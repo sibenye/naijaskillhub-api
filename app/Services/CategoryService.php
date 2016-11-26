@@ -29,6 +29,11 @@ class CategoryService {
                 'The Category name is already in use.');
         }
 
+        if ($request->getParentId()) {
+            // confirm that the parentId exists
+            $this->repository->get($request->getParentId());
+        }
+
         $modelAttributes = $request->buildModelAttributes();
 
         $category = $this->repository->create($modelAttributes);
@@ -51,6 +56,12 @@ class CategoryService {
                     'The Category name is already in use.');
             }
         }
+
+        if ($request->getParentId()) {
+            // confirm that the parentId exists
+            $this->repository->get($request->getParentId());
+        }
+
         $modelAttributes = $request->buildModelAttributes();
 
         $category = $this->repository->update($request->getCategoryId(),

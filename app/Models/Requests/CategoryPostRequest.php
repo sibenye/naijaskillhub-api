@@ -67,6 +67,7 @@ class CategoryPostRequest implements IPostRequest {
     public function __construct($requestBody) {
         $this->categoryId = array_get($requestBody, 'categoryId', null);
         $this->name = array_get($requestBody, 'name', null);
+        $this->parentId = array_get($requestBody, 'parentId', null);
         $this->pluralName = array_get($requestBody, 'pluralName', null);
         $this->description = array_get($requestBody, 'description', null);
         $this->imageUrl = array_get($requestBody, 'imageUrl', null);
