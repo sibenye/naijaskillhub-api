@@ -47,7 +47,10 @@ class NSHResponse {
     }
 
     public function render() {
-        return response($this, $this->http_status, [ ]);
+        return response($this, $this->http_status,
+                [
+                        'Content-Type' => 'application/json'
+                ]);
     }
 
     public function getResponse() {

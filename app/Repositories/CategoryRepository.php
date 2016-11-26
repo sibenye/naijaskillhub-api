@@ -9,7 +9,7 @@ class CategoryRepository extends BaseRepository {
     }
 
     public function getCategoryByName($categoryName) {
-        return $this->model->where('name', $categoryName)->firstOrFail();
+        return $this->model->where('name', $categoryName)->first();
     }
 
 }

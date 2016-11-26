@@ -50,6 +50,12 @@ class Handler extends ExceptionHandler {
                     'Resource Not Found');
                 return $errorResponse->render();
                 break;
+            case 'Illuminate\Validation\ValidationException' :
+                $validationMessage = $e->getMessage() . ' ' . $e->getResponse();
+                $errorResponse = new NSHResponse(400, 'error',
+                    $validationMessage);
+                return $errorResponse->render();
+                break;
             default :
                 return parent::render($request, $e);
         }

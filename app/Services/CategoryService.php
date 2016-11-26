@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\CategoryRepository;
 use App\Models\Requests\CategoryPostRequest;
+use Illuminate\Validation\ValidationException;
 
 class CategoryService {
 
@@ -22,6 +23,12 @@ class CategoryService {
     }
 
     public function createCategory(CategoryPostRequest $request) {
+        // ensure that the category name is not taken
+        if ($this->repository->getCategoryByName($request->getName())) {
+            throw new ValidationException(NULL,
+                'The Category name is already in use.');
+        }
+
         $modelAttributes = $request->buildModelAttributes();
 
         $category = $this->repository->create($modelAttributes);
@@ -30,6 +37,20 @@ class CategoryService {
     }
 
     public function updateCategory(CategoryPostRequest $request) {
+        // ensure the category exists
+        $this->repository->get($request->getCategoryId());
+
+        if ($request->getName()) {
+            // ensure that the category name is not taken
+            $existingCategoryByName = $this->repository->getCategoryByName(
+                    $request->getName());
+
+            if ($existingCategoryByName &&
+                     $existingCategoryByName ['id'] != $request->getCategoryId()) {
+                throw new ValidationException(NULL,
+                    'The Category name is already in use.');
+            }
+        }
         $modelAttributes = $request->buildModelAttributes();
 
         $category = $this->repository->update($request->getCategoryId(),
