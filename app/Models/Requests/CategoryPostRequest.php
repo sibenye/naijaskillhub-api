@@ -2,7 +2,7 @@
 
 namespace App\Models\Requests;
 
-class CategoryPostRequest {
+class CategoryPostRequest implements IPostRequest {
     private $categoryId;
     private $name;
     private $pluralName;
@@ -64,12 +64,12 @@ class CategoryPostRequest {
         return $this;
     }
 
-    public function __construct($uri_request_body) {
-        $this->categoryId = array_get($uri_request_body, 'categoryId', null);
-        $this->name = array_get($uri_request_body, 'name', null);
-        $this->pluralName = array_get($uri_request_body, 'pluralName', null);
-        $this->description = array_get($uri_request_body, 'description', null);
-        $this->imageUrl = array_get($uri_request_body, 'imageUrl', null);
+    public function __construct($requestBody) {
+        $this->categoryId = array_get($requestBody, 'categoryId', null);
+        $this->name = array_get($requestBody, 'name', null);
+        $this->pluralName = array_get($requestBody, 'pluralName', null);
+        $this->description = array_get($requestBody, 'description', null);
+        $this->imageUrl = array_get($requestBody, 'imageUrl', null);
     }
 
     public function buildModelAttributes() {
@@ -82,6 +82,16 @@ class CategoryPostRequest {
         $attr ['imageUrl'] = $this->imageUrl;
 
         return $attr;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \App\Models\Requests\IPostRequest::validationRules()
+     */
+    public function getValidationRules() {
+        return [
+                'name' => 'required'
+        ];
     }
 
 }

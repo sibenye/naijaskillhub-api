@@ -35,6 +35,9 @@ class CategoryController extends Controller {
     public function create() {
         $categoryPostRequest = new CategoryPostRequest($this->request->all());
 
+        // validate request.
+        $this->validateRequest($categoryPostRequest->getValidationRules());
+
         $category = $this->service->createCategory($categoryPostRequest);
 
         return $this->response($category);

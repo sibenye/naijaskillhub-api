@@ -25,4 +25,8 @@ class Controller extends BaseController {
         return $nsh_response->render();
     }
 
+    public function validateRequest($validationRules) {
+        $this->validate($this->request, $validationRules);
+    }
+
 }

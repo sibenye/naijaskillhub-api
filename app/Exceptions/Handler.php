@@ -46,13 +46,14 @@ class Handler extends ExceptionHandler {
     public function render($request, Exception $e) {
         Switch (get_class($e)) {
             case 'Illuminate\Database\Eloquent\ModelNotFoundException' :
-                $errorResponse = new NSHResponse(404, 'error',
+                $errorResponse = new NSHResponse(404, 'Error',
                     'Resource Not Found');
                 return $errorResponse->render();
                 break;
             case 'Illuminate\Validation\ValidationException' :
-                $validationMessage = $e->getMessage() . ' ' . $e->getResponse();
-                $errorResponse = new NSHResponse(400, 'error',
+                $status = 'Error. ' . $e->getMessage();
+                $validationMessage = $e->getResponse()->getContent();
+                $errorResponse = new NSHResponse(400, $status,
                     $validationMessage);
                 return $errorResponse->render();
                 break;
