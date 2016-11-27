@@ -73,6 +73,11 @@ class CategoryPostRequest implements IPostRequest {
         $this->imageUrl = array_get($requestBody, 'imageUrl', null);
     }
 
+    /**
+     *
+     * {@inheritDoc}
+     * @see \App\Models\Requests\IPostRequest::buildModelAttributes()
+     */
     public function buildModelAttributes() {
         $attr = array ();
 

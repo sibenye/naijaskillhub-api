@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Response;
 use App\Models\Responses\NSHResponse;
+use phpDocumentor\Reflection\Types\String_;
 
 class Handler extends ExceptionHandler {
     /**
@@ -52,7 +53,11 @@ class Handler extends ExceptionHandler {
                 break;
             case 'Illuminate\Validation\ValidationException' :
                 $status = 'Error. ' . $e->getMessage();
-                $validationMessage = $e->getResponse()->getContent();
+
+                $validationMessage = $e->getResponse();
+                if (! is_string($e->getResponse())) {
+                    $validationMessage = $e->getResponse()->getContent();
+                }
                 $errorResponse = new NSHResponse(400, $status,
                     $validationMessage);
                 return $errorResponse->render();
