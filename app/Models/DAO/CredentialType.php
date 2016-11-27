@@ -4,15 +4,14 @@ namespace App\Models\DAO;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserAttribute extends Model {
-    const CREATED_AT = 'createdDate';
-    const UPDATED_AT = 'modifiedDate';
+class CredentialType extends Model {
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'nsh_userattributes';
+    protected $table = 'nsh_credentialtypes';
 
     /**
      * The attributes that aren't mass assignable.
@@ -20,5 +19,12 @@ class UserAttribute extends Model {
      * @var array
      */
     protected $guarded = [ ];
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
 
 }

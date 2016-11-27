@@ -42,8 +42,7 @@ class UserAttributeService {
         // ensure that the attribute name is not taken
         $existingAttributeByName = $this->repository->getUserAttributeByName(
                 $request->getName());
-        if ($existingAttributeByName &&
-                 $request->getUserAttributeId() !=
+        if ($existingAttributeByName && $request->getUserAttributeId() !=
                  $existingAttributeByName ['id']) {
             throw new ValidationException(NULL,
                 'The UserAttribute name is already in use.');
