@@ -26,4 +26,12 @@ class Category extends Model {
      */
     public $timestamps = false;
 
+    /**
+     * The users that this category belongs to.
+     */
+    public function users() {
+        return $this->belongsToMany('App\Models\DAO\User',
+                'nsh_users_categories_portfolio', 'categoryId', 'userId');
+    }
+
 }

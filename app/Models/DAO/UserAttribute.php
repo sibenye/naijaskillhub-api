@@ -21,4 +21,21 @@ class UserAttribute extends Model {
      */
     protected $guarded = [ ];
 
+    /**
+     * Get the UserAttributeValues for this UserAttribute.
+     */
+    public function userAttributeValues() {
+        return $this->hasMany('App\Models\DAO\UserAttributeValue',
+                'userAttributeId');
+    }
+
+    /**
+     * The users that belong to this userAttribute.
+     */
+    public function users() {
+        return $this->belongsToMany('App\Models\DAO\User',
+                'nsh_userattributevalues', 'userAttributeId', 'userId')->withPivot(
+                'attributeValue')->withTimestamps('createdDate', 'modifiedDate');
+    }
+
 }
