@@ -23,3 +23,5 @@ $app->group(
             require __DIR__ . '/category_route.php';
             require __DIR__ . '/userattribute_route.php';
         });
+
+require __DIR__ . '/user_route.php';

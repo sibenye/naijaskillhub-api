@@ -22,14 +22,6 @@ class UserAttribute extends Model {
     protected $guarded = [ ];
 
     /**
-     * Get the UserAttributeValues for this UserAttribute.
-     */
-    public function userAttributeValues() {
-        return $this->hasMany('App\Models\DAO\UserAttributeValue',
-                'userAttributeId');
-    }
-
-    /**
      * The users that belong to this userAttribute.
      */
     public function users() {
