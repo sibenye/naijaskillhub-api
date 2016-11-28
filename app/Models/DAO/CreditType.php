@@ -4,14 +4,13 @@ namespace App\Models\DAO;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CredentialType extends Model {
-
+class CreditType extends Model {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'nsh_credentialtypes';
+    protected $table = 'nsh_credittypes';
 
     /**
      * The attributes that aren't mass assignable.
@@ -28,12 +27,12 @@ class CredentialType extends Model {
     public $timestamps = false;
 
     /**
-     * The users that have this credentialType.
+     * The users to which this creditType belongs to.
      */
     public function users() {
         return $this->belongsToMany('App\Models\DAO\User',
-                'nsh_usercredentials', 'credentialTypeId', 'userId')->withPivot(
-                'password')->withTimestamps('createdDate', 'modifiedDate');
+                'nsh_users_credits_portfolio', 'creditTypeId', 'userId')->withPivot(
+                'year', 'caption')->withTimestamps('createdDate', 'modifiedDate');
     }
 
 }
