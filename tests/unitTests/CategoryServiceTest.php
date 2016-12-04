@@ -4,7 +4,7 @@ namespace Tests\unitTests;
 
 use App\Services\CategoryService;
 use App\Repositories\CategoryRepository;
-use App\Models\Requests\CategoryPostRequest;
+use App\Models\Requests\Admin\CategoryPostRequest;
 
 class CategoryServiceTest extends \TestCase {
     private $categoryService;

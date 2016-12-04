@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mappers\UserAttributeValuePostRequestMapper;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 
@@ -11,10 +12,13 @@ class UserController extends Controller {
      * @var UserService
      */
     private $service;
+    private $attributeValuePostMapper;
 
-    public function __construct(Request $request, UserService $service) {
+    public function __construct(Request $request, UserService $service,
+            UserAttributeValuePostRequestMapper $attributeValuePostMapper) {
         parent::__construct($request);
         $this->service = $service;
+        $this->attributeValuePostMapper = $attributeValuePostMapper;
     }
 
     public function getUser($id) {
@@ -24,7 +28,10 @@ class UserController extends Controller {
     }
 
     public function getUserAttributes($id) {
-        $userAttributes = $this->service->getUserAttributes($id);
+        $requestedAttributes = $this->request->input('attributeNames', '');
+        $requestedAttributesArray = preg_split('/,/', $requestedAttributes);
+        $userAttributes = $this->service->getUserAttributes($id,
+                $requestedAttributesArray);
 
         return $this->response($userAttributes);
     }
@@ -45,6 +52,15 @@ class UserController extends Controller {
         $userCredentialTypes = $this->service->getUserCredentialTypes($id);
 
         return $this->response($userCredentialTypes);
+    }
+
+    public function upsertUserAttributeValue($id) {
+        $requestBody = $this->request->all();
+
+        $userAttributeValues = $this->service->upsertUserAttributeValue($id,
+                $requestBody);
+
+        return $this->response($userAttributeValues);
     }
 
 }

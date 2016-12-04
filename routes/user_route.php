@@ -26,3 +26,8 @@ $app->get('/users/{id}/credentialTypes',
         [
                 'uses' => 'UserController@getUserCredentialTypes'
         ]);
+
+$app->put('/users/{id}/attributes',
+        [
+                'uses' => 'UserController@upsertUserAttributeValue'
+        ]);

@@ -4,7 +4,7 @@ namespace Tests\unitTests;
 
 use App\Repositories\UserAttributeRepository;
 use App\Services\UserAttributeService;
-use App\Models\Requests\UserAttributePostRequest;
+use App\Models\Requests\Admin\UserAttributePostRequest;
 
 class UserAttributeServiceTest extends \TestCase {
     private $userAttributeService;

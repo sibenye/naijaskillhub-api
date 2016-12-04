@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\UserAttributeService;
 use Illuminate\Http\Request;
-use App\Models\Requests\UserAttributePostRequest;
+use App\Models\Requests\Admin\UserAttributePostRequest;
 
 class UserAttributeController extends Controller {
 

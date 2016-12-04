@@ -8,8 +8,12 @@ class UserAttributeRepository extends BaseRepository {
         return 'App\Models\DAO\UserAttribute';
     }
 
-    public function getUserAttributeByName($attributeName) {
-        return $this->model->where('name', $attributeName)->first();
+    public function getUserAttributeByName($attributeName, $throw = false) {
+        if ($throw) {
+            return $this->model->where('name', $attributeName)->firstOrFail();
+        } else {
+            return $this->model->where('name', $attributeName)->first();
+        }
     }
 
 }

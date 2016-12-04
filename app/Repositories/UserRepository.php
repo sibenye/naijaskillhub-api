@@ -2,10 +2,57 @@
 
 namespace App\Repositories;
 
+use Illuminate\Database\Eloquent\Model;
+
 class UserRepository extends BaseRepository {
 
     public function model() {
         return 'App\Models\DAO\User';
     }
 
+    public function getUserAttributes($userId, $attributeNames = []) {
+        $user = $this->get($userId);
+
+        if (!empty($attributeNames)) {
+            $userAttributes = $user->userAttributes->whereIn('name',
+                    $attributeNames);
+            return $userAttributes;
+        } else {
+            $userAttributes = $user->userAttributes;
+            return $userAttributes;
+        }
+    }
+
+    public function upsertUserAttributeValue(Model $user, $attributesCollection) {
+        $userAttributes = $user->userAttributes;
+
+        $existingAttributesCollection = array ();
+
+        foreach ($userAttributes as $userAttribute) {
+            $existingAttributesCollection [$userAttribute->id] = $userAttribute->pivot->attributeValue;
+        }
+
+        foreach ($attributesCollection as $userAttributeRequest) {
+            if (in_array($userAttributeRequest ['attributeId'],
+                    array_keys($existingAttributesCollection))) {
+                // only update if it is different.
+                if ($existingAttributesCollection [$userAttributeRequest ['attributeId']] !=
+                         $userAttributeRequest ['attributeValue']) {
+                    $user->userAttributes()->updateExistingPivot(
+                            $userAttributeRequest ['attributeId'],
+                            [
+                                    'attributeValue' => $userAttributeRequest ['attributeValue']
+                            ]);
+                }
+            } else {
+                $user->userAttributes()->attach(
+                        $userAttributeRequest ['attributeId'],
+                        [
+                                'attributeValue' => $userAttributeRequest ['attributeValue']
+                        ]);
+            }
+        }
+    }
+
 }
+

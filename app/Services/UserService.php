@@ -3,20 +3,30 @@
 namespace App\Services;
 
 use App\Repositories\UserRepository;
+use App\Models\Requests\UserAttributeValuePostRequest;
+use App\Repositories\UserAttributeRepository;
 
 class UserService {
     /**
      *
      * @var UserRepository
      */
-    private $repository;
+    private $userRepository;
 
-    public function __construct(UserRepository $repository) {
-        $this->repository = $repository;
+    /**
+     *
+     * @var UserAttributeRepository
+     */
+    private $userAttributeRepository;
+
+    public function __construct(UserRepository $repository,
+            UserAttributeRepository $userAttributeRepository) {
+        $this->userRepository = $repository;
+        $this->userAttributeRepository = $userAttributeRepository;
     }
 
     public function getUser($id) {
-        $user = $this->repository->get($id);
+        $user = $this->userRepository->get($id);
 
         $userContent = array ();
         $userContent ['userId'] = $user->id;
@@ -28,10 +38,9 @@ class UserService {
         return $userContent;
     }
 
-    public function getUserAttributes($id) {
-        $user = $this->repository->get($id);
-
-        $userAttributes = $user->userAttributes;
+    public function getUserAttributes($userId, $requestedAttributes = []) {
+        $userAttributes = $this->userRepository->getUserAttributes($userId,
+                $requestedAttributes);
 
         $userAttributesContent = array ();
 
@@ -44,14 +53,14 @@ class UserService {
         }
 
         $result = array ();
-        $result ['userId'] = $id;
+        $result ['userId'] = $userId;
         $result ['attributes'] = $userAttributesContent;
 
         return $result;
     }
 
     public function getUserPortfolios($id) {
-        $user = $this->repository->get($id);
+        $user = $this->userRepository->get($id);
 
         $images = $user->images;
         $videos = $user->videos;
@@ -107,7 +116,7 @@ class UserService {
     }
 
     public function getUserCategories($id) {
-        $user = $this->repository->get($id);
+        $user = $this->userRepository->get($id);
 
         $userCategories = $user->categories;
 
@@ -126,7 +135,7 @@ class UserService {
     }
 
     public function getUserCredentialTypes($id) {
-        $user = $this->repository->get($id);
+        $user = $this->userRepository->get($id);
 
         $userCredentialTypes = $user->credentialTypes;
 
@@ -144,6 +153,32 @@ class UserService {
         $result ['credentialTypes'] = $userCredentialTypesContent;
 
         return $result;
+    }
+
+    public function upsertUserAttributeValue($userId,
+            $userAttributeValuePostRequest) {
+        // validate user Id
+        $user = $this->userRepository->get($userId);
+
+        // validate the attribute names in the request
+        $attributesCollection = array ();
+        $i = 0;
+
+        foreach ($userAttributeValuePostRequest as $attributeName => $attributeValue) {
+            $i++;
+            $userAttribute = $this->userAttributeRepository->getUserAttributeByName(
+                    $attributeName, true);
+            $attributesCollection [$i] ['attributeId'] = $userAttribute ['id'];
+            $attributesCollection [$i] ['attributeValue'] = $attributeValue;
+        }
+
+        $this->userRepository->upsertUserAttributeValue($user,
+                $attributesCollection);
+
+        $attributeNames = implode(',',
+                array_keys($userAttributeValuePostRequest));
+
+        return $this->getUserAttributes($userId, $attributeNames);
     }
 
 }

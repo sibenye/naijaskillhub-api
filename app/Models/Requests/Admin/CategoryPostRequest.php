@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Models\Requests;
+namespace App\Models\Requests\Admin;
+
+use App\Models\Requests\IPostRequest;
 
 class CategoryPostRequest implements IPostRequest {
     private $categoryId;
@@ -65,12 +67,12 @@ class CategoryPostRequest implements IPostRequest {
     }
 
     public function __construct($requestBody) {
-        $this->categoryId = array_get($requestBody, 'categoryId', null);
-        $this->name = array_get($requestBody, 'name', null);
-        $this->parentId = array_get($requestBody, 'parentId', null);
-        $this->pluralName = array_get($requestBody, 'pluralName', null);
-        $this->description = array_get($requestBody, 'description', null);
-        $this->imageUrl = array_get($requestBody, 'imageUrl', null);
+        $this->categoryId = array_get($requestBody, 'categoryId', NULL);
+        $this->name = array_get($requestBody, 'name', NULL);
+        $this->parentId = array_get($requestBody, 'parentId', NULL);
+        $this->pluralName = array_get($requestBody, 'pluralName', NULL);
+        $this->description = array_get($requestBody, 'description', NULL);
+        $this->imageUrl = array_get($requestBody, 'imageUrl', NULL);
     }
 
     /**
@@ -81,11 +83,21 @@ class CategoryPostRequest implements IPostRequest {
     public function buildModelAttributes() {
         $attr = array ();
 
-        $attr ['name'] = $this->name;
-        $attr ['pluralName'] = $this->pluralName;
-        $attr ['parentId'] = $this->parentId;
-        $attr ['description'] = $this->description;
-        $attr ['imageUrl'] = $this->imageUrl;
+        if (! empty($this->name)) { // checking for both NULL and zero length string.
+            $attr ['name'] = $this->name;
+        }
+        if ($this->pluralName !== NULL) {
+            $attr ['pluralName'] = $this->pluralName;
+        }
+        if ($this->parentId !== NULL) {
+            $attr ['parentId'] = $this->parentId;
+        }
+        if ($this->description !== NULL) {
+            $attr ['description'] = $this->description;
+        }
+        if ($this->imageUrl !== NULL) {
+            $attr ['imageUrl'] = $this->imageUrl;
+        }
 
         return $attr;
     }
