@@ -23,6 +23,40 @@ class UserRepository extends BaseRepository {
         }
     }
 
+    public function linkUserToCategory($userId, $categoriesCollection) {
+        $user = $this->get($userId);
+
+        $alreadyLinkedCategories = $user->categories;
+        $alreadyLinkedCategoryIds = array ();
+
+        foreach ($alreadyLinkedCategories as $alreadyLinkedCategory) {
+            $alreadyLinkedCategoryIds [] = $alreadyLinkedCategory->id;
+        }
+
+        foreach ($categoriesCollection as $category) {
+            if (!in_array($category ['categoryId'], $alreadyLinkedCategoryIds)) {
+                $user->categories()->attach($category ['categoryId']);
+            }
+        }
+    }
+
+    public function unlinkUserFromCategory($userId, $categoriesCollection) {
+        $user = $this->get($userId);
+
+        $alreadyLinkedCategories = $user->categories;
+        $alreadyLinkedCategoryIds = array ();
+
+        foreach ($alreadyLinkedCategories as $alreadyLinkedCategory) {
+            $alreadyLinkedCategoryIds [] = $alreadyLinkedCategory->id;
+        }
+
+        foreach ($categoriesCollection as $category) {
+            if (in_array($category ['categoryId'], $alreadyLinkedCategoryIds)) {
+                $user->categories()->detach($category ['categoryId']);
+            }
+        }
+    }
+
     public function upsertUserAttributeValue(Model $user, $attributesCollection) {
         $userAttributes = $user->userAttributes;
 

@@ -28,18 +28,44 @@ class UserController extends Controller {
     }
 
     public function getUserAttributes($id) {
-        $requestedAttributes = $this->request->input('attributeNames', '');
-        $requestedAttributesArray = preg_split('/,/', $requestedAttributes);
+        $requestedAttributes = $this->request->input('attributeNames', NULL);
+        $requestedAttributesArray = $requestedAttributes ? preg_split('/,/',
+                $requestedAttributes) : [ ];
         $userAttributes = $this->service->getUserAttributes($id,
                 $requestedAttributesArray);
 
         return $this->response($userAttributes);
     }
 
-    public function getUserPortfolios($id) {
-        $userPortfolios = $this->service->getUserPortfolios($id);
+    public function getAllUserPortfolios($id) {
+        $userPortfolios = $this->service->getAllUserPortfolios($id);
 
         return $this->response($userPortfolios);
+    }
+
+    public function getUserImagesPortfolio($id) {
+        $userImagesPortfolio = $this->service->getUserImagesPortfolio($id);
+
+        return $this->response($userImagesPortfolio);
+    }
+
+    public function getUserVideosPortfolio($id) {
+        $userVideosPortfolio = $this->service->getUserVideosPortfolio($id);
+
+        return $this->response($userVideosPortfolio);
+    }
+
+    public function getUserVoiceclipsPortfolio($id) {
+        $userVoiceclipsPortfolio = $this->service->getUserVoiceclipsPortfolio(
+                $id);
+
+        return $this->response($userVoiceclipsPortfolio);
+    }
+
+    public function getUserCreditsPortfolio($id) {
+        $userCreditsPortfolio = $this->service->getUserCreditsPortfolio($id);
+
+        return $this->response($userCreditsPortfolio);
     }
 
     public function getUserCategories($id) {
@@ -57,10 +83,25 @@ class UserController extends Controller {
     public function upsertUserAttributeValue($id) {
         $requestBody = $this->request->all();
 
-        $userAttributeValues = $this->service->upsertUserAttributeValue($id,
-                $requestBody);
+        $this->service->upsertUserAttributeValue($id, $requestBody);
 
-        return $this->response($userAttributeValues);
+        return $this->response();
+    }
+
+    public function linkUserToCategory($id) {
+        $requestBody = $this->request->all();
+
+        $this->service->linkUserToCategory($id, $requestBody);
+
+        return $this->response();
+    }
+
+    public function unlinkUserFromCategory($id) {
+        $requestBody = $this->request->all();
+
+        $this->service->unlinkUserFromCategory($id, $requestBody);
+
+        return $this->response();
     }
 
 }

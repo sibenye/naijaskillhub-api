@@ -14,7 +14,27 @@ $app->get('/users/{id}/attributes',
 
 $app->get('/users/{id}/portfolios',
         [
-                'uses' => 'UserController@getUserPortfolios'
+                'uses' => 'UserController@getAllUserPortfolios'
+        ]);
+
+$app->get('/users/{id}/portfolios/images',
+        [
+                'uses' => 'UserController@getUserImagesPortfolio'
+        ]);
+
+$app->get('/users/{id}/portfolios/videos',
+        [
+                'uses' => 'UserController@getUserVideosPortfolio'
+        ]);
+
+$app->get('/users/{id}/portfolios/voiceclips',
+        [
+                'uses' => 'UserController@getUserVoiceclipsPortfolio'
+        ]);
+
+$app->get('/users/{id}/portfolios/credits',
+        [
+                'uses' => 'UserController@getUserCreditsPortfolio'
         ]);
 
 $app->get('/users/{id}/categories',
@@ -27,7 +47,16 @@ $app->get('/users/{id}/credentialTypes',
                 'uses' => 'UserController@getUserCredentialTypes'
         ]);
 
-$app->put('/users/{id}/attributes',
+$app->post('/users/{id}/attributes',
         [
                 'uses' => 'UserController@upsertUserAttributeValue'
+        ]);
+
+$app->post('/users/{id}/categories',
+        [
+                'uses' => 'UserController@linkUserToCategory'
+        ]);
+$app->delete('/users/{id}/categories',
+        [
+                'uses' => 'UserController@unlinkUserFromCategory'
         ]);

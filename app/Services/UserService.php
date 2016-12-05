@@ -5,6 +5,9 @@ namespace App\Services;
 use App\Repositories\UserRepository;
 use App\Models\Requests\UserAttributeValuePostRequest;
 use App\Repositories\UserAttributeRepository;
+use Illuminate\Broadcasting\PrivateChannel;
+use App\Repositories\CategoryRepository;
+use Illuminate\Database\Eloquent\Model;
 
 class UserService {
     /**
@@ -19,10 +22,18 @@ class UserService {
      */
     private $userAttributeRepository;
 
+    /**
+     *
+     * @var CategoryRepository
+     */
+    private $categoryRepository;
+
     public function __construct(UserRepository $repository,
-            UserAttributeRepository $userAttributeRepository) {
+            UserAttributeRepository $userAttributeRepository,
+            CategoryRepository $categoryRepository) {
         $this->userRepository = $repository;
         $this->userAttributeRepository = $userAttributeRepository;
+        $this->categoryRepository = $categoryRepository;
     }
 
     public function getUser($id) {
@@ -43,13 +54,16 @@ class UserService {
                 $requestedAttributes);
 
         $userAttributesContent = array ();
+        $i = 0;
 
-        foreach ($userAttributes as $key => $value) {
-            $userAttributesContent [$key] ['attributeId'] = $value->id;
-            $userAttributesContent [$key] ['attributeName'] = $value->name;
-            $userAttributesContent [$key] ['attributeValue'] = $value->pivot->attributeValue;
-            $userAttributesContent [$key] ['createdDate'] = $value->pivot->createdDate;
-            $userAttributesContent [$key] ['modifiedDate'] = $value->pivot->modifiedDate;
+        foreach ($userAttributes as $value) {
+            $userAttributesContent [$i] ['attributeId'] = $value->id;
+            $userAttributesContent [$i] ['attributeName'] = $value->name;
+            $userAttributesContent [$i] ['attributeValue'] = $value->pivot->attributeValue;
+            $userAttributesContent [$i] ['createdDate'] = $value->pivot->createdDate;
+            $userAttributesContent [$i] ['modifiedDate'] = $value->pivot->modifiedDate;
+
+            $i++;
         }
 
         $result = array ();
@@ -59,58 +73,55 @@ class UserService {
         return $result;
     }
 
-    public function getUserPortfolios($id) {
+    public function getAllUserPortfolios($id) {
         $user = $this->userRepository->get($id);
-
-        $images = $user->images;
-        $videos = $user->videos;
-        $voiceClips = $user->voiceClips;
-        $credits = $user->credits;
-
-        $imagesContent = array ();
-        foreach ($images as $key => $value) {
-            $imagesContent [$key] ['imageId'] = $value->id;
-            $imagesContent [$key] ['imageUrl'] = $value->imageUrl;
-            $imagesContent [$key] ['caption'] = $value->caption;
-            $imagesContent [$key] ['createdDate'] = $value->createdDate;
-            $imagesContent [$key] ['modifiedDate'] = $value->modifiedDate;
-        }
-
-        $videosContent = array ();
-        foreach ($videos as $key => $value) {
-            $videosContent [$key] ['videoId'] = $value->id;
-            $videosContent [$key] ['videoUrl'] = $value->videoUrl;
-            $videosContent [$key] ['caption'] = $value->caption;
-            $videosContent [$key] ['createdDate'] = $value->createdDate;
-            $videosContent [$key] ['modifiedDate'] = $value->modifiedDate;
-        }
-
-        $voiceClipsContent = array ();
-        foreach ($voiceClips as $key => $value) {
-            $voiceClipsContent [$key] ['clipId'] = $value->id;
-            $voiceClipsContent [$key] ['clipUrl'] = $value->clipUrl;
-            $voiceClipsContent [$key] ['caption'] = $value->caption;
-            $voiceClipsContent [$key] ['createdDate'] = $value->createdDate;
-            $voiceClipsContent [$key] ['modifiedDate'] = $value->modifiedDate;
-        }
-
-        $creditsContent = array ();
-        foreach ($credits as $key => $value) {
-            $creditsContent [$key] ['creditId'] = $value->id;
-            $creditsContent [$key] ['creditTypeName'] = $value->name;
-            $creditsContent [$key] ['creditTypeId'] = $value->pivot->creditTypeId;
-            $creditsContent [$key] ['year'] = $value->pivot->year;
-            $creditsContent [$key] ['caption'] = $value->pivot->caption;
-            $creditsContent [$key] ['createdDate'] = $value->pivot->createdDate;
-            $creditsContent [$key] ['modifiedDate'] = $value->pivot->modifiedDate;
-        }
 
         $result = array ();
         $result ['userId'] = $id;
-        $result ['images'] = $imagesContent;
-        $result ['videos'] = $videosContent;
-        $result ['voiceClips'] = $voiceClips;
-        $result ['credits'] = $creditsContent;
+        $result ['images'] = $this->mapImagesResponse($user);
+        $result ['videos'] = $this->mapVideosResponse($user);
+        $result ['voiceClips'] = $this->mapVoiceclipsResponse($user);
+        $result ['credits'] = $this->mapCreditsResponse($user);
+
+        return $result;
+    }
+
+    public function getUserImagesPortfolio($id) {
+        $user = $this->userRepository->get($id);
+
+        $result = array ();
+        $result ['userId'] = $id;
+        $result ['images'] = $this->mapImagesResponse($user);
+
+        return $result;
+    }
+
+    public function getUserVideosPortfolio($id) {
+        $user = $this->userRepository->get($id);
+
+        $result = array ();
+        $result ['userId'] = $id;
+        $result ['videos'] = $this->mapVideosResponse($user);
+
+        return $result;
+    }
+
+    public function getUserVoiceclipsPortfolio($id) {
+        $user = $this->userRepository->get($id);
+
+        $result = array ();
+        $result ['userId'] = $id;
+        $result ['voiceClips'] = $this->mapVoiceclipsResponse($user);
+
+        return $result;
+    }
+
+    public function getUserCreditsPortfolio($id) {
+        $user = $this->userRepository->get($id);
+
+        $result = array ();
+        $result ['userId'] = $id;
+        $result ['credits'] = $this->mapCreditsResponse($user);
 
         return $result;
     }
@@ -174,11 +185,82 @@ class UserService {
 
         $this->userRepository->upsertUserAttributeValue($user,
                 $attributesCollection);
+    }
 
-        $attributeNames = implode(',',
-                array_keys($userAttributeValuePostRequest));
+    public function linkUserToCategory($userId, $categoriesRequest) {
+        // ensure the categoryIds are valid
+        foreach ($categoriesRequest as $request) {
+            $this->categoryRepository->get($request ['categoryId']);
+        }
 
-        return $this->getUserAttributes($userId, $attributeNames);
+        $this->userRepository->linkUserToCategory($userId, $categoriesRequest);
+    }
+
+    public function unlinkUserFromCategory($userId, $categoriesRequest) {
+        // ensure the categoryIds are valid
+        foreach ($categoriesRequest as $request) {
+            $this->categoryRepository->get($request ['categoryId']);
+        }
+
+        $this->userRepository->unlinkUserFromCategory($userId,
+                $categoriesRequest);
+    }
+
+    private function mapImagesResponse(Model $user) {
+        $images = $user->images;
+        $imagesContent = array ();
+        foreach ($images as $key => $value) {
+            $imagesContent [$key] ['imageId'] = $value->id;
+            $imagesContent [$key] ['imageUrl'] = $value->imageUrl;
+            $imagesContent [$key] ['caption'] = $value->caption;
+            $imagesContent [$key] ['createdDate'] = $value->createdDate;
+            $imagesContent [$key] ['modifiedDate'] = $value->modifiedDate;
+        }
+
+        return $imagesContent;
+    }
+
+    private function mapVideosResponse(Model $user) {
+        $videos = $user->videos;
+        $videosContent = array ();
+        foreach ($videos as $key => $value) {
+            $videosContent [$key] ['videoId'] = $value->id;
+            $videosContent [$key] ['videoUrl'] = $value->videoUrl;
+            $videosContent [$key] ['caption'] = $value->caption;
+            $videosContent [$key] ['createdDate'] = $value->createdDate;
+            $videosContent [$key] ['modifiedDate'] = $value->modifiedDate;
+        }
+
+        return $videosContent;
+    }
+
+    private function mapVoiceclipsResponse(Model $user) {
+        $voiceClips = $user->voiceClips;
+        $voiceClipsContent = array ();
+        foreach ($voiceClips as $key => $value) {
+            $voiceClipsContent [$key] ['clipId'] = $value->id;
+            $voiceClipsContent [$key] ['clipUrl'] = $value->clipUrl;
+            $voiceClipsContent [$key] ['caption'] = $value->caption;
+            $voiceClipsContent [$key] ['createdDate'] = $value->createdDate;
+            $voiceClipsContent [$key] ['modifiedDate'] = $value->modifiedDate;
+        }
+        return $voiceClipsContent;
+    }
+
+    private function mapCreditsResponse(Model $user) {
+        $credits = $user->credits;
+        $creditsContent = array ();
+        foreach ($credits as $key => $value) {
+            $creditsContent [$key] ['creditId'] = $value->id;
+            $creditsContent [$key] ['creditTypeName'] = $value->name;
+            $creditsContent [$key] ['creditTypeId'] = $value->pivot->creditTypeId;
+            $creditsContent [$key] ['year'] = $value->pivot->year;
+            $creditsContent [$key] ['caption'] = $value->pivot->caption;
+            $creditsContent [$key] ['createdDate'] = $value->pivot->createdDate;
+            $creditsContent [$key] ['modifiedDate'] = $value->pivot->modifiedDate;
+        }
+
+        return $creditsContent;
     }
 
 }
