@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Services;
 
 use App\Repositories\UserRepository;
@@ -8,8 +7,12 @@ use App\Repositories\UserAttributeRepository;
 use Illuminate\Broadcasting\PrivateChannel;
 use App\Repositories\CategoryRepository;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
+use App\Repositories\CredentialTypeRepository;
+use App\Enums\CredentialType;
 
-class UserService {
+class UserService
+{
     /**
      *
      * @var UserRepository
@@ -28,15 +31,25 @@ class UserService {
      */
     private $categoryRepository;
 
+    /**
+     *
+     * @var CredentialTypeRepository
+     */
+    private $credentialTypeRepository;
+
     public function __construct(UserRepository $repository,
             UserAttributeRepository $userAttributeRepository,
-            CategoryRepository $categoryRepository) {
+            CategoryRepository $categoryRepository,
+            CredentialTypeRepository $credentialTypeRepository)
+    {
         $this->userRepository = $repository;
         $this->userAttributeRepository = $userAttributeRepository;
         $this->categoryRepository = $categoryRepository;
+        $this->credentialTypeRepository = $credentialTypeRepository;
     }
 
-    public function getUser($id) {
+    public function getUser($id)
+    {
         $user = $this->userRepository->get($id);
 
         $userContent = array ();
@@ -49,7 +62,8 @@ class UserService {
         return $userContent;
     }
 
-    public function getUserAttributes($userId, $requestedAttributes = []) {
+    public function getUserAttributes($userId, $requestedAttributes = [])
+    {
         $userAttributes = $this->userRepository->getUserAttributes($userId,
                 $requestedAttributes);
 
@@ -73,7 +87,8 @@ class UserService {
         return $result;
     }
 
-    public function getAllUserPortfolios($id) {
+    public function getAllUserPortfolios($id)
+    {
         $user = $this->userRepository->get($id);
 
         $result = array ();
@@ -86,7 +101,8 @@ class UserService {
         return $result;
     }
 
-    public function getUserImagesPortfolio($id) {
+    public function getUserImagesPortfolio($id)
+    {
         $user = $this->userRepository->get($id);
 
         $result = array ();
@@ -96,7 +112,8 @@ class UserService {
         return $result;
     }
 
-    public function getUserVideosPortfolio($id) {
+    public function getUserVideosPortfolio($id)
+    {
         $user = $this->userRepository->get($id);
 
         $result = array ();
@@ -106,7 +123,8 @@ class UserService {
         return $result;
     }
 
-    public function getUserVoiceclipsPortfolio($id) {
+    public function getUserVoiceclipsPortfolio($id)
+    {
         $user = $this->userRepository->get($id);
 
         $result = array ();
@@ -116,7 +134,8 @@ class UserService {
         return $result;
     }
 
-    public function getUserCreditsPortfolio($id) {
+    public function getUserCreditsPortfolio($id)
+    {
         $user = $this->userRepository->get($id);
 
         $result = array ();
@@ -126,7 +145,8 @@ class UserService {
         return $result;
     }
 
-    public function getUserCategories($id) {
+    public function getUserCategories($id)
+    {
         $user = $this->userRepository->get($id);
 
         $userCategories = $user->categories;
@@ -145,7 +165,8 @@ class UserService {
         return $result;
     }
 
-    public function getUserCredentialTypes($id) {
+    public function getUserCredentialTypes($id)
+    {
         $user = $this->userRepository->get($id);
 
         $userCredentialTypes = $user->credentialTypes;
@@ -167,7 +188,8 @@ class UserService {
     }
 
     public function upsertUserAttributeValue($userId,
-            $userAttributeValuePostRequest) {
+            $userAttributeValuePostRequest)
+    {
         // validate user Id
         $user = $this->userRepository->get($userId);
 
@@ -187,7 +209,8 @@ class UserService {
                 $attributesCollection);
     }
 
-    public function linkUserToCategory($userId, $categoriesRequest) {
+    public function linkUserToCategory($userId, $categoriesRequest)
+    {
         // ensure the categoryIds are valid
         foreach ($categoriesRequest as $request) {
             $this->categoryRepository->get($request ['categoryId']);
@@ -196,7 +219,8 @@ class UserService {
         $this->userRepository->linkUserToCategory($userId, $categoriesRequest);
     }
 
-    public function unlinkUserFromCategory($userId, $categoriesRequest) {
+    public function unlinkUserFromCategory($userId, $categoriesRequest)
+    {
         // ensure the categoryIds are valid
         foreach ($categoriesRequest as $request) {
             $this->categoryRepository->get($request ['categoryId']);
@@ -206,7 +230,42 @@ class UserService {
                 $categoriesRequest);
     }
 
-    private function mapImagesResponse(Model $user) {
+    /**
+     * Register or Create a User.
+     *
+     * @param array $requestBody
+     * @throws ValidationException
+     * @return array Associative array.
+     */
+    public function registerUser($requestBody)
+    {
+        // ensure emailAddress is not already in use
+        if ($this->userRepository->getUserByEmailAddress(
+                $requestBody ['emailAddress'])) {
+            throw new ValidationException(NULL,
+                'The emailAddress is already in use.');
+        }
+
+        // ensure credentialType is valid
+        $credentialType = $this->credentialTypeRepository->getCredentialTypeByName(
+                $requestBody ['credentialType']);
+        if (empty($credentialType)) {
+            throw new ValidationException(NULL, 'The credentialType is invalid.');
+        }
+
+        if ($requestBody ['credentialType'] == CredentialType::STANDARD) {
+            // TODO hash password
+        }
+
+        $requestBody ['credentialTypeId'] = $credentialType->id;
+
+        $user = $this->userRepository->createUser($requestBody);
+
+        return $user;
+    }
+
+    private function mapImagesResponse(Model $user)
+    {
         $images = $user->images;
         $imagesContent = array ();
         foreach ($images as $key => $value) {
@@ -220,7 +279,8 @@ class UserService {
         return $imagesContent;
     }
 
-    private function mapVideosResponse(Model $user) {
+    private function mapVideosResponse(Model $user)
+    {
         $videos = $user->videos;
         $videosContent = array ();
         foreach ($videos as $key => $value) {
@@ -234,7 +294,8 @@ class UserService {
         return $videosContent;
     }
 
-    private function mapVoiceclipsResponse(Model $user) {
+    private function mapVoiceclipsResponse(Model $user)
+    {
         $voiceClips = $user->voiceClips;
         $voiceClipsContent = array ();
         foreach ($voiceClips as $key => $value) {
@@ -247,7 +308,8 @@ class UserService {
         return $voiceClipsContent;
     }
 
-    private function mapCreditsResponse(Model $user) {
+    private function mapCreditsResponse(Model $user)
+    {
         $credits = $user->credits;
         $creditsContent = array ();
         foreach ($credits as $key => $value) {

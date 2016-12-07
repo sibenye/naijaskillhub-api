@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Mappers\UserAttributeValuePostRequestMapper;
+use App\Mappers\UserPostRequestMapper;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 
@@ -12,13 +12,13 @@ class UserController extends Controller {
      * @var UserService
      */
     private $service;
-    private $attributeValuePostMapper;
+    private $userPostMapper;
 
     public function __construct(Request $request, UserService $service,
-            UserAttributeValuePostRequestMapper $attributeValuePostMapper) {
+            UserPostRequestMapper $userPostMapper) {
         parent::__construct($request);
         $this->service = $service;
-        $this->attributeValuePostMapper = $attributeValuePostMapper;
+        $this->userPostMapper = $userPostMapper;
     }
 
     public function getUser($id) {
@@ -102,6 +102,16 @@ class UserController extends Controller {
         $this->service->unlinkUserFromCategory($id, $requestBody);
 
         return $this->response();
+    }
+
+    public function registerUser() {
+        $postRequest = $this->userPostMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
+
+        $requestBody = $postRequest->buildModelAttributes();
+
+        $user = $this->service->registerUser($requestBody);
+        return $this->response($user);
     }
 
 }

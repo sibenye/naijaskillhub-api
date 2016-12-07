@@ -56,6 +56,12 @@ $app->post('/users/{id}/categories',
         [
                 'uses' => 'UserController@linkUserToCategory'
         ]);
+
+$app->post('/users',
+        [
+                'uses' => 'UserController@registerUser'
+        ]);
+
 $app->delete('/users/{id}/categories',
         [
                 'uses' => 'UserController@unlinkUserFromCategory'

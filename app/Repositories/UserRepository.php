@@ -10,6 +10,10 @@ class UserRepository extends BaseRepository {
         return 'App\Models\DAO\User';
     }
 
+    public function getUserByEmailAddress($emailAddress) {
+        return $this->model->where('emailAddress', $emailAddress)->first();
+    }
+
     public function getUserAttributes($userId, $attributeNames = []) {
         $user = $this->get($userId);
 
@@ -86,6 +90,20 @@ class UserRepository extends BaseRepository {
                         ]);
             }
         }
+    }
+
+    public function createUser($requestBody) {
+        $userModelAttributes = array ();
+        $userModelAttributes ['emailAddress'] = $requestBody ['emailAddress'];
+
+        $user = $this->create($userModelAttributes);
+
+        $user->credentialTypes()->attach($requestBody ['credentialTypeId'],
+                [
+                        'password' => $requestBody ['password']
+                ]);
+
+        return $user;
     }
 
 }
