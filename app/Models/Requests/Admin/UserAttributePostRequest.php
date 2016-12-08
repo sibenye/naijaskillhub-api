@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Models\Requests;
+namespace App\Models\Requests\Admin;
+
+use App\Models\Requests\IPostRequest;
 
 class UserAttributePostRequest implements IPostRequest {
     private $name;
@@ -36,8 +38,8 @@ class UserAttributePostRequest implements IPostRequest {
 
     public function __construct($requestBody) {
         $this->userAttributeId = array_get($requestBody, 'userAttributeId',
-                null);
-        $this->name = array_get($requestBody, 'name', null);
+                NULL);
+        $this->name = array_get($requestBody, 'name', NULL);
     }
 
     /**
@@ -46,8 +48,9 @@ class UserAttributePostRequest implements IPostRequest {
      */
     public function buildModelAttributes() {
         $attr = array ();
-
-        $attr ['name'] = $this->name;
+        if (! empty($this->name)) { // checking for both NULL and zero length string.
+            $attr ['name'] = $this->name;
+        }
 
         return $attr;
     }

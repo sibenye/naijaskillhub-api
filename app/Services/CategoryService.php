@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\CategoryRepository;
-use App\Models\Requests\CategoryPostRequest;
+use App\Models\Requests\Admin\CategoryPostRequest;
 use Illuminate\Validation\ValidationException;
 
 class CategoryService {

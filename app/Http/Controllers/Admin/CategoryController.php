@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\CategoryService;
-use App\Models\Requests\CategoryPostRequest;
+use App\Models\Requests\Admin\CategoryPostRequest;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller {

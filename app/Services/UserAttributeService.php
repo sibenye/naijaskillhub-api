@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\UserAttributeRepository;
-use App\Models\Requests\UserAttributePostRequest;
+use App\Models\Requests\Admin\UserAttributePostRequest;
 use Illuminate\Validation\ValidationException;
 
 class UserAttributeService {

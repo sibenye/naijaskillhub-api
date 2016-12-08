@@ -31,11 +31,7 @@ class NSHResponse {
     protected $message;
 
     public function __toString() {
-        $nsh_response = array ();
-        $nsh_response ['response'] = $this->response;
-        $nsh_response ['status'] = $this->status;
-        $nsh_response ['message'] = $this->message;
-        return json_encode($nsh_response);
+        return json_encode(get_object_vars($this));
     }
 
     public function __construct($http_status = 200, $status = 'success', $message = NULL,
