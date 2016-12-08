@@ -1,16 +1,25 @@
 <?php
+/**
+ *
+ * @package App\Services
+ */
 namespace App\Services;
 
-use App\Repositories\UserRepository;
-use App\Models\Requests\UserAttributeValuePostRequest;
-use App\Repositories\UserAttributeRepository;
-use Illuminate\Broadcasting\PrivateChannel;
+use App\Enums\CredentialType;
 use App\Repositories\CategoryRepository;
+use App\Repositories\CredentialTypeRepository;
+use App\Repositories\UserAttributeRepository;
+use App\Repositories\UserRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
-use App\Repositories\CredentialTypeRepository;
-use App\Enums\CredentialType;
+use App\Helpers\NSHCryptoUtil;
 
+/**
+ * UserService class.
+ *
+ * @author silver.ibenye
+ *
+ */
 class UserService
 {
     /**
@@ -37,15 +46,29 @@ class UserService
      */
     private $credentialTypeRepository;
 
+    /**
+     *
+     * @var NSHCryptoUtil
+     */
+    private $cryptoUtil;
+
+    /**
+     *
+     * @param UserRepository $repository
+     * @param UserAttributeRepository $userAttributeRepository
+     * @param CategoryRepository $categoryRepository
+     * @param CredentialTypeRepository $credentialTypeRepository
+     * @param NSH_CryptoUtil $cryptoUtil
+     */
     public function __construct(UserRepository $repository,
-            UserAttributeRepository $userAttributeRepository,
-            CategoryRepository $categoryRepository,
-            CredentialTypeRepository $credentialTypeRepository)
+            UserAttributeRepository $userAttributeRepository, CategoryRepository $categoryRepository,
+            CredentialTypeRepository $credentialTypeRepository, NSHCryptoUtil $cryptoUtil)
     {
         $this->userRepository = $repository;
         $this->userAttributeRepository = $userAttributeRepository;
         $this->categoryRepository = $categoryRepository;
         $this->credentialTypeRepository = $credentialTypeRepository;
+        $this->cryptoUtil = $cryptoUtil;
     }
 
     public function getUser($id)
@@ -64,8 +87,7 @@ class UserService
 
     public function getUserAttributes($userId, $requestedAttributes = [])
     {
-        $userAttributes = $this->userRepository->getUserAttributes($userId,
-                $requestedAttributes);
+        $userAttributes = $this->userRepository->getUserAttributes($userId, $requestedAttributes);
 
         $userAttributesContent = array ();
         $i = 0;
@@ -187,8 +209,7 @@ class UserService
         return $result;
     }
 
-    public function upsertUserAttributeValue($userId,
-            $userAttributeValuePostRequest)
+    public function upsertUserAttributeValue($userId, $userAttributeValuePostRequest)
     {
         // validate user Id
         $user = $this->userRepository->get($userId);
@@ -199,14 +220,13 @@ class UserService
 
         foreach ($userAttributeValuePostRequest as $attributeName => $attributeValue) {
             $i++;
-            $userAttribute = $this->userAttributeRepository->getUserAttributeByName(
-                    $attributeName, true);
+            $userAttribute = $this->userAttributeRepository->getUserAttributeByName($attributeName,
+                    true);
             $attributesCollection [$i] ['attributeId'] = $userAttribute ['id'];
             $attributesCollection [$i] ['attributeValue'] = $attributeValue;
         }
 
-        $this->userRepository->upsertUserAttributeValue($user,
-                $attributesCollection);
+        $this->userRepository->upsertUserAttributeValue($user, $attributesCollection);
     }
 
     public function linkUserToCategory($userId, $categoriesRequest)
@@ -226,8 +246,7 @@ class UserService
             $this->categoryRepository->get($request ['categoryId']);
         }
 
-        $this->userRepository->unlinkUserFromCategory($userId,
-                $categoriesRequest);
+        $this->userRepository->unlinkUserFromCategory($userId, $categoriesRequest);
     }
 
     /**
@@ -240,10 +259,8 @@ class UserService
     public function registerUser($requestBody)
     {
         // ensure emailAddress is not already in use
-        if ($this->userRepository->getUserByEmailAddress(
-                $requestBody ['emailAddress'])) {
-            throw new ValidationException(NULL,
-                'The emailAddress is already in use.');
+        if ($this->userRepository->getUserByEmailAddress($requestBody ['emailAddress'])) {
+            throw new ValidationException(NULL, 'The emailAddress is already in use.');
         }
 
         // ensure credentialType is valid
@@ -254,7 +271,7 @@ class UserService
         }
 
         if ($requestBody ['credentialType'] == CredentialType::STANDARD) {
-            // TODO hash password
+            $requestBody ['password'] = $this->cryptoUtil->hashThis($requestBody ['password']);
         }
 
         $requestBody ['credentialTypeId'] = $credentialType->id;
@@ -324,5 +341,4 @@ class UserService
 
         return $creditsContent;
     }
-
 }
