@@ -15,6 +15,13 @@ use Intervention\Image\Facades\Image;
 class NSHFileHandler
 {
 
+    /**
+     *
+     * @param UploadedFile $image
+     * @param unknown $filename
+     * @param unknown $dirPath
+     * @return string[]
+     */
     public function saveImage(UploadedFile $image, $filename, $dirPath)
     {
         $path = $dirPath . '/' . $filename;
