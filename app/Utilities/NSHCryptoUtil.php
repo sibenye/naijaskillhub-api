@@ -3,7 +3,7 @@
  * NSH_CryptoUtil.
  * Provides crypto utilities such as encryption, hashing etc.
  */
-namespace App\Helpers;
+namespace App\Utilities;
 
 /**
  * NSH_CryptoUtil Class.

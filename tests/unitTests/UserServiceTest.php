@@ -9,7 +9,7 @@ use App\Models\DAO\UserAttribute;
 use App\Repositories\CategoryRepository;
 use App\Repositories\CredentialTypeRepository;
 use App\Models\DAO\CredentialType;
-use App\Helpers\NSHCryptoUtil;
+use App\Utilities\NSHCryptoUtil;
 
 class UserServiceTest extends \TestCase
 {

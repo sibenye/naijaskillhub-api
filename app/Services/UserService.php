@@ -12,7 +12,7 @@ use App\Repositories\UserAttributeRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
-use App\Helpers\NSHCryptoUtil;
+use App\Utilities\NSHCryptoUtil;
 
 /**
  * UserService class.
