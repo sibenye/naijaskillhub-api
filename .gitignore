@@ -7,3 +7,4 @@ Homestead.yaml
 /.buildpath
 /.vagrant/
 /.settings/
+/public/images/*
