@@ -10,9 +10,8 @@ use App\Repositories\CategoryRepository;
 use App\Repositories\CredentialTypeRepository;
 use App\Repositories\UserAttributeRepository;
 use App\Repositories\UserRepository;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Validation\ValidationException;
 use App\Utilities\NSHCryptoUtil;
+use Illuminate\Validation\ValidationException;
 
 /**
  * UserService class.
@@ -71,6 +70,11 @@ class UserService
         $this->cryptoUtil = $cryptoUtil;
     }
 
+    /**
+     *
+     * @param string $id
+     * @return array
+     */
     public function getUser($id)
     {
         $user = $this->userRepository->get($id);
@@ -85,6 +89,12 @@ class UserService
         return $userContent;
     }
 
+    /**
+     *
+     * @param string $userId
+     * @param array $requestedAttributes
+     * @return array
+     */
     public function getUserAttributes($userId, $requestedAttributes = [])
     {
         $userAttributes = $this->userRepository->getUserAttributes($userId, $requestedAttributes);
@@ -109,64 +119,11 @@ class UserService
         return $result;
     }
 
-    public function getAllUserPortfolios($id)
-    {
-        $user = $this->userRepository->get($id);
-
-        $result = array ();
-        $result ['userId'] = $id;
-        $result ['images'] = $this->mapImagesResponse($user);
-        $result ['videos'] = $this->mapVideosResponse($user);
-        $result ['voiceClips'] = $this->mapVoiceclipsResponse($user);
-        $result ['credits'] = $this->mapCreditsResponse($user);
-
-        return $result;
-    }
-
-    public function getUserImagesPortfolio($id)
-    {
-        $user = $this->userRepository->get($id);
-
-        $result = array ();
-        $result ['userId'] = $id;
-        $result ['images'] = $this->mapImagesResponse($user);
-
-        return $result;
-    }
-
-    public function getUserVideosPortfolio($id)
-    {
-        $user = $this->userRepository->get($id);
-
-        $result = array ();
-        $result ['userId'] = $id;
-        $result ['videos'] = $this->mapVideosResponse($user);
-
-        return $result;
-    }
-
-    public function getUserVoiceclipsPortfolio($id)
-    {
-        $user = $this->userRepository->get($id);
-
-        $result = array ();
-        $result ['userId'] = $id;
-        $result ['voiceClips'] = $this->mapVoiceclipsResponse($user);
-
-        return $result;
-    }
-
-    public function getUserCreditsPortfolio($id)
-    {
-        $user = $this->userRepository->get($id);
-
-        $result = array ();
-        $result ['userId'] = $id;
-        $result ['credits'] = $this->mapCreditsResponse($user);
-
-        return $result;
-    }
-
+    /**
+     *
+     * @param string $id
+     * @return array
+     */
     public function getUserCategories($id)
     {
         $user = $this->userRepository->get($id);
@@ -187,6 +144,11 @@ class UserService
         return $result;
     }
 
+    /**
+     *
+     * @param string $id
+     * @return array
+     */
     public function getUserCredentialTypes($id)
     {
         $user = $this->userRepository->get($id);
@@ -209,6 +171,12 @@ class UserService
         return $result;
     }
 
+    /**
+     *
+     * @param string $userId
+     * @param array $userAttributeValuePostRequest
+     * @return void
+     */
     public function upsertUserAttributeValue($userId, $userAttributeValuePostRequest)
     {
         // validate user Id
@@ -229,6 +197,12 @@ class UserService
         $this->userRepository->upsertUserAttributeValue($user, $attributesCollection);
     }
 
+    /**
+     *
+     * @param string $userId
+     * @param array $categoriesRequest
+     * @return void
+     */
     public function linkUserToCategory($userId, $categoriesRequest)
     {
         // ensure the categoryIds are valid
@@ -239,6 +213,12 @@ class UserService
         $this->userRepository->linkUserToCategory($userId, $categoriesRequest);
     }
 
+    /**
+     *
+     * @param string $userId
+     * @param array $categoriesRequest
+     * @return void
+     */
     public function unlinkUserFromCategory($userId, $categoriesRequest)
     {
         // ensure the categoryIds are valid
@@ -279,66 +259,5 @@ class UserService
         $user = $this->userRepository->createUser($requestBody);
 
         return $user;
-    }
-
-    private function mapImagesResponse(Model $user)
-    {
-        $images = $user->images;
-        $imagesContent = array ();
-        foreach ($images as $key => $value) {
-            $imagesContent [$key] ['imageId'] = $value->id;
-            $imagesContent [$key] ['imageUrl'] = $value->imageUrl;
-            $imagesContent [$key] ['caption'] = $value->caption;
-            $imagesContent [$key] ['createdDate'] = $value->createdDate;
-            $imagesContent [$key] ['modifiedDate'] = $value->modifiedDate;
-        }
-
-        return $imagesContent;
-    }
-
-    private function mapVideosResponse(Model $user)
-    {
-        $videos = $user->videos;
-        $videosContent = array ();
-        foreach ($videos as $key => $value) {
-            $videosContent [$key] ['videoId'] = $value->id;
-            $videosContent [$key] ['videoUrl'] = $value->videoUrl;
-            $videosContent [$key] ['caption'] = $value->caption;
-            $videosContent [$key] ['createdDate'] = $value->createdDate;
-            $videosContent [$key] ['modifiedDate'] = $value->modifiedDate;
-        }
-
-        return $videosContent;
-    }
-
-    private function mapVoiceclipsResponse(Model $user)
-    {
-        $voiceClips = $user->voiceClips;
-        $voiceClipsContent = array ();
-        foreach ($voiceClips as $key => $value) {
-            $voiceClipsContent [$key] ['clipId'] = $value->id;
-            $voiceClipsContent [$key] ['clipUrl'] = $value->clipUrl;
-            $voiceClipsContent [$key] ['caption'] = $value->caption;
-            $voiceClipsContent [$key] ['createdDate'] = $value->createdDate;
-            $voiceClipsContent [$key] ['modifiedDate'] = $value->modifiedDate;
-        }
-        return $voiceClipsContent;
-    }
-
-    private function mapCreditsResponse(Model $user)
-    {
-        $credits = $user->credits;
-        $creditsContent = array ();
-        foreach ($credits as $key => $value) {
-            $creditsContent [$key] ['creditId'] = $value->id;
-            $creditsContent [$key] ['creditTypeName'] = $value->name;
-            $creditsContent [$key] ['creditTypeId'] = $value->pivot->creditTypeId;
-            $creditsContent [$key] ['year'] = $value->pivot->year;
-            $creditsContent [$key] ['caption'] = $value->pivot->caption;
-            $creditsContent [$key] ['createdDate'] = $value->pivot->createdDate;
-            $creditsContent [$key] ['modifiedDate'] = $value->pivot->modifiedDate;
-        }
-
-        return $creditsContent;
     }
 }

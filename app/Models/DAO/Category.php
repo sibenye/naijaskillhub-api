@@ -1,10 +1,10 @@
 <?php
-
 namespace App\Models\DAO;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Category extends Model {
+class Category extends Model
+{
     /**
      * The table associated with the model.
      *
@@ -29,9 +29,9 @@ class Category extends Model {
     /**
      * The users that this category belongs to.
      */
-    public function users() {
-        return $this->belongsToMany('App\Models\DAO\User',
-                'nsh_users_categories_portfolio', 'categoryId', 'userId');
+    public function users()
+    {
+        return $this->belongsToMany('App\Models\DAO\User', 'nsh_users_categories_link',
+                'categoryId', 'userId');
     }
-
 }

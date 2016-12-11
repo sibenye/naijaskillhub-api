@@ -1,25 +1,27 @@
 <?php
-
 namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserRepository extends BaseRepository {
+class UserRepository extends BaseRepository
+{
 
-    public function model() {
+    public function model()
+    {
         return 'App\Models\DAO\User';
     }
 
-    public function getUserByEmailAddress($emailAddress) {
+    public function getUserByEmailAddress($emailAddress)
+    {
         return $this->model->where('emailAddress', $emailAddress)->first();
     }
 
-    public function getUserAttributes($userId, $attributeNames = []) {
+    public function getUserAttributes($userId, $attributeNames = [])
+    {
         $user = $this->get($userId);
 
         if (!empty($attributeNames)) {
-            $userAttributes = $user->userAttributes->whereIn('name',
-                    $attributeNames);
+            $userAttributes = $user->userAttributes->whereIn('name', $attributeNames);
             return $userAttributes;
         } else {
             $userAttributes = $user->userAttributes;
@@ -27,7 +29,8 @@ class UserRepository extends BaseRepository {
         }
     }
 
-    public function linkUserToCategory($userId, $categoriesCollection) {
+    public function linkUserToCategory($userId, $categoriesCollection)
+    {
         $user = $this->get($userId);
 
         $alreadyLinkedCategories = $user->categories;
@@ -44,7 +47,8 @@ class UserRepository extends BaseRepository {
         }
     }
 
-    public function unlinkUserFromCategory($userId, $categoriesCollection) {
+    public function unlinkUserFromCategory($userId, $categoriesCollection)
+    {
         $user = $this->get($userId);
 
         $alreadyLinkedCategories = $user->categories;
@@ -61,7 +65,8 @@ class UserRepository extends BaseRepository {
         }
     }
 
-    public function upsertUserAttributeValue(Model $user, $attributesCollection) {
+    public function upsertUserAttributeValue(Model $user, $attributesCollection)
+    {
         $userAttributes = $user->userAttributes;
 
         $existingAttributesCollection = array ();
@@ -83,8 +88,7 @@ class UserRepository extends BaseRepository {
                             ]);
                 }
             } else {
-                $user->userAttributes()->attach(
-                        $userAttributeRequest ['attributeId'],
+                $user->userAttributes()->attach($userAttributeRequest ['attributeId'],
                         [
                                 'attributeValue' => $userAttributeRequest ['attributeValue']
                         ]);
@@ -92,7 +96,8 @@ class UserRepository extends BaseRepository {
         }
     }
 
-    public function createUser($requestBody) {
+    public function createUser($requestBody)
+    {
         $userModelAttributes = array ();
         $userModelAttributes ['emailAddress'] = $requestBody ['emailAddress'];
 
@@ -105,6 +110,5 @@ class UserRepository extends BaseRepository {
 
         return $user;
     }
-
 }
 

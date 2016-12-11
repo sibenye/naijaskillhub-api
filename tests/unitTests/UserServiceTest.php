@@ -1,4 +1,7 @@
 <?php
+/**
+ * @package Tests\unitTests
+ */
 namespace Tests\unitTests;
 
 use App\Repositories\UserRepository;
@@ -11,18 +14,73 @@ use App\Repositories\CredentialTypeRepository;
 use App\Models\DAO\CredentialType;
 use App\Utilities\NSHCryptoUtil;
 
+/**
+ * UserService Tests.
+ * @author silver.ibenye
+ *
+ */
 class UserServiceTest extends \TestCase
 {
+    /**
+     *
+     * @var UserService
+     */
     private $userService;
+
+    /**
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     private $userRepositoryMock;
+
+    /**
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     private $userAttributeRepositoryMock;
+
+    /**
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     private $userModelMock;
+
+    /**
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     private $userAttributeModelMock;
+
+    /**
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     private $categoryRepositoryMock;
+
+    /**
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     private $credentialTypeRepositoryMock;
+
+    /**
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     private $credentialTypeMock;
+
+    /**
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
     private $cryptoUtilMock;
 
+    /**
+     *
+     * {@inheritDoc}
+     * @see \Laravel\Lumen\Testing\TestCase::setUp()
+     * @return void
+     */
     public function setUp()
     {
         parent::setUp();
@@ -61,6 +119,11 @@ class UserServiceTest extends \TestCase
         $this->credentialTypeMock = $this->getMockBuilder(CredentialType::class)->disableOriginalConstructor()->getMock();
     }
 
+    /**
+     * Test UpsertUserAttributeValue.
+     *
+     * @return void
+     */
     public function testUpsertUserAttributeValue()
     {
         $userId = "5";
@@ -86,6 +149,11 @@ class UserServiceTest extends \TestCase
         $this->userService->upsertUserAttributeValue($userId, $userAttributeValueRequest);
     }
 
+    /**
+     * Test RegisterUser.
+     *
+     * @return void
+     */
     public function testRegisterUser()
     {
         $userRegisterRequest = [
