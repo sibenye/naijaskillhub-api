@@ -1,8 +1,16 @@
 <?php
-
+/**
+ * @package App\Repositories
+ */
 namespace App\Repositories;
 
-interface IBaseRepository {
+/**
+ * Base Repository Interface.
+ * @author silver.ibenye
+ *
+ */
+interface IBaseRepository
+{
 
     /**
      * Find a record by Id or find all.
@@ -32,6 +40,5 @@ interface IBaseRepository {
      * @param integer $id
      */
     public function delete($id);
-
 }
 

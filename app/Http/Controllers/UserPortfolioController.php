@@ -8,6 +8,7 @@ use App\Services\UserPortfolioService;
 use App\Mappers\UserImagePortfolioPostRequestMapper;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Mappers\UserVideoPortfolioPostRequestMapper;
 
 /**
  * UserPortfolio Controller.
@@ -31,16 +32,24 @@ class UserPortfolioController extends Controller
 
     /**
      *
+     * @var UserVideoPortfolioPostRequestMapper
+     */
+    private $userVideoPortfolioPostRequestMapper;
+
+    /**
+     *
      * @param Request $request
      * @param UserPortfolioService $service
      * @param UserImagePortfolioPostRequestMapper $userImagePortfolioPostRequestMapper
      */
     public function __construct(Request $request, UserPortfolioService $service,
-            UserImagePortfolioPostRequestMapper $userImagePortfolioPostRequestMapper)
+            UserImagePortfolioPostRequestMapper $userImagePortfolioPostRequestMapper,
+            UserVideoPortfolioPostRequestMapper $userVideoPortfolioPostRequestMapper)
     {
         parent::__construct($request);
         $this->service = $service;
         $this->userImagePortfolioPostRequestMapper = $userImagePortfolioPostRequestMapper;
+        $this->userVideoPortfolioPostRequestMapper = $userVideoPortfolioPostRequestMapper;
     }
 
     /**
@@ -103,6 +112,11 @@ class UserPortfolioController extends Controller
         return $this->response($userCreditsPortfolio);
     }
 
+    /**
+     *
+     * @param string $userId
+     * @return Response
+     */
     public function upsertUserImagePortfolio($userId)
     {
         $postRequest = $this->userImagePortfolioPostRequestMapper->map($this->request->all());
@@ -116,5 +130,25 @@ class UserPortfolioController extends Controller
             $userImagesPortfolio = $this->service->updateUserImagePortfolio($userId, $requestBody);
         }
         return $this->response($userImagesPortfolio);
+    }
+
+    /**
+     *
+     * @param string $userId
+     * @return Response
+     */
+    public function upsertUserVideoPortfolio($userId)
+    {
+        $postRequest = $this->userVideoPortfolioPostRequestMapper->map($this->request->all());
+        $requestBody = $postRequest->buildModelAttributes();
+        $videoId = $this->request->input("videoId", NULL);
+        $userVideosPortfolio = array ();
+
+        if (empty($videoId)) {
+            $userVideosPortfolio = $this->service->createUserVideoPortfolio($userId, $requestBody);
+        } else {
+            $userVideosPortfolio = $this->service->updateUserVideoPortfolio($userId, $requestBody);
+        }
+        return $this->response($userVideosPortfolio);
     }
 }

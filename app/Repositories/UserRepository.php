@@ -1,21 +1,47 @@
 <?php
+/**
+ * @package App\Repositories
+ */
 namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 
+/**
+ * User Repository.
+ * @author silver.ibenye
+ *
+ */
 class UserRepository extends BaseRepository
 {
 
+    /**
+     *
+     * {@inheritDoc}
+     * @see \App\Repositories\BaseRepository::model()
+     * @return string
+     */
     public function model()
     {
         return 'App\Models\DAO\User';
     }
 
+    /**
+     *
+     * @param string $emailAddress
+     * @return Model
+     */
     public function getUserByEmailAddress($emailAddress)
     {
         return $this->model->where('emailAddress', $emailAddress)->first();
     }
 
+    /**
+     *
+     * @param string $userId
+     * @param array $attributeNames
+     * @return Collection
+     */
     public function getUserAttributes($userId, $attributeNames = [])
     {
         $user = $this->get($userId);
@@ -29,6 +55,12 @@ class UserRepository extends BaseRepository
         }
     }
 
+    /**
+     *
+     * @param string $userId
+     * @param string $categoriesCollection
+     * @return void
+     */
     public function linkUserToCategory($userId, $categoriesCollection)
     {
         $user = $this->get($userId);
@@ -47,6 +79,12 @@ class UserRepository extends BaseRepository
         }
     }
 
+    /**
+     *
+     * @param string $userId
+     * @param string $categoriesCollection
+     * @return string
+     */
     public function unlinkUserFromCategory($userId, $categoriesCollection)
     {
         $user = $this->get($userId);
@@ -65,6 +103,12 @@ class UserRepository extends BaseRepository
         }
     }
 
+    /**
+     *
+     * @param Model $user
+     * @param array $attributesCollection
+     * @return void
+     */
     public function upsertUserAttributeValue(Model $user, $attributesCollection)
     {
         $userAttributes = $user->userAttributes;
@@ -96,6 +140,11 @@ class UserRepository extends BaseRepository
         }
     }
 
+    /**
+     *
+     * @param array $requestBody
+     * @return Model
+     */
     public function createUser($requestBody)
     {
         $userModelAttributes = array ();

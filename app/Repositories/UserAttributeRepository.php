@@ -1,19 +1,42 @@
 <?php
-
+/**
+ * @package App\Repositories
+ */
 namespace App\Repositories;
 
-class UserAttributeRepository extends BaseRepository {
+use Illuminate\Database\Eloquent\Model;
 
-    public function model() {
+/**
+ * UserAttribute Repository.
+ * @author silver.ibenye
+ *
+ */
+class UserAttributeRepository extends BaseRepository
+{
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \App\Repositories\BaseRepository::model()
+     * @return string
+     */
+    public function model()
+    {
         return 'App\Models\DAO\UserAttribute';
     }
 
-    public function getUserAttributeByName($attributeName, $throw = false) {
+    /**
+     *
+     * @param string $attributeName
+     * @param boolean $throw
+     * @return Model
+     */
+    public function getUserAttributeByName($attributeName, $throw = false)
+    {
         if ($throw) {
             return $this->model->where('name', $attributeName)->firstOrFail();
         } else {
             return $this->model->where('name', $attributeName)->first();
         }
     }
-
 }

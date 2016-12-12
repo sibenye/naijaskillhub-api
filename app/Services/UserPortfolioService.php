@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Utilities\NSHFileHandler;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\UserImagePortfolioRepository;
+use App\Repositories\UserVideoPortfolioRepository;
 
 /**
  * UserPortfolio Service.
@@ -32,15 +33,23 @@ class UserPortfolioService
 
     /**
      *
+     * @var UserVideoPortfolioRepository
+     */
+    private $userVideoPortfolioRepository;
+
+    /**
+     *
      * @var NSHFileHandler
      */
     private $fileHandler;
 
     public function __construct(UserRepository $repository,
-            UserImagePortfolioRepository $userImagePortfolioRepository, NSHFileHandler $fileHandler)
+            UserImagePortfolioRepository $userImagePortfolioRepository,
+            UserVideoPortfolioRepository $userVideoPortfolioRepository, NSHFileHandler $fileHandler)
     {
         $this->userRepository = $repository;
         $this->userImagePortfolioRepository = $userImagePortfolioRepository;
+        $this->userVideoPortfolioRepository = $userVideoPortfolioRepository;
         $this->fileHandler = $fileHandler;
     }
 
@@ -131,7 +140,7 @@ class UserPortfolioService
      *
      * @param string $userId
      * @param array $request Associative array of the request.
-     * @return void
+     * @return array Associative array.
      * @throws ValidationException
      */
     public function createUserImagePortfolio($userId, $request)
@@ -180,10 +189,25 @@ class UserPortfolioService
         return $this->getUserImagesPortfolio($userId);
     }
 
+    /**
+     *
+     * @param string $userId
+     * @param array $request
+     * @return array Associative array.
+     * @throws ValidationException
+     */
     public function updateUserImagePortfolio($userId, $request)
     {
         // validate userId.
         $user = $this->userRepository->get($userId);
+
+        if (empty($request ['imageId'])) {
+            throw new ValidationException(NULL, 'imageId is required');
+        }
+
+        if (!in_array('caption', $request ['caption'])) {
+            throw new ValidationException(NULL, 'caption is required');
+        }
 
         $imageId = $request ['imageId'];
 
@@ -199,6 +223,74 @@ class UserPortfolioService
         $this->userImagePortfolioRepository->update($imageId, $modelAttributes);
 
         return $this->getUserImagesPortfolio($userId);
+    }
+
+    /**
+     *
+     * @param string $userId
+     * @param array $request Associative array of the request.
+     * @return array Associative array.
+     * @throws ValidationException
+     */
+    public function createUserVideoPortfolio($userId, $request)
+    {
+        // validate userId.
+        $this->userRepository->get($userId);
+
+        if (empty($request ['videoUrl'])) {
+            throw new ValidationException(NULL, 'videoUrl is required');
+        }
+
+        // save image portfolio.
+        $modelAttribute = array ();
+        $modelAttribute ['userId'] = $userId;
+        $modelAttribute ['caption'] = $request ['caption'];
+        $modelAttribute ['videoUrl'] = $request ['videoUrl'];
+
+        $this->userVideoPortfolioRepository->create($modelAttribute);
+
+        return $this->getUserVideosPortfolio($userId);
+    }
+
+    /**
+     *
+     * @param string $userId
+     * @param array $request
+     * @return array Associative array.
+     * @throws ValidationException
+     */
+    public function updateUserVideoPortfolio($userId, $request)
+    {
+        // validate userId.
+        $user = $this->userRepository->get($userId);
+
+        if (empty($request ['videoId'])) {
+            throw new ValidationException(NULL, 'videoId is required');
+        }
+
+        if (empty($request ['videoUrl']) && empty($request ['caption'])) {
+            throw new ValidationException(NULL, 'videoUrl or caption is required');
+        }
+
+        $videoId = $request ['videoId'];
+
+        // ensure that the videoId is valid
+        $existingVideo = $user->videos()->where('id', $videoId)->get();
+        if (count($existingVideo) == 0) {
+            throw new ValidationException(NULL, 'Invalid videoId');
+        }
+
+        $modelAttributes = array ();
+        if (array_key_exists('caption', $request)) {
+            $modelAttributes ['caption'] = $request ['caption'];
+        }
+        if (array_key_exists('videoUrl', $request)) {
+            $modelAttributes ['videoUrl'] = $request ['videoUrl'];
+        }
+
+        $this->userVideoPortfolioRepository->update($videoId, $modelAttributes);
+
+        return $this->getUserVideosPortfolio($userId);
     }
 
     /**

@@ -5,11 +5,11 @@
 namespace App\Repositories;
 
 /**
- * UserImagePortfolio Repository.
+ * UserVoiceClipPortfolio Repository.
  * @author silver.ibenye
  *
  */
-class UserImagePortfolioRepository extends BaseRepository
+class UserVoiceClipPortfolioRepository extends BaseRepository
 {
 
     /**
@@ -20,6 +20,6 @@ class UserImagePortfolioRepository extends BaseRepository
      */
     public function model()
     {
-        return 'App\Models\DAO\ImagePortfolio';
+        return 'App\Models\DAO\VoiceClipPortfolio';
     }
 }

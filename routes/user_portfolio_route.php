@@ -30,3 +30,7 @@ $app->post('/users/{id}/portfolios/images',
         [
                 'uses' => 'UserPortfolioController@upsertUserImagePortfolio'
         ]);
+$app->post('/users/{id}/portfolios/videos',
+        [
+                'uses' => 'UserPortfolioController@upsertUserVideoPortfolio'
+        ]);
