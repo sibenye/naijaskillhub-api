@@ -77,10 +77,10 @@ class User extends Model
     }
 
     /**
-     * Get the voice clips for this user.
+     * Get the audio clips for this user.
      */
-    public function voiceClips()
+    public function audios()
     {
-        return $this->hasMany('App\Models\DAO\VoiceClipPortfolio', 'userId');
+        return $this->hasMany('App\Models\DAO\AudioPortfolio', 'userId');
     }
 }
