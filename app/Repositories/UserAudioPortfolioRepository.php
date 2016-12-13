@@ -9,7 +9,7 @@ namespace App\Repositories;
  * @author silver.ibenye
  *
  */
-class UserVoiceClipPortfolioRepository extends BaseRepository
+class UserAudioPortfolioRepository extends BaseRepository
 {
 
     /**
@@ -20,6 +20,6 @@ class UserVoiceClipPortfolioRepository extends BaseRepository
      */
     public function model()
     {
-        return 'App\Models\DAO\VoiceClipPortfolio';
+        return 'App\Models\DAO\AudioPortfolio';
     }
 }

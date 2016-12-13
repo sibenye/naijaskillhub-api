@@ -17,9 +17,9 @@ $app->get('/users/{id}/portfolios/videos',
                 'uses' => 'UserPortfolioController@getUserVideosPortfolio'
         ]);
 
-$app->get('/users/{id}/portfolios/voiceclips',
+$app->get('/users/{id}/portfolios/audios',
         [
-                'uses' => 'UserPortfolioController@getUserVoiceclipsPortfolio'
+                'uses' => 'UserPortfolioController@getUserAudiosPortfolio'
         ]);
 
 $app->get('/users/{id}/portfolios/credits',
@@ -33,4 +33,8 @@ $app->post('/users/{id}/portfolios/images',
 $app->post('/users/{id}/portfolios/videos',
         [
                 'uses' => 'UserPortfolioController@upsertUserVideoPortfolio'
+        ]);
+$app->post('/users/{id}/portfolios/audios',
+        [
+                'uses' => 'UserPortfolioController@upsertUserAudioPortfolio'
         ]);

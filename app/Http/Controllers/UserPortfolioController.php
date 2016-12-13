@@ -9,6 +9,7 @@ use App\Mappers\UserImagePortfolioPostRequestMapper;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Mappers\UserVideoPortfolioPostRequestMapper;
+use App\Mappers\UserAudioPortfolioPostRequestMapper;
 
 /**
  * UserPortfolio Controller.
@@ -38,18 +39,26 @@ class UserPortfolioController extends Controller
 
     /**
      *
+     * @var UserAudioPortfolioPostRequestMapper
+     */
+    private $userAudioPortfolioPostRequestMapper;
+
+    /**
+     *
      * @param Request $request
      * @param UserPortfolioService $service
      * @param UserImagePortfolioPostRequestMapper $userImagePortfolioPostRequestMapper
      */
     public function __construct(Request $request, UserPortfolioService $service,
             UserImagePortfolioPostRequestMapper $userImagePortfolioPostRequestMapper,
-            UserVideoPortfolioPostRequestMapper $userVideoPortfolioPostRequestMapper)
+            UserVideoPortfolioPostRequestMapper $userVideoPortfolioPostRequestMapper,
+            UserAudioPortfolioPostRequestMapper $userAudioPortfolioPostRequestMapper)
     {
         parent::__construct($request);
         $this->service = $service;
         $this->userImagePortfolioPostRequestMapper = $userImagePortfolioPostRequestMapper;
         $this->userVideoPortfolioPostRequestMapper = $userVideoPortfolioPostRequestMapper;
+        $this->userAudioPortfolioPostRequestMapper = $userAudioPortfolioPostRequestMapper;
     }
 
     /**
@@ -93,9 +102,9 @@ class UserPortfolioController extends Controller
      * @param string $userId
      * @return Response
      */
-    public function getUserVoiceclipsPortfolio($userId)
+    public function getUserAudiosPortfolio($userId)
     {
-        $userVoiceclipsPortfolio = $this->service->getUserVoiceclipsPortfolio($userId);
+        $userVoiceclipsPortfolio = $this->service->getUserAudiosPortfolio($userId);
 
         return $this->response($userVoiceclipsPortfolio);
     }
@@ -120,6 +129,7 @@ class UserPortfolioController extends Controller
     public function upsertUserImagePortfolio($userId)
     {
         $postRequest = $this->userImagePortfolioPostRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
         $requestBody = $postRequest->buildModelAttributes();
         $imageId = $this->request->input("imageId", NULL);
         $userImagesPortfolio = array ();
@@ -140,6 +150,7 @@ class UserPortfolioController extends Controller
     public function upsertUserVideoPortfolio($userId)
     {
         $postRequest = $this->userVideoPortfolioPostRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
         $requestBody = $postRequest->buildModelAttributes();
         $videoId = $this->request->input("videoId", NULL);
         $userVideosPortfolio = array ();
@@ -150,5 +161,26 @@ class UserPortfolioController extends Controller
             $userVideosPortfolio = $this->service->updateUserVideoPortfolio($userId, $requestBody);
         }
         return $this->response($userVideosPortfolio);
+    }
+
+    /**
+     *
+     * @param string $userId
+     * @return Response
+     */
+    public function upsertUserAudioPortfolio($userId)
+    {
+        $postRequest = $this->userAudioPortfolioPostRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
+        $requestBody = $postRequest->buildModelAttributes();
+        $audioId = $this->request->input("audioId", NULL);
+        $userAudiosPortfolio = array ();
+
+        if (empty($audioId)) {
+            $userAudiosPortfolio = $this->service->createUserAudioPortfolio($userId, $requestBody);
+        } else {
+            $userAudiosPortfolio = $this->service->updateUserAudioPortfolio($userId, $requestBody);
+        }
+        return $this->response($userAudiosPortfolio);
     }
 }

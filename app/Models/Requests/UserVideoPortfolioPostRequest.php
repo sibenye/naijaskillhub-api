@@ -57,7 +57,9 @@ class UserVideoPortfolioPostRequest implements IPostRequest
      */
     public function getValidationRules()
     {
-        return [ ];
+        return [
+                'caption' => 'max:200'
+        ];
     }
 
     /**

@@ -10,6 +10,7 @@ use App\Utilities\NSHFileHandler;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\UserImagePortfolioRepository;
 use App\Repositories\UserVideoPortfolioRepository;
+use App\Repositories\UserAudioPortfolioRepository;
 
 /**
  * UserPortfolio Service.
@@ -39,17 +40,25 @@ class UserPortfolioService
 
     /**
      *
+     * @var UserAudioPortfolioRepository
+     */
+    private $userAudioPortfolioRepository;
+
+    /**
+     *
      * @var NSHFileHandler
      */
     private $fileHandler;
 
     public function __construct(UserRepository $repository,
             UserImagePortfolioRepository $userImagePortfolioRepository,
-            UserVideoPortfolioRepository $userVideoPortfolioRepository, NSHFileHandler $fileHandler)
+            UserVideoPortfolioRepository $userVideoPortfolioRepository,
+            UserAudioPortfolioRepository $userAudioPortfolioRepository, NSHFileHandler $fileHandler)
     {
         $this->userRepository = $repository;
         $this->userImagePortfolioRepository = $userImagePortfolioRepository;
         $this->userVideoPortfolioRepository = $userVideoPortfolioRepository;
+        $this->userAudioPortfolioRepository = $userAudioPortfolioRepository;
         $this->fileHandler = $fileHandler;
     }
 
@@ -66,7 +75,7 @@ class UserPortfolioService
         $result ['userId'] = $userId;
         $result ['images'] = $this->mapImagesResponse($user);
         $result ['videos'] = $this->mapVideosResponse($user);
-        $result ['voiceClips'] = $this->mapVoiceclipsResponse($user);
+        $result ['audios'] = $this->mapAudiosResponse($user);
         $result ['credits'] = $this->mapCreditsResponse($user);
 
         return $result;
@@ -109,13 +118,13 @@ class UserPortfolioService
      * @param string $id
      * @return array Associative array.
      */
-    public function getUserVoiceclipsPortfolio($userId)
+    public function getUserAudiosPortfolio($userId)
     {
         $user = $this->userRepository->get($userId);
 
         $result = array ();
         $result ['userId'] = $userId;
-        $result ['voiceClips'] = $this->mapVoiceclipsResponse($user);
+        $result ['voiceClips'] = $this->mapAudiosResponse($user);
 
         return $result;
     }
@@ -150,7 +159,7 @@ class UserPortfolioService
 
         // ensure image is in the request
         if (empty($request ['image'])) {
-            throw new ValidationException(NULL, 'Image is required.');
+            throw new ValidationException(NULL, 'Image file is required.');
         }
 
         // ensure image was uploaded successfully.
@@ -172,14 +181,14 @@ class UserPortfolioService
             $this->fileHandler->makeDirectory($dirPath);
         }
 
-        $savedImage = $this->fileHandler->saveImage($image, $filename, $dirPath);
+        $savedImage = $this->fileHandler->saveImageFile($image, $filename, $dirPath);
 
         // save image portfolio.
         $modelAttribute = array ();
         $modelAttribute ['userId'] = $userId;
         $modelAttribute ['caption'] = $request ['caption'];
         $modelAttribute ['fileName'] = $filename;
-        $modelAttribute ['fileSize'] = $savedImage->filesize() . 'Bytes';
+        $modelAttribute ['fileSize'] = $savedImage->filesize();
         $modelAttribute ['filePath'] = $relativeDirPath . '/' . $filename;
         $modelAttribute ['width'] = $savedImage->width();
         $modelAttribute ['height'] = $savedImage->height();
@@ -201,11 +210,11 @@ class UserPortfolioService
         // validate userId.
         $user = $this->userRepository->get($userId);
 
-        if (empty($request ['imageId'])) {
+        if (!array_key_exists('imageId', $request) || empty($request ['imageId'])) {
             throw new ValidationException(NULL, 'imageId is required');
         }
 
-        if (!in_array('caption', $request ['caption'])) {
+        if (!array_key_exists('caption', $request) || empty($request ['caption'])) {
             throw new ValidationException(NULL, 'caption is required');
         }
 
@@ -237,14 +246,18 @@ class UserPortfolioService
         // validate userId.
         $this->userRepository->get($userId);
 
-        if (empty($request ['videoUrl'])) {
+        if (!array_key_exists('videoUrl', $request) || empty($request ['videoUrl'])) {
             throw new ValidationException(NULL, 'videoUrl is required');
+        }
+        $caption = null;
+        if (array_key_exists('caption', $request)) {
+            $caption = $request ['caption'];
         }
 
         // save image portfolio.
         $modelAttribute = array ();
         $modelAttribute ['userId'] = $userId;
-        $modelAttribute ['caption'] = $request ['caption'];
+        $modelAttribute ['caption'] = $caption;
         $modelAttribute ['videoUrl'] = $request ['videoUrl'];
 
         $this->userVideoPortfolioRepository->create($modelAttribute);
@@ -264,11 +277,12 @@ class UserPortfolioService
         // validate userId.
         $user = $this->userRepository->get($userId);
 
-        if (empty($request ['videoId'])) {
+        if (!array_key_exists('videoId', $request) || empty($request ['videoId'])) {
             throw new ValidationException(NULL, 'videoId is required');
         }
 
-        if (empty($request ['videoUrl']) && empty($request ['caption'])) {
+        if ((!array_key_exists('videoUrl', $request) || empty($request ['videoUrl'])) &&
+                 (!array_key_exists('caption', $request) || empty($request ['caption']))) {
             throw new ValidationException(NULL, 'videoUrl or caption is required');
         }
 
@@ -291,6 +305,100 @@ class UserPortfolioService
         $this->userVideoPortfolioRepository->update($videoId, $modelAttributes);
 
         return $this->getUserVideosPortfolio($userId);
+    }
+
+    /**
+     *
+     * @param string $userId
+     * @param string $request
+     * @return array
+     * @throws ValidationException
+     */
+    public function createUserAudioPortfolio($userId, $request)
+    {
+        // validate userId.
+        $this->userRepository->get($userId);
+
+        // ensure image is in the request
+        if (empty($request ['audio'])) {
+            throw new ValidationException(NULL, 'Audio file is required.');
+        }
+
+        // ensure image was uploaded successfully.
+        $audio = $request ['audio'];
+        if (!$audio->isValid()) {
+            throw new ValidationException(NULL, 'The audio file was not uploaded successfully.');
+        }
+
+        // TODO: ensure audio file size is not more than 2MB
+
+        // save audio file.
+        $filename = $userId . '_' . time() . '.' . $audio->getClientOriginalExtension();
+
+        $relativeDirPath = 'media/' . $userId . '/audios';
+
+        $dirPath = public_path($relativeDirPath);
+
+        if (!$this->fileHandler->directoryExists($dirPath)) {
+            $this->fileHandler->makeDirectory($dirPath);
+        }
+
+        $savedAudio = $this->fileHandler->saveAudioFile($audio, $filename, $dirPath);
+
+        $caption = '';
+        if (!array_key_exists('caption', $request) || empty($request ['caption'])) {
+            $caption = $audio->getClientOriginalName();
+        } else {
+            $caption = $request ['caption'];
+        }
+
+        // save image portfolio.
+        $modelAttribute = array ();
+        $modelAttribute ['userId'] = $userId;
+        $modelAttribute ['caption'] = $caption;
+        $modelAttribute ['fileName'] = $filename;
+        $modelAttribute ['fileSize'] = $savedAudio->getSize();
+        $modelAttribute ['filePath'] = $relativeDirPath . '/' . $filename;
+
+        $this->userAudioPortfolioRepository->create($modelAttribute);
+
+        return $this->getUserAudiosPortfolio($userId);
+    }
+
+    /**
+     *
+     * @param string $userId
+     * @param array $request
+     * @return array
+     * @throws ValidationException
+     */
+    public function updateUserAudioPortfolio($userId, $request)
+    {
+        // validate userId.
+        $user = $this->userRepository->get($userId);
+
+        if (!array_key_exists('audioId', $request) || empty($request ['audioId'])) {
+            throw new ValidationException(NULL, 'audioId is required');
+        }
+
+        if (!array_key_exists('caption', $request) || empty($request ['caption'])) {
+            throw new ValidationException(NULL, 'caption is required');
+        }
+
+        $audioId = $request ['audioId'];
+
+        // ensure that the audioId is valid
+        $existingAudio = $user->audios()->where('id', $audioId)->get();
+        if (count($existingAudio) == 0) {
+            throw new ValidationException(NULL, 'Invalid audioId');
+        }
+
+        $modelAttributes = array ();
+        $modelAttributes ['caption'] = $request ['caption'];
+
+        $this->userAudioPortfolioRepository->update($audioId, $modelAttributes);
+
+        return $this->getUserAudiosPortfolio($userId);
     }
 
     /**
@@ -344,19 +452,21 @@ class UserPortfolioService
      * @param Model $user
      * @return array Associative array.
      */
-    private function mapVoiceclipsResponse(Model $user)
+    private function mapAudiosResponse(Model $user)
     {
-        $voiceClips = $user->voiceClips;
-        $voiceClipsContent = array ();
-        foreach ($voiceClips as $key => $value) {
-            $voiceClipsContent [$key] ['clipId'] = $value->id;
-            $voiceClipsContent [$key] ['clipUrl'] = $value->clipUrl;
-            $voiceClipsContent [$key] ['caption'] = $value->caption;
-            $voiceClipsContent [$key] ['createdDate'] = $value->createdDate->toDateTimeString();
-            $voiceClipsContent [$key] ['modifiedDate'] = $value->modifiedDate->toDateTimeString();
+        $audios = $user->audios;
+        $audiosContent = array ();
+        foreach ($audios as $key => $value) {
+            $audiosContent [$key] ['audioId'] = $value->id;
+            $audiosContent [$key] ['filePath'] = $value->filePath;
+            $audiosContent [$key] ['caption'] = $value->caption;
+            $audiosContent [$key] ['fileName'] = $value->fileName;
+            $audiosContent [$key] ['fileSize'] = $value->fileSize;
+            $audiosContent [$key] ['createdDate'] = $value->createdDate->toDateTimeString();
+            $audiosContent [$key] ['modifiedDate'] = $value->modifiedDate->toDateTimeString();
             ;
         }
-        return $voiceClipsContent;
+        return $audiosContent;
     }
 
     /**
