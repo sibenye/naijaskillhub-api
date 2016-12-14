@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Mappers\UserVideoPortfolioPostRequestMapper;
 use App\Mappers\UserAudioPortfolioPostRequestMapper;
+use App\Mappers\UserCreditPortfolioPostRequestMapper;
 
 /**
  * UserPortfolio Controller.
@@ -45,20 +46,31 @@ class UserPortfolioController extends Controller
 
     /**
      *
+     * @var UserCreditPortfolioPostRequestMapper
+     */
+    private $userCreditPortfolioPostRequestMapper;
+
+    /**
+     *
      * @param Request $request
      * @param UserPortfolioService $service
      * @param UserImagePortfolioPostRequestMapper $userImagePortfolioPostRequestMapper
+     * @param UserVideoPortfolioPostRequestMapper $userVideoPortfolioPostRequestMapper
+     * @param UserAudioPortfolioPostRequestMapper $userAudioPortfolioPostRequestMapper
+     * @param UserCreditPortfolioPostRequestMapper $userCreditPortfolioPostRequestMapper
      */
     public function __construct(Request $request, UserPortfolioService $service,
             UserImagePortfolioPostRequestMapper $userImagePortfolioPostRequestMapper,
             UserVideoPortfolioPostRequestMapper $userVideoPortfolioPostRequestMapper,
-            UserAudioPortfolioPostRequestMapper $userAudioPortfolioPostRequestMapper)
+            UserAudioPortfolioPostRequestMapper $userAudioPortfolioPostRequestMapper,
+            UserCreditPortfolioPostRequestMapper $userCreditPortfolioPostRequestMapper)
     {
         parent::__construct($request);
         $this->service = $service;
         $this->userImagePortfolioPostRequestMapper = $userImagePortfolioPostRequestMapper;
         $this->userVideoPortfolioPostRequestMapper = $userVideoPortfolioPostRequestMapper;
         $this->userAudioPortfolioPostRequestMapper = $userAudioPortfolioPostRequestMapper;
+        $this->userCreditPortfolioPostRequestMapper = $userCreditPortfolioPostRequestMapper;
     }
 
     /**
@@ -129,15 +141,16 @@ class UserPortfolioController extends Controller
     public function upsertUserImagePortfolio($userId)
     {
         $postRequest = $this->userImagePortfolioPostRequestMapper->map($this->request->all());
-        $this->validateRequest($postRequest->getValidationRules());
-        $requestBody = $postRequest->buildModelAttributes();
-        $imageId = $this->request->input("imageId", NULL);
+
+        $imageId = $postRequest->getImageId();
         $userImagesPortfolio = array ();
 
         if (empty($imageId)) {
-            $userImagesPortfolio = $this->service->createUserImagePortfolio($userId, $requestBody);
+            $this->validateRequest($postRequest->getValidationRules());
+            $userImagesPortfolio = $this->service->createUserImagePortfolio($userId, $postRequest);
         } else {
-            $userImagesPortfolio = $this->service->updateUserImagePortfolio($userId, $requestBody);
+            $this->validateRequest($postRequest->getUpdateValidationRules());
+            $userImagesPortfolio = $this->service->updateUserImagePortfolio($userId, $postRequest);
         }
         return $this->response($userImagesPortfolio);
     }
@@ -150,15 +163,15 @@ class UserPortfolioController extends Controller
     public function upsertUserVideoPortfolio($userId)
     {
         $postRequest = $this->userVideoPortfolioPostRequestMapper->map($this->request->all());
-        $this->validateRequest($postRequest->getValidationRules());
-        $requestBody = $postRequest->buildModelAttributes();
-        $videoId = $this->request->input("videoId", NULL);
+        $videoId = $postRequest->getVideoId();
         $userVideosPortfolio = array ();
 
         if (empty($videoId)) {
-            $userVideosPortfolio = $this->service->createUserVideoPortfolio($userId, $requestBody);
+            $this->validateRequest($postRequest->getValidationRules());
+            $userVideosPortfolio = $this->service->createUserVideoPortfolio($userId, $postRequest);
         } else {
-            $userVideosPortfolio = $this->service->updateUserVideoPortfolio($userId, $requestBody);
+            $this->validateRequest($postRequest->getUpdateValidationRules());
+            $userVideosPortfolio = $this->service->updateUserVideoPortfolio($userId, $postRequest);
         }
         return $this->response($userVideosPortfolio);
     }
@@ -171,16 +184,39 @@ class UserPortfolioController extends Controller
     public function upsertUserAudioPortfolio($userId)
     {
         $postRequest = $this->userAudioPortfolioPostRequestMapper->map($this->request->all());
-        $this->validateRequest($postRequest->getValidationRules());
-        $requestBody = $postRequest->buildModelAttributes();
-        $audioId = $this->request->input("audioId", NULL);
+
+        $audioId = $postRequest->getAudioId();
         $userAudiosPortfolio = array ();
 
         if (empty($audioId)) {
-            $userAudiosPortfolio = $this->service->createUserAudioPortfolio($userId, $requestBody);
+            $this->validateRequest($postRequest->getValidationRules());
+            $userAudiosPortfolio = $this->service->createUserAudioPortfolio($userId, $postRequest);
         } else {
-            $userAudiosPortfolio = $this->service->updateUserAudioPortfolio($userId, $requestBody);
+            $this->validateRequest($postRequest->getUpdateValidationRules());
+            $userAudiosPortfolio = $this->service->updateUserAudioPortfolio($userId, $postRequest);
         }
         return $this->response($userAudiosPortfolio);
+    }
+
+    /**
+     *
+     * @param string $userId
+     * @return Response
+     */
+    public function upsertUserCreditPortfolio($userId)
+    {
+        $postRequest = $this->userCreditPortfolioPostRequestMapper->map($this->request->all());
+
+        $creditId = $postRequest->getCreditId();
+        $userCreditsPortfolio = array ();
+
+        if (empty($creditId)) {
+            $this->validateRequest($postRequest->getValidationRules());
+            $userCreditsPortfolio = $this->service->createUserCreditPortfolio($userId, $postRequest);
+        } else {
+            $this->validateRequest($postRequest->getUpdateValidationRules());
+            $userCreditsPortfolio = $this->service->updateUserCreditPortfolio($userId, $postRequest);
+        }
+        return $this->response($userCreditsPortfolio);
     }
 }

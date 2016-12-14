@@ -56,12 +56,25 @@ class UserAudioPortfolioPostRequest implements IPostRequest
     /**
      * {@inheritDoc}
      * @see \App\Models\Requests\IPostRequest::getValidationRules()
-     * @return void
+     * @return array
      */
     public function getValidationRules()
     {
         return [
+                'audio' => 'required',
                 'caption' => 'max:200'
+        ];
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getUpdateValidationRules()
+    {
+        return [
+                'audioId' => 'required',
+                'caption' => 'required|max:200'
         ];
     }
 

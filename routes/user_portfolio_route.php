@@ -38,3 +38,7 @@ $app->post('/users/{id}/portfolios/audios',
         [
                 'uses' => 'UserPortfolioController@upsertUserAudioPortfolio'
         ]);
+$app->post('/users/{id}/portfolios/credits',
+        [
+                'uses' => 'UserPortfolioController@upsertUserCreditPortfolio'
+        ]);

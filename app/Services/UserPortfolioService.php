@@ -11,6 +11,12 @@ use Illuminate\Validation\ValidationException;
 use App\Repositories\UserImagePortfolioRepository;
 use App\Repositories\UserVideoPortfolioRepository;
 use App\Repositories\UserAudioPortfolioRepository;
+use App\Repositories\UserCreditPortfolioRepository;
+use App\Repositories\CreditTypeRepository;
+use App\Models\Requests\UserCreditPortfolioPostRequest;
+use App\Models\Requests\UserAudioPortfolioPostRequest;
+use App\Models\Requests\UserVideoPortfolioPostRequest;
+use App\Models\Requests\UserImagePortfolioPostRequest;
 
 /**
  * UserPortfolio Service.
@@ -46,6 +52,18 @@ class UserPortfolioService
 
     /**
      *
+     * @var UserCreditPortfolioRepository
+     */
+    private $userCreditPortfolioRepository;
+
+    /**
+     *
+     * @var CreditTypeRepository
+     */
+    private $creditTypeRepository;
+
+    /**
+     *
      * @var NSHFileHandler
      */
     private $fileHandler;
@@ -53,12 +71,16 @@ class UserPortfolioService
     public function __construct(UserRepository $repository,
             UserImagePortfolioRepository $userImagePortfolioRepository,
             UserVideoPortfolioRepository $userVideoPortfolioRepository,
-            UserAudioPortfolioRepository $userAudioPortfolioRepository, NSHFileHandler $fileHandler)
+            UserAudioPortfolioRepository $userAudioPortfolioRepository,
+            UserCreditPortfolioRepository $userCreditPortfolioRepository,
+            CreditTypeRepository $creditTypeRepository, NSHFileHandler $fileHandler)
     {
         $this->userRepository = $repository;
         $this->userImagePortfolioRepository = $userImagePortfolioRepository;
         $this->userVideoPortfolioRepository = $userVideoPortfolioRepository;
         $this->userAudioPortfolioRepository = $userAudioPortfolioRepository;
+        $this->userCreditPortfolioRepository = $userCreditPortfolioRepository;
+        $this->creditTypeRepository = $creditTypeRepository;
         $this->fileHandler = $fileHandler;
     }
 
@@ -152,18 +174,13 @@ class UserPortfolioService
      * @return array Associative array.
      * @throws ValidationException
      */
-    public function createUserImagePortfolio($userId, $request)
+    public function createUserImagePortfolio($userId, UserImagePortfolioPostRequest $request)
     {
         // validate userId.
         $this->userRepository->get($userId);
 
-        // ensure image is in the request
-        if (empty($request ['image'])) {
-            throw new ValidationException(NULL, 'Image file is required.');
-        }
-
         // ensure image was uploaded successfully.
-        $image = $request ['image'];
+        $image = $request->getImage();
         if (!$image->isValid()) {
             throw new ValidationException(NULL, 'The image was not uploaded successfully.');
         }
@@ -186,7 +203,7 @@ class UserPortfolioService
         // save image portfolio.
         $modelAttribute = array ();
         $modelAttribute ['userId'] = $userId;
-        $modelAttribute ['caption'] = $request ['caption'];
+        $modelAttribute ['caption'] = $request->getCaption();
         $modelAttribute ['fileName'] = $filename;
         $modelAttribute ['fileSize'] = $savedImage->filesize();
         $modelAttribute ['filePath'] = $relativeDirPath . '/' . $filename;
@@ -205,20 +222,12 @@ class UserPortfolioService
      * @return array Associative array.
      * @throws ValidationException
      */
-    public function updateUserImagePortfolio($userId, $request)
+    public function updateUserImagePortfolio($userId, UserImagePortfolioPostRequest $request)
     {
         // validate userId.
         $user = $this->userRepository->get($userId);
 
-        if (!array_key_exists('imageId', $request) || empty($request ['imageId'])) {
-            throw new ValidationException(NULL, 'imageId is required');
-        }
-
-        if (!array_key_exists('caption', $request) || empty($request ['caption'])) {
-            throw new ValidationException(NULL, 'caption is required');
-        }
-
-        $imageId = $request ['imageId'];
+        $imageId = $request->getImageId();
 
         // ensure that the imageId is valid
         $existingImage = $user->images()->where('id', $imageId)->get();
@@ -227,7 +236,7 @@ class UserPortfolioService
         }
 
         $modelAttributes = array ();
-        $modelAttributes ['caption'] = $request ['caption'];
+        $modelAttributes ['caption'] = $request->getCaption();
 
         $this->userImagePortfolioRepository->update($imageId, $modelAttributes);
 
@@ -241,24 +250,21 @@ class UserPortfolioService
      * @return array Associative array.
      * @throws ValidationException
      */
-    public function createUserVideoPortfolio($userId, $request)
+    public function createUserVideoPortfolio($userId, UserVideoPortfolioPostRequest $request)
     {
         // validate userId.
         $this->userRepository->get($userId);
 
-        if (!array_key_exists('videoUrl', $request) || empty($request ['videoUrl'])) {
-            throw new ValidationException(NULL, 'videoUrl is required');
-        }
         $caption = null;
-        if (array_key_exists('caption', $request)) {
-            $caption = $request ['caption'];
+        if (!empty($request->getCaption())) {
+            $caption = $request->getCaption();
         }
 
         // save image portfolio.
         $modelAttribute = array ();
         $modelAttribute ['userId'] = $userId;
         $modelAttribute ['caption'] = $caption;
-        $modelAttribute ['videoUrl'] = $request ['videoUrl'];
+        $modelAttribute ['videoUrl'] = $request->getVideoUrl();
 
         $this->userVideoPortfolioRepository->create($modelAttribute);
 
@@ -272,21 +278,16 @@ class UserPortfolioService
      * @return array Associative array.
      * @throws ValidationException
      */
-    public function updateUserVideoPortfolio($userId, $request)
+    public function updateUserVideoPortfolio($userId, UserVideoPortfolioPostRequest $request)
     {
         // validate userId.
         $user = $this->userRepository->get($userId);
 
-        if (!array_key_exists('videoId', $request) || empty($request ['videoId'])) {
-            throw new ValidationException(NULL, 'videoId is required');
-        }
-
-        if ((!array_key_exists('videoUrl', $request) || empty($request ['videoUrl'])) &&
-                 (!array_key_exists('caption', $request) || empty($request ['caption']))) {
+        if (empty($request->getVideoUrl()) && empty($request->getCaption())) {
             throw new ValidationException(NULL, 'videoUrl or caption is required');
         }
 
-        $videoId = $request ['videoId'];
+        $videoId = $request->getVideoId();
 
         // ensure that the videoId is valid
         $existingVideo = $user->videos()->where('id', $videoId)->get();
@@ -295,10 +296,10 @@ class UserPortfolioService
         }
 
         $modelAttributes = array ();
-        if (array_key_exists('caption', $request)) {
-            $modelAttributes ['caption'] = $request ['caption'];
+        if (!empty($request->getCaption())) {
+            $modelAttributes ['caption'] = $request->getCaption();
         }
-        if (array_key_exists('videoUrl', $request)) {
+        if (!empty($request->getVideoUrl())) {
             $modelAttributes ['videoUrl'] = $request ['videoUrl'];
         }
 
@@ -314,18 +315,13 @@ class UserPortfolioService
      * @return array
      * @throws ValidationException
      */
-    public function createUserAudioPortfolio($userId, $request)
+    public function createUserAudioPortfolio($userId, UserAudioPortfolioPostRequest $request)
     {
         // validate userId.
         $this->userRepository->get($userId);
 
-        // ensure image is in the request
-        if (empty($request ['audio'])) {
-            throw new ValidationException(NULL, 'Audio file is required.');
-        }
-
         // ensure image was uploaded successfully.
-        $audio = $request ['audio'];
+        $audio = $request->getAudio();
         if (!$audio->isValid()) {
             throw new ValidationException(NULL, 'The audio file was not uploaded successfully.');
         }
@@ -346,10 +342,10 @@ class UserPortfolioService
         $savedAudio = $this->fileHandler->saveAudioFile($audio, $filename, $dirPath);
 
         $caption = '';
-        if (!array_key_exists('caption', $request) || empty($request ['caption'])) {
+        if (empty($request->getCaption())) {
             $caption = $audio->getClientOriginalName();
         } else {
-            $caption = $request ['caption'];
+            $caption = $request->getCaption();
         }
 
         // save image portfolio.
@@ -372,20 +368,12 @@ class UserPortfolioService
      * @return array
      * @throws ValidationException
      */
-    public function updateUserAudioPortfolio($userId, $request)
+    public function updateUserAudioPortfolio($userId, UserAudioPortfolioPostRequest $request)
     {
         // validate userId.
         $user = $this->userRepository->get($userId);
 
-        if (!array_key_exists('audioId', $request) || empty($request ['audioId'])) {
-            throw new ValidationException(NULL, 'audioId is required');
-        }
-
-        if (!array_key_exists('caption', $request) || empty($request ['caption'])) {
-            throw new ValidationException(NULL, 'caption is required');
-        }
-
-        $audioId = $request ['audioId'];
+        $audioId = $request->getAudioId();
 
         // ensure that the audioId is valid
         $existingAudio = $user->audios()->where('id', $audioId)->get();
@@ -394,11 +382,81 @@ class UserPortfolioService
         }
 
         $modelAttributes = array ();
-        $modelAttributes ['caption'] = $request ['caption'];
+        $modelAttributes ['caption'] = $request->getCaption();
 
         $this->userAudioPortfolioRepository->update($audioId, $modelAttributes);
 
         return $this->getUserAudiosPortfolio($userId);
+    }
+
+    /**
+     *
+     * @param string $userId
+     * @param UserCreditPortfolioPostRequest $request
+     * @return array
+     * @throws ValidationException
+     */
+    public function createUserCreditPortfolio($userId, UserCreditPortfolioPostRequest $request)
+    {
+        // validate userId.
+        $this->userRepository->get($userId);
+
+        // validate creditTypeId.
+        $creditType = $this->creditTypeRepository->getCreditTypeByName($request->getCreditType());
+        if ($creditType == NULL) {
+            throw new ValidationException(NULL, 'The creditType is invalid.');
+        }
+
+        // save image portfolio.
+        $modelAttribute = array ();
+        $modelAttribute ['userId'] = $userId;
+        $modelAttribute ['caption'] = $request->getCaption();
+        $modelAttribute ['year'] = $request->getYear();
+        $modelAttribute ['creditTypeId'] = $creditType->id;
+
+        $this->userCreditPortfolioRepository->create($modelAttribute);
+
+        return $this->getUserCreditsPortfolio($userId);
+    }
+
+    public function updateUserCreditPortfolio($userId, UserCreditPortfolioPostRequest $request)
+    {
+        // validate userId.
+        $this->userRepository->get($userId);
+
+        $creditType = NULL;
+        if (!empty($request->getCreditType())) {
+            // validate creditTypeId.
+            $creditType = $this->creditTypeRepository->getCreditTypeByName(
+                    $request->getCreditType());
+            if ($creditType == NULL) {
+                throw new ValidationException(NULL, 'The creditType is invalid.');
+            }
+        }
+
+        $creditId = $request->getCreditId();
+
+        // ensure that the creditId is valid
+        $existingCredit = $this->userCreditPortfolioRepository->getByUserIdAndCreditId($userId,
+                $creditId);
+        if (count($existingCredit) == 0) {
+            throw new ValidationException(NULL, 'Invalid creditId');
+        }
+
+        $modelAttributes = array ();
+        if (!empty($request->getCaption())) {
+            $modelAttributes ['caption'] = $request->getCaption();
+        }
+        if (!empty($request->getYear())) {
+            $modelAttributes ['year'] = $request->getYear();
+        }
+        if (!empty($request->getCreditType())) {
+            $modelAttributes ['creditTypeId'] = $creditType->id;
+        }
+
+        $this->userCreditPortfolioRepository->update($creditId, $modelAttributes);
+
+        return $this->getUserCreditsPortfolio($userId);
     }
 
     /**
@@ -479,8 +537,8 @@ class UserPortfolioService
         $credits = $user->credits;
         $creditsContent = array ();
         foreach ($credits as $key => $value) {
-            $creditsContent [$key] ['creditId'] = $value->id;
-            $creditsContent [$key] ['creditTypeName'] = $value->name;
+            $creditsContent [$key] ['creditId'] = $value->pivot->id;
+            $creditsContent [$key] ['creditType'] = $value->name;
             $creditsContent [$key] ['creditTypeId'] = $value->pivot->creditTypeId;
             $creditsContent [$key] ['year'] = $value->pivot->year;
             $creditsContent [$key] ['caption'] = $value->pivot->caption;

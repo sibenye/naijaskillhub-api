@@ -56,11 +56,25 @@ class UserImagePortfolioPostRequest implements IPostRequest
     /**
      * {@inheritDoc}
      * @see \App\Models\Requests\IPostRequest::getValidationRules()
+     * @return array
      */
     public function getValidationRules()
     {
         return [
+                'image' => 'required',
                 'caption' => 'max:200'
+        ];
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getUpdateValidationRules()
+    {
+        return [
+                'imageId' => 'required',
+                'caption' => 'required|max:200'
         ];
     }
 

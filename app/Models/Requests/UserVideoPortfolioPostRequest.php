@@ -54,10 +54,26 @@ class UserVideoPortfolioPostRequest implements IPostRequest
     /**
      * {@inheritDoc}
      * @see \App\Models\Requests\IPostRequest::getValidationRules()
+     * @return array
      */
     public function getValidationRules()
     {
         return [
+                'videoUrl' => 'required|max:500',
+                'caption' => 'max:200'
+        ];
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \App\Models\Requests\IPostRequest::getValidationRules()
+     * @return array
+     */
+    public function getUpdateValidationRules()
+    {
+        return [
+                'videoId' => 'required',
+                'videoUrl' => 'max:500',
                 'caption' => 'max:200'
         ];
     }

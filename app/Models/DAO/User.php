@@ -56,7 +56,7 @@ class User extends Model
     public function credits()
     {
         return $this->belongsToMany('App\Models\DAO\CreditType', 'nsh_users_credits_portfolio',
-                'userId', 'creditTypeId')->withPivot('year', 'caption')->withTimestamps(
+                'userId', 'creditTypeId')->withPivot('id', 'year', 'caption')->withTimestamps(
                 'createdDate', 'modifiedDate');
     }
 
