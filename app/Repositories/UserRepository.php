@@ -1,25 +1,53 @@
 <?php
-
+/**
+ * @package App\Repositories
+ */
 namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 
-class UserRepository extends BaseRepository {
+/**
+ * User Repository.
+ * @author silver.ibenye
+ *
+ */
+class UserRepository extends BaseRepository
+{
 
-    public function model() {
+    /**
+     *
+     * {@inheritDoc}
+     * @see \App\Repositories\BaseRepository::model()
+     * @return string
+     */
+    public function model()
+    {
         return 'App\Models\DAO\User';
     }
 
-    public function getUserByEmailAddress($emailAddress) {
+    /**
+     *
+     * @param string $emailAddress
+     * @return Model
+     */
+    public function getUserByEmailAddress($emailAddress)
+    {
         return $this->model->where('emailAddress', $emailAddress)->first();
     }
 
-    public function getUserAttributes($userId, $attributeNames = []) {
+    /**
+     *
+     * @param string $userId
+     * @param array $attributeNames
+     * @return Collection
+     */
+    public function getUserAttributes($userId, $attributeNames = [])
+    {
         $user = $this->get($userId);
 
         if (!empty($attributeNames)) {
-            $userAttributes = $user->userAttributes->whereIn('name',
-                    $attributeNames);
+            $userAttributes = $user->userAttributes->whereIn('name', $attributeNames);
             return $userAttributes;
         } else {
             $userAttributes = $user->userAttributes;
@@ -27,7 +55,14 @@ class UserRepository extends BaseRepository {
         }
     }
 
-    public function linkUserToCategory($userId, $categoriesCollection) {
+    /**
+     *
+     * @param string $userId
+     * @param string $categoriesCollection
+     * @return void
+     */
+    public function linkUserToCategory($userId, $categoriesCollection)
+    {
         $user = $this->get($userId);
 
         $alreadyLinkedCategories = $user->categories;
@@ -44,7 +79,14 @@ class UserRepository extends BaseRepository {
         }
     }
 
-    public function unlinkUserFromCategory($userId, $categoriesCollection) {
+    /**
+     *
+     * @param string $userId
+     * @param string $categoriesCollection
+     * @return string
+     */
+    public function unlinkUserFromCategory($userId, $categoriesCollection)
+    {
         $user = $this->get($userId);
 
         $alreadyLinkedCategories = $user->categories;
@@ -61,7 +103,14 @@ class UserRepository extends BaseRepository {
         }
     }
 
-    public function upsertUserAttributeValue(Model $user, $attributesCollection) {
+    /**
+     *
+     * @param Model $user
+     * @param array $attributesCollection
+     * @return void
+     */
+    public function upsertUserAttributeValue(Model $user, $attributesCollection)
+    {
         $userAttributes = $user->userAttributes;
 
         $existingAttributesCollection = array ();
@@ -83,8 +132,7 @@ class UserRepository extends BaseRepository {
                             ]);
                 }
             } else {
-                $user->userAttributes()->attach(
-                        $userAttributeRequest ['attributeId'],
+                $user->userAttributes()->attach($userAttributeRequest ['attributeId'],
                         [
                                 'attributeValue' => $userAttributeRequest ['attributeValue']
                         ]);
@@ -92,7 +140,13 @@ class UserRepository extends BaseRepository {
         }
     }
 
-    public function createUser($requestBody) {
+    /**
+     *
+     * @param array $requestBody
+     * @return Model
+     */
+    public function createUser($requestBody)
+    {
         $userModelAttributes = array ();
         $userModelAttributes ['emailAddress'] = $requestBody ['emailAddress'];
 
@@ -105,6 +159,5 @@ class UserRepository extends BaseRepository {
 
         return $user;
     }
-
 }
 

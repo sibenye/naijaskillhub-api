@@ -1,17 +1,17 @@
 <?php
 /**
- * @package App\Repositories
+ * @package App\Repositories.
  */
 namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Category Repository.
+ * CreditType Repository.
  * @author silver.ibenye
  *
  */
-class CategoryRepository extends BaseRepository
+class CreditTypeRepository extends BaseRepository
 {
 
     /**
@@ -22,16 +22,16 @@ class CategoryRepository extends BaseRepository
      */
     public function model()
     {
-        return 'App\Models\DAO\Category';
+        return 'App\Models\DAO\CreditType';
     }
 
     /**
      *
-     * @param string $categoryName
+     * @param string $creditTypeName
      * @return Model
      */
-    public function getCategoryByName($categoryName)
+    public function getCreditTypeByName($creditTypeName)
     {
-        return $this->model->where('name', $categoryName)->first();
+        return $this->model->where('name', $creditTypeName)->first();
     }
 }

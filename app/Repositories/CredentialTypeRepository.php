@@ -1,15 +1,37 @@
 <?php
-
+/**
+ * @package App\Repositories.
+ */
 namespace App\Repositories;
 
-class CredentialTypeRepository extends BaseRepository {
+use Illuminate\Database\Eloquent\Model;
 
-    public function model() {
+/**
+ * CredentialType Repository.
+ * @author silver.ibenye
+ *
+ */
+class CredentialTypeRepository extends BaseRepository
+{
+
+    /**
+     *
+     * {@inheritDoc}
+     * @see \App\Repositories\BaseRepository::model()
+     * @return string
+     */
+    public function model()
+    {
         return 'App\Models\DAO\CredentialType';
     }
 
-    public function getCredentialTypeByName($credentialTypeName) {
+    /**
+     *
+     * @param string $credentialTypeName
+     * @return Model
+     */
+    public function getCredentialTypeByName($credentialTypeName)
+    {
         return $this->model->where('name', $credentialTypeName)->first();
     }
-
 }

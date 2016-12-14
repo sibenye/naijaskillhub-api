@@ -1,10 +1,15 @@
 <?php
-
 namespace App\Models\DAO;
 
 use Illuminate\Database\Eloquent\Model;
 
-class VoiceClipPortfolio extends Model {
+/**
+ * Credit Portfolio Model
+ * @author silver.ibenye
+ *
+ */
+class CreditPortfolio extends Model
+{
     const CREATED_AT = 'createdDate';
     const UPDATED_AT = 'modifiedDate';
     /**
@@ -12,7 +17,7 @@ class VoiceClipPortfolio extends Model {
      *
      * @var string
      */
-    protected $table = 'nsh_users_voiceclips_portfolio';
+    protected $table = 'nsh_users_credits_portfolio';
 
     /**
      * The attributes that aren't mass assignable.
@@ -31,10 +36,10 @@ class VoiceClipPortfolio extends Model {
     ];
 
     /**
-     * Get the user that this voice clip belongs to.
+     * Get the user that this credit belongs to.
      */
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo('App\Models\DAO\User', 'userId');
     }
-
 }
