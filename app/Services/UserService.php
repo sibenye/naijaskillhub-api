@@ -72,7 +72,7 @@ class UserService
 
     /**
      *
-     * @param string $id
+     * @param integer $id
      * @return array
      */
     public function getUser($id)
@@ -91,7 +91,7 @@ class UserService
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @param array $requestedAttributes
      * @return array
      */
@@ -121,7 +121,7 @@ class UserService
 
     /**
      *
-     * @param string $id
+     * @param integer $id
      * @return array
      */
     public function getUserCategories($id)
@@ -146,7 +146,7 @@ class UserService
 
     /**
      *
-     * @param string $id
+     * @param integer $id
      * @return array
      */
     public function getUserCredentialTypes($id)
@@ -173,7 +173,7 @@ class UserService
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @param array $userAttributeValuePostRequest
      * @return void
      */
@@ -199,7 +199,7 @@ class UserService
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @param array $categoriesRequest
      * @return void
      */
@@ -215,7 +215,7 @@ class UserService
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @param array $categoriesRequest
      * @return void
      */

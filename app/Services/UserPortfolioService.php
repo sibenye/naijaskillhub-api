@@ -86,7 +86,7 @@ class UserPortfolioService
 
     /**
      *
-     * @param string $id
+     * @param integer $id
      * @return array Associative array.
      */
     public function getAllUserPortfolios($userId)
@@ -105,7 +105,7 @@ class UserPortfolioService
 
     /**
      *
-     * @param string $id
+     * @param integer $id
      * @return array Associative array.
      */
     public function getUserImagesPortfolio($userId)
@@ -121,7 +121,7 @@ class UserPortfolioService
 
     /**
      *
-     * @param string $id
+     * @param integer $id
      * @return array Associative array.
      */
     public function getUserVideosPortfolio($userId)
@@ -137,7 +137,7 @@ class UserPortfolioService
 
     /**
      *
-     * @param string $id
+     * @param integer $id
      * @return array Associative array.
      */
     public function getUserAudiosPortfolio($userId)
@@ -153,7 +153,7 @@ class UserPortfolioService
 
     /**
      *
-     * @param string $id
+     * @param integer $id
      * @return array Associative array.
      */
     public function getUserCreditsPortfolio($userId)
@@ -169,8 +169,8 @@ class UserPortfolioService
 
     /**
      *
-     * @param string $userId
-     * @param array $request Associative array of the request.
+     * @param integer $userId
+     * @param UserImagePortfolioPostRequest $request
      * @return array Associative array.
      * @throws ValidationException
      */
@@ -217,8 +217,8 @@ class UserPortfolioService
 
     /**
      *
-     * @param string $userId
-     * @param array $request
+     * @param integer $userId
+     * @param UserImagePortfolioPostRequest $request
      * @return array Associative array.
      * @throws ValidationException
      */
@@ -245,8 +245,8 @@ class UserPortfolioService
 
     /**
      *
-     * @param string $userId
-     * @param array $request Associative array of the request.
+     * @param integer $userId
+     * @param UserVideoPortfolioPostRequest $request
      * @return array Associative array.
      * @throws ValidationException
      */
@@ -273,8 +273,8 @@ class UserPortfolioService
 
     /**
      *
-     * @param string $userId
-     * @param array $request
+     * @param integer $userId
+     * @param UserVideoPortfolioPostRequest $request
      * @return array Associative array.
      * @throws ValidationException
      */
@@ -310,8 +310,8 @@ class UserPortfolioService
 
     /**
      *
-     * @param string $userId
-     * @param string $request
+     * @param integer $userId
+     * @param UserAudioPortfolioPostRequest $request
      * @return array
      * @throws ValidationException
      */
@@ -363,7 +363,7 @@ class UserPortfolioService
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @param array $request
      * @return array
      * @throws ValidationException
@@ -391,7 +391,7 @@ class UserPortfolioService
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @param UserCreditPortfolioPostRequest $request
      * @return array
      * @throws ValidationException
@@ -419,6 +419,13 @@ class UserPortfolioService
         return $this->getUserCreditsPortfolio($userId);
     }
 
+    /**
+     *
+     * @param integer $userId
+     * @param UserCreditPortfolioPostRequest $request
+     * @return array
+     * @throws ValidationException
+     */
     public function updateUserCreditPortfolio($userId, UserCreditPortfolioPostRequest $request)
     {
         // validate userId.
@@ -457,6 +464,129 @@ class UserPortfolioService
         $this->userCreditPortfolioRepository->update($creditId, $modelAttributes);
 
         return $this->getUserCreditsPortfolio($userId);
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @param integer $imageId
+     * @return void
+     * @throws ValidationException
+     */
+    public function deleteUserImagePortfolio($userId, $imageId)
+    {
+        // validate user.
+        $user = $this->userRepository->get($userId);
+
+        if (empty($imageId)) {
+            throw new ValidationException(NULL, 'imageId is required');
+        }
+
+        // ensure that the imageId is valid
+        $existingImage = $user->images()->where('id', $imageId)->get();
+        if (count($existingImage) == 0) {
+            throw new ValidationException(NULL, 'Invalid imageId');
+        }
+
+        // delete from database.
+        $this->userImagePortfolioRepository->delete($imageId);
+
+        // delete image file from directory.
+        $relativeDirPath = $existingImage [0]->filePath;
+        if (!empty($relativeDirPath)) {
+            $absolutePath = public_path($relativeDirPath);
+            if ($this->fileHandler->fileExists($absolutePath)) {
+                $this->fileHandler->deleteFile($absolutePath);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @param integer $videoId
+     * @return void
+     * @throws ValidationException
+     */
+    public function deleteUserVideoPortfolio($userId, $videoId)
+    {
+        // validate user.
+        $user = $this->userRepository->get($userId);
+
+        if (empty($videoId)) {
+            throw new ValidationException(NULL, 'videoId is required');
+        }
+
+        // ensure that the imageId is valid
+        $existingVideo = $user->videos()->where('id', $videoId)->get();
+        if (count($existingVideo) == 0) {
+            throw new ValidationException(NULL, 'Invalid videoId');
+        }
+
+        // delete from database.
+        $this->userVideoPortfolioRepository->delete($videoId);
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @param integer $audioId
+     * @return void
+     * @throws ValidationException
+     */
+    public function deleteUserAudioPortfolio($userId, $audioId)
+    {
+        // validate user.
+        $user = $this->userRepository->get($userId);
+
+        if (empty($audioId)) {
+            throw new ValidationException(NULL, 'audioId is required');
+        }
+
+        // ensure that the imageId is valid
+        $existingAudio = $user->audios()->where('id', $audioId)->get();
+        if (count($existingAudio) == 0) {
+            throw new ValidationException(NULL, 'Invalid audioId');
+        }
+
+        // delete from database.
+        $this->userAudioPortfolioRepository->delete($audioId);
+
+        // delete audio file from directory.
+        $relativeDirPath = $existingAudio [0]->filePath;
+        if (!empty($relativeDirPath)) {
+            $absolutePath = public_path($relativeDirPath);
+            if ($this->fileHandler->fileExists($absolutePath)) {
+                $this->fileHandler->deleteFile($absolutePath);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @param integer $creditId
+     * @return void
+     * @throws ValidationException
+     */
+    public function deleteUserCreditPortfolio($userId, $creditId)
+    {
+        // validate user.
+        $this->userRepository->get($userId);
+
+        if (empty($creditId)) {
+            throw new ValidationException(NULL, 'creditId is required');
+        }
+
+        // ensure that the imageId is valid
+        $existingCredit = $this->userCreditPortfolioRepository->getByUserIdAndCreditId($userId,
+                $creditId);
+        if (count($existingCredit) == 0) {
+            throw new ValidationException(NULL, 'Invalid creditId');
+        }
+
+        // delete from database.
+        $this->userCreditPortfolioRepository->delete($creditId);
     }
 
     /**

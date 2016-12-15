@@ -27,6 +27,8 @@ class NSHFileHandler
     {
         $path = $dirPath . '/' . $filename;
         $savedImage = Image::make($image->getRealPath())->save($path);
+        // free memory resource.
+        $image->destroy();
 
         return $savedImage;
     }
@@ -49,6 +51,7 @@ class NSHFileHandler
      *
      * @param string $dirPath
      * @param number $mode
+     * @return void
      */
     public function makeDirectory($dirPath, $mode = 0777)
     {
@@ -63,5 +66,25 @@ class NSHFileHandler
     public function directoryExists($dirPath)
     {
         return is_dir($dirPath);
+    }
+
+    /**
+     *
+     * @param string $filename
+     * @return boolean
+     */
+    public function fileExists($filename)
+    {
+        return is_file($filename);
+    }
+
+    /**
+     *
+     * @param string $filename Path to file.
+     * @return void
+     */
+    public function deleteFile($filename)
+    {
+        unlink($filename);
     }
 }

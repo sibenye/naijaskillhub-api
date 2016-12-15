@@ -42,3 +42,19 @@ $app->post('/users/{id}/portfolios/credits',
         [
                 'uses' => 'UserPortfolioController@upsertUserCreditPortfolio'
         ]);
+$app->delete('/users/{id}/portfolios/images',
+        [
+                'uses' => 'UserPortfolioController@deleteUserImagePortfolio'
+        ]);
+$app->delete('/users/{id}/portfolios/videos',
+        [
+                'uses' => 'UserPortfolioController@deleteUserVideoPortfolio'
+        ]);
+$app->delete('/users/{id}/portfolios/audios',
+        [
+                'uses' => 'UserPortfolioController@deleteUserAudioPortfolio'
+        ]);
+$app->delete('/users/{id}/portfolios/credits',
+        [
+                'uses' => 'UserPortfolioController@deleteUserCreditPortfolio'
+        ]);
