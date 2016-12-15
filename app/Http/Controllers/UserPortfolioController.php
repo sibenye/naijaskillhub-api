@@ -75,7 +75,7 @@ class UserPortfolioController extends Controller
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @return Response
      */
     public function getAllUserPortfolios($userId)
@@ -87,7 +87,7 @@ class UserPortfolioController extends Controller
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @return Response
      */
     public function getUserImagesPortfolio($userId)
@@ -99,7 +99,7 @@ class UserPortfolioController extends Controller
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @return Response
      */
     public function getUserVideosPortfolio($userId)
@@ -111,7 +111,7 @@ class UserPortfolioController extends Controller
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @return Response
      */
     public function getUserAudiosPortfolio($userId)
@@ -123,7 +123,7 @@ class UserPortfolioController extends Controller
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @return Response
      */
     public function getUserCreditsPortfolio($userId)
@@ -135,7 +135,7 @@ class UserPortfolioController extends Controller
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @return Response
      */
     public function upsertUserImagePortfolio($userId)
@@ -157,7 +157,7 @@ class UserPortfolioController extends Controller
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @return Response
      */
     public function upsertUserVideoPortfolio($userId)
@@ -178,7 +178,7 @@ class UserPortfolioController extends Controller
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @return Response
      */
     public function upsertUserAudioPortfolio($userId)
@@ -200,7 +200,7 @@ class UserPortfolioController extends Controller
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @return Response
      */
     public function upsertUserCreditPortfolio($userId)
@@ -218,5 +218,61 @@ class UserPortfolioController extends Controller
             $userCreditsPortfolio = $this->service->updateUserCreditPortfolio($userId, $postRequest);
         }
         return $this->response($userCreditsPortfolio);
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @return Response
+     */
+    public function deleteUserImagePortfolio($userId)
+    {
+        $imageId = $this->request->get('imageId', NULL);
+
+        $this->service->deleteUserImagePortfolio($userId, $imageId);
+
+        return $this->response();
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @return Response
+     */
+    public function deleteUserVideoPortfolio($userId)
+    {
+        $videoId = $this->request->get('videoId', NULL);
+
+        $this->service->deleteUserVideoPortfolio($userId, $videoId);
+
+        return $this->response();
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @return Response
+     */
+    public function deleteUserAudioPortfolio($userId)
+    {
+        $audioId = $this->request->get('audioId', NULL);
+
+        $this->service->deleteUserAudioPortfolio($userId, $audioId);
+
+        return $this->response();
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @return Response
+     */
+    public function deleteUserCreditPortfolio($userId)
+    {
+        $creditId = $this->request->get('creditId', NULL);
+
+        $this->service->deleteUserCreditPortfolio($userId, $creditId);
+
+        return $this->response();
     }
 }
