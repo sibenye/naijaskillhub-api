@@ -303,6 +303,13 @@ class UserService
         $this->userRepository->upsertUserCredential($user, $userCred);
     }
 
+    /**
+     *
+     * @param integer $userId
+     * @param UserResetPasswordPostRequest $request
+     * @return void
+     * @throws ValidationException
+     */
     public function resetUserPassword($userId, UserResetPasswordPostRequest $request)
     {
         // verify user
@@ -338,6 +345,13 @@ class UserService
         $this->userRepository->update($userId, $userUpdateAttributes);
     }
 
+    /**
+     *
+     * @param integer $userId
+     * @param string $resetToken
+     * @return void
+     * @throws ValidationException
+     */
     public function insertResetToken($userId, $resetToken)
     {
         if (empty($resetToken)) {
@@ -350,6 +364,23 @@ class UserService
         // save the resetToken
         $updateAttributes = array ();
         $updateAttributes ['resetToken'] = $resetToken;
+
+        $this->userRepository->update($userId, $updateAttributes);
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @return void
+     */
+    public function activateUser($userId)
+    {
+        // verify user
+        $this->userRepository->get($userId);
+
+        // activate user
+        $updateAttributes = array ();
+        $updateAttributes ['isActive'] = true;
 
         $this->userRepository->update($userId, $updateAttributes);
     }

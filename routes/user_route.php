@@ -50,6 +50,11 @@ $app->post('/users/{id}/password/reset_request',
                 'uses' => 'UserController@resetRequest'
         ]);
 
+$app->post('/users/{id}/activate',
+        [
+                'uses' => 'UserController@activateUser'
+        ]);
+
 $app->delete('/users/{id}/categories',
         [
                 'uses' => 'UserController@unlinkUserFromCategory'
