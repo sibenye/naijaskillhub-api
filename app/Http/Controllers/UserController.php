@@ -196,4 +196,15 @@ class UserController extends Controller
         $this->service->insertResetToken($id, $resetToken);
         return $this->response();
     }
+
+    /**
+     *
+     * @param integer $id User Id.
+     * @return Response
+     */
+    public function activateUser($id)
+    {
+        $this->service->activateUser($id);
+        return $this->response();
+    }
 }
