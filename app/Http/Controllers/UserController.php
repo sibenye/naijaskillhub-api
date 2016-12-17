@@ -5,6 +5,8 @@ use App\Mappers\UserPostRequestMapper;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Mappers\UserChangePasswordPostRequestMapper;
+use App\Mappers\UserResetPasswordPostRequestMapper;
 
 class UserController extends Controller
 {
@@ -22,21 +24,39 @@ class UserController extends Controller
 
     /**
      *
-     * @param Request $request
-     * @param UserService $service
-     * @param UserPostRequestMapper $userPostMapper
+     * @var UserChangePasswordPostRequestMapper
+     */
+    private $userChangePasswordPostRequestMapper;
+
+    /**
+     *
+     * @var UserResetPasswordPostRequestMapper
+     */
+    private $userResetPasswordPostRequestMapper;
+
+    /**
+     *
+     * @param Request                             $request
+     * @param UserService                         $service
+     * @param UserPostRequestMapper               $userPostMapper
+     * @param UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper
+     * @param UserResetPasswordPostRequestMapper  $userResetPasswordPostRequestMapper
      */
     public function __construct(Request $request, UserService $service,
-            UserPostRequestMapper $userPostMapper)
+            UserPostRequestMapper $userPostMapper,
+            UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper,
+            UserResetPasswordPostRequestMapper $userResetPasswordPostRequestMapper)
     {
         parent::__construct($request);
         $this->service = $service;
         $this->userPostMapper = $userPostMapper;
+        $this->userChangePasswordPostRequestMapper = $userChangePasswordPostRequestMapper;
+        $this->userResetPasswordPostRequestMapper = $userResetPasswordPostRequestMapper;
     }
 
     /**
      *
-     * @param string $id
+     * @param integer $id User Id.
      * @return Response
      */
     public function getUser($id)
@@ -48,7 +68,7 @@ class UserController extends Controller
 
     /**
      *
-     * @param string $id
+     * @param integer $id User Id.
      * @return Response
      */
     public function getUserAttributes($id)
@@ -62,7 +82,7 @@ class UserController extends Controller
 
     /**
      *
-     * @param string $id
+     * @param integer $id User Id.
      * @return Response
      */
     public function getUserCategories($id)
@@ -74,7 +94,7 @@ class UserController extends Controller
 
     /**
      *
-     * @param string $id
+     * @param integer $id User Id.
      * @return Response
      */
     public function getUserCredentialTypes($id)
@@ -86,7 +106,7 @@ class UserController extends Controller
 
     /**
      *
-     * @param string $id
+     * @param integer $id User Id.
      * @return Response
      */
     public function upsertUserAttributeValue($id)
@@ -100,7 +120,7 @@ class UserController extends Controller
 
     /**
      *
-     * @param string $id
+     * @param integer $id User Id.
      * @return Response
      */
     public function linkUserToCategory($id)
@@ -114,7 +134,7 @@ class UserController extends Controller
 
     /**
      *
-     * @param string $id
+     * @param integer $id User Id.
      * @return Response
      */
     public function unlinkUserFromCategory($id)
@@ -135,9 +155,45 @@ class UserController extends Controller
         $postRequest = $this->userPostMapper->map($this->request->all());
         $this->validateRequest($postRequest->getValidationRules());
 
-        $requestBody = $postRequest->buildModelAttributes();
-
-        $user = $this->service->registerUser($requestBody);
+        $user = $this->service->registerUser($postRequest);
         return $this->response($user);
+    }
+
+    /**
+     * @param integer $id User Id.
+     * @return Response
+     */
+    public function changeUserPassword($id)
+    {
+        $postRequest = $this->userChangePasswordPostRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
+
+        $this->service->changeUserPassword($id, $postRequest);
+        return $this->response();
+    }
+
+    /**
+     * @param integer $id User Id.
+     * @return Response
+     */
+    public function resetUserPassword($id)
+    {
+        $postRequest = $this->userResetPasswordPostRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
+
+        $this->service->resetUserPassword($id, $postRequest);
+        return $this->response();
+    }
+
+    /**
+     * @param integer $id User Id.
+     * @return Response
+     */
+    public function resetRequest($id)
+    {
+        $resetToken = $this->request->input('resetToken', NULL);
+
+        $this->service->insertResetToken($id, $resetToken);
+        return $this->response();
     }
 }
