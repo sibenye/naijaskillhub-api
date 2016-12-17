@@ -24,4 +24,9 @@ class NSHCryptoUtil
     {
         return app('hash')->make($secret);
     }
+
+    public function hashMatches($secret, $hash)
+    {
+        return app('hash')->check($secret, $hash);
+    }
 }

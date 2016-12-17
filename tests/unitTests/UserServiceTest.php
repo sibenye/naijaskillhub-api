@@ -13,6 +13,7 @@ use App\Repositories\CategoryRepository;
 use App\Repositories\CredentialTypeRepository;
 use App\Models\DAO\CredentialType;
 use App\Utilities\NSHCryptoUtil;
+use App\Models\Requests\UserPostRequest;
 
 /**
  * UserService Tests.
@@ -156,26 +157,25 @@ class UserServiceTest extends \TestCase
      */
     public function testRegisterUser()
     {
-        $userRegisterRequest = [
-                "emailAddress" => "testUser@test.com",
-                "credentialType" => "standard",
-                "password" => "password"
-        ];
+        $userRegisterRequest = new UserPostRequest();
+        $userRegisterRequest->setCredentialType("standard");
+        $userRegisterRequest->setEmailAddress("testUser@test.com");
+        $userRegisterRequest->setPassword("password");
 
         $this->userRepositoryMock->method('getUserByEmailAddress')->with(
-                $userRegisterRequest ['emailAddress'])->willReturn([ ]);
+                $userRegisterRequest->getEmailAddress())->willReturn([ ]);
 
-        $this->cryptoUtilMock->method('hashThis')->with($userRegisterRequest ['password'])->willReturn(
+        $this->cryptoUtilMock->method('hashThis')->with($userRegisterRequest->getPassword())->willReturn(
                 'password');
 
         $this->credentialTypeRepositoryMock->method('getCredentialTypeByName')->with(
-                $userRegisterRequest ['credentialType'])->willReturn($this->credentialTypeMock);
+                $userRegisterRequest->getCredentialType())->willReturn($this->credentialTypeMock);
 
         $this->userRepositoryMock->expects($this->once())->method('getUserByEmailAddress')->with(
-                $userRegisterRequest ['emailAddress']);
+                $userRegisterRequest->getEmailAddress());
 
         $this->credentialTypeRepositoryMock->expects($this->once())->method(
-                'getCredentialTypeByName')->with($userRegisterRequest ['credentialType']);
+                'getCredentialTypeByName')->with($userRegisterRequest->getCredentialType());
 
         $userDataRequest = [
                 "emailAddress" => "testUser@test.com",

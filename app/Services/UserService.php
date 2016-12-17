@@ -12,6 +12,9 @@ use App\Repositories\UserAttributeRepository;
 use App\Repositories\UserRepository;
 use App\Utilities\NSHCryptoUtil;
 use Illuminate\Validation\ValidationException;
+use App\Models\Requests\UserChangePasswordPostRequest;
+use App\Models\Requests\UserResetPasswordPostRequest;
+use App\Models\Requests\UserPostRequest;
 
 /**
  * UserService class.
@@ -232,32 +235,122 @@ class UserService
     /**
      * Register or Create a User.
      *
-     * @param array $requestBody
+     * @param array $request
      * @throws ValidationException
      * @return array Associative array.
      */
-    public function registerUser($requestBody)
+    public function registerUser(UserPostRequest $request)
     {
         // ensure emailAddress is not already in use
-        if ($this->userRepository->getUserByEmailAddress($requestBody ['emailAddress'])) {
+        if ($this->userRepository->getUserByEmailAddress($request->getEmailAddress())) {
             throw new ValidationException(NULL, 'The emailAddress is already in use.');
         }
 
         // ensure credentialType is valid
         $credentialType = $this->credentialTypeRepository->getCredentialTypeByName(
-                $requestBody ['credentialType']);
+                $request->getCredentialType());
         if (empty($credentialType)) {
             throw new ValidationException(NULL, 'The credentialType is invalid.');
         }
 
-        if ($requestBody ['credentialType'] == CredentialType::STANDARD) {
-            $requestBody ['password'] = $this->cryptoUtil->hashThis($requestBody ['password']);
+        if ($request->getCredentialType() == CredentialType::STANDARD) {
+            $request->setPassword($this->cryptoUtil->hashThis($request->getPassword()));
         }
 
-        $requestBody ['credentialTypeId'] = $credentialType->id;
+        $userModelAttr = $request->buildModelAttributes();
 
-        $user = $this->userRepository->createUser($requestBody);
+        $userModelAttr ['credentialTypeId'] = $credentialType->id;
+
+        $user = $this->userRepository->createUser($userModelAttr);
 
         return $user;
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @param UserChangePasswordPostRequest $request
+     * @return void
+     * @throws ValidationException
+     */
+    public function changeUserPassword($userId, UserChangePasswordPostRequest $request)
+    {
+        // verify user
+        $user = $this->userRepository->get($userId);
+
+        // password change is only for standard credentials.
+        $existingUserCredentials = $this->userRepository->getUserCredentials($userId, 'standard');
+
+        if (empty($existingUserCredentials)) {
+            throw new ValidationException(null, 'User does not have standard credential.');
+        }
+
+        // verify old password
+        if (!$this->cryptoUtil->hashMatches($request->getOldPassword(),
+                $existingUserCredentials [0]->pivot->password)) {
+            throw new ValidationException(null, 'Invalid old password');
+        }
+
+        $newPasswordHash = $this->cryptoUtil->hashThis($request->getNewPassword());
+
+        $credentialTypeId = $this->credentialTypeRepository->getCredentialTypeByName('standard')->id;
+
+        $userCred = array ();
+        $userCred ['credentialType'] = 'standard';
+        $userCred ['credentialTypeId'] = $credentialTypeId;
+        $userCred ['password'] = $newPasswordHash;
+
+        $this->userRepository->upsertUserCredential($user, $userCred);
+    }
+
+    public function resetUserPassword($userId, UserResetPasswordPostRequest $request)
+    {
+        // verify user
+        $user = $this->userRepository->get($userId);
+
+        // password reset is only for standard credentials.
+        $existingUserCredentials = $this->userRepository->getUserCredentials($userId, 'standard');
+
+        if (empty($existingUserCredentials)) {
+            throw new ValidationException(null, 'User does not have standard credential.');
+        }
+
+        // validate reset token
+        if ($user->resetToken != $request->getResetToken()) {
+            throw new ValidationException(null, 'resetToken is invalid.');
+        }
+
+        $newPasswordHash = $this->cryptoUtil->hashThis($request->getNewPassword());
+
+        $credentialTypeId = $this->credentialTypeRepository->getCredentialTypeByName('standard')->id;
+
+        $userCred = array ();
+        $userCred ['credentialType'] = 'Standard';
+        $userCred ['credentialTypeId'] = $credentialTypeId;
+        $userCred ['password'] = $newPasswordHash;
+
+        $this->userRepository->upsertUserCredential($user, $userCred);
+
+        // clear the resetToken
+        $userUpdateAttributes = array ();
+        $userUpdateAttributes ['resetToken'] = '';
+
+        $this->userRepository->update($userId, $userUpdateAttributes);
+    }
+
+    public function insertResetToken($userId, $resetToken)
+    {
+        if (empty($resetToken)) {
+            throw new ValidationException(null, 'resetToken is required');
+        }
+
+        // verify user
+        $this->userRepository->get($userId);
+
+        // save the resetToken
+        $updateAttributes = array ();
+        $updateAttributes ['resetToken'] = $resetToken;
+
+        $this->userRepository->update($userId, $updateAttributes);
     }
 }

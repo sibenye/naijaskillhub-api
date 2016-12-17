@@ -38,7 +38,7 @@ class UserRepository extends BaseRepository
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @param array $attributeNames
      * @return Collection
      */
@@ -57,7 +57,26 @@ class UserRepository extends BaseRepository
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
+     * @param string $credentialType
+     * @return Collection
+     */
+    public function getUserCredentials($userId, $credentialType = NULL)
+    {
+        $user = $this->get($userId);
+
+        if (!empty($credentialType)) {
+            $userCredntials = $user->credentialTypes->where('name', $credentialType);
+            return $userCredntials;
+        } else {
+            $userCredntials = $user->credentialTypes;
+            return $userCredntials;
+        }
+    }
+
+    /**
+     *
+     * @param integer $userId
      * @param string $categoriesCollection
      * @return void
      */
@@ -81,7 +100,7 @@ class UserRepository extends BaseRepository
 
     /**
      *
-     * @param string $userId
+     * @param integer $userId
      * @param string $categoriesCollection
      * @return string
      */
@@ -137,6 +156,23 @@ class UserRepository extends BaseRepository
                                 'attributeValue' => $userAttributeRequest ['attributeValue']
                         ]);
             }
+        }
+    }
+
+    public function upsertUserCredential(Model $user, $credential)
+    {
+        $userCredentials = $user->credentialTypes->where('name', $credential ['credentialType']);
+
+        if (empty($userCredentials)) {
+            $user->credentialTypes()->attach($credential ['credentialTypeId'],
+                    [
+                            'password' => $credential ['password']
+                    ]);
+        } else {
+            $user->credentialTypes()->updateExistingPivot($credential ['credentialTypeId'],
+                    [
+                            'password' => $credential ['password']
+                    ]);
         }
     }
 
