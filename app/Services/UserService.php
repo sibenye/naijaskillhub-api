@@ -15,6 +15,7 @@ use Illuminate\Validation\ValidationException;
 use App\Models\Requests\UserChangePasswordPostRequest;
 use App\Models\Requests\UserResetPasswordPostRequest;
 use App\Models\Requests\UserPostRequest;
+use App\Models\Requests\UserEmailChangePostRequest;
 
 /**
  * UserService class.
@@ -383,5 +384,25 @@ class UserService
         $updateAttributes ['isActive'] = true;
 
         $this->userRepository->update($userId, $updateAttributes);
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @param UserEmailChangePostRequest $request
+     * @return void
+     */
+    public function changeUserEmailAddress($userId, UserEmailChangePostRequest $request)
+    {
+        // verify user
+        $user = $this->userRepository->get($userId);
+
+        if (strtolower($user->emailAddress) != strtolower($request->getNewEmailAddress())) {
+            $modelAttr = [
+                    'emailAddress' => $request->getNewEmailAddress(),
+                    'isActive' => false
+            ];
+            $this->userRepository->update($userId, $modelAttr);
+        }
     }
 }

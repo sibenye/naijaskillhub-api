@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Mappers\UserChangePasswordPostRequestMapper;
 use App\Mappers\UserResetPasswordPostRequestMapper;
+use App\Mappers\UserEmailChangePostRequestMapper;
 
 class UserController extends Controller
 {
@@ -36,22 +37,31 @@ class UserController extends Controller
 
     /**
      *
+     * @var UserEmailChangePostRequestMapper
+     */
+    private $userEmailChangePostRequestMapper;
+
+    /**
+     *
      * @param Request                             $request
      * @param UserService                         $service
      * @param UserPostRequestMapper               $userPostMapper
      * @param UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper
      * @param UserResetPasswordPostRequestMapper  $userResetPasswordPostRequestMapper
+     * @param UserEmailChangePostRequestMapper    $userEmailChangePostRequestMapper
      */
     public function __construct(Request $request, UserService $service,
             UserPostRequestMapper $userPostMapper,
             UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper,
-            UserResetPasswordPostRequestMapper $userResetPasswordPostRequestMapper)
+            UserResetPasswordPostRequestMapper $userResetPasswordPostRequestMapper,
+            UserEmailChangePostRequestMapper $userEmailChangePostRequestMapper)
     {
         parent::__construct($request);
         $this->service = $service;
         $this->userPostMapper = $userPostMapper;
         $this->userChangePasswordPostRequestMapper = $userChangePasswordPostRequestMapper;
         $this->userResetPasswordPostRequestMapper = $userResetPasswordPostRequestMapper;
+        $this->userEmailChangePostRequestMapper = $userEmailChangePostRequestMapper;
     }
 
     /**
@@ -205,6 +215,20 @@ class UserController extends Controller
     public function activateUser($id)
     {
         $this->service->activateUser($id);
+        return $this->response();
+    }
+
+    /**
+     *
+     * @param integer $id User Id.
+     * @return Response
+     */
+    public function changeUserEmailAddress($id)
+    {
+        $postRequest = $this->userEmailChangePostRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
+
+        $this->service->changeUserEmailAddress($id, $postRequest);
         return $this->response();
     }
 }
