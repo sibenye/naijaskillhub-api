@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Mappers\UserChangePasswordPostRequestMapper;
 use App\Mappers\UserResetPasswordPostRequestMapper;
-use App\Mappers\UserEmailChangePostRequestMapper;
+use App\Mappers\UserChangeEmailPostRequestMapper;
 
 class UserController extends Controller
 {
@@ -37,9 +37,9 @@ class UserController extends Controller
 
     /**
      *
-     * @var UserEmailChangePostRequestMapper
+     * @var UserChangeEmailPostRequestMapper
      */
-    private $userEmailChangePostRequestMapper;
+    private $userChangeEmailPostRequestMapper;
 
     /**
      *
@@ -48,20 +48,20 @@ class UserController extends Controller
      * @param UserPostRequestMapper               $userPostMapper
      * @param UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper
      * @param UserResetPasswordPostRequestMapper  $userResetPasswordPostRequestMapper
-     * @param UserEmailChangePostRequestMapper    $userEmailChangePostRequestMapper
+     * @param UserChangeEmailPostRequestMapper    $userChangeEmailPostRequestMapper
      */
     public function __construct(Request $request, UserService $service,
             UserPostRequestMapper $userPostMapper,
             UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper,
             UserResetPasswordPostRequestMapper $userResetPasswordPostRequestMapper,
-            UserEmailChangePostRequestMapper $userEmailChangePostRequestMapper)
+            UserChangeEmailPostRequestMapper $userChangeEmailPostRequestMapper)
     {
         parent::__construct($request);
         $this->service = $service;
         $this->userPostMapper = $userPostMapper;
         $this->userChangePasswordPostRequestMapper = $userChangePasswordPostRequestMapper;
         $this->userResetPasswordPostRequestMapper = $userResetPasswordPostRequestMapper;
-        $this->userEmailChangePostRequestMapper = $userEmailChangePostRequestMapper;
+        $this->userChangeEmailPostRequestMapper = $userChangeEmailPostRequestMapper;
     }
 
     /**
@@ -225,7 +225,7 @@ class UserController extends Controller
      */
     public function changeUserEmailAddress($id)
     {
-        $postRequest = $this->userEmailChangePostRequestMapper->map($this->request->all());
+        $postRequest = $this->userChangeEmailPostRequestMapper->map($this->request->all());
         $this->validateRequest($postRequest->getValidationRules());
 
         $this->service->changeUserEmailAddress($id, $postRequest);

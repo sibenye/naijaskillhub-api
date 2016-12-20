@@ -5,12 +5,12 @@
 namespace App\Models\Requests;
 
 /**
- * User Email Change Post Request.
+ * UserChangeEmailPost Request.
  *
  * @author silver.ibenye
  *
  */
-class UserEmailChangePostRequest implements IPostRequest
+class UserChangeEmailPostRequest implements IPostRequest
 {
     /**
      *

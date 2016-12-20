@@ -4,19 +4,19 @@
  */
 namespace Tests\unitTests\Mappers;
 
-use App\Mappers\UserEmailChangePostRequestMapper;
-use App\Models\Requests\UserEmailChangePostRequest;
+use App\Mappers\UserChangeEmailPostRequestMapper;
+use App\Models\Requests\UserChangeEmailPostRequest;
 
 /**
- * UserEmailChangePostRequestMapper Tests.
+ * UserChangeEmailPostRequestMapper Tests.
  *
  * @author silver.ibenye
  *
  */
-class UserEmailChangePostRequestMapperTest extends \TestCase
+class UserChangeEmailPostRequestMapperTest extends \TestCase
 {
     /**
-     * @var UserEmailChangePostRequestMapper
+     * @var UserChangeEmailPostRequestMapper
      */
     private $mapper;
 
@@ -28,7 +28,7 @@ class UserEmailChangePostRequestMapperTest extends \TestCase
      */
     public function setUp()
     {
-        $this->mapper = new UserEmailChangePostRequestMapper();
+        $this->mapper = new UserChangeEmailPostRequestMapper();
     }
 
     /**
@@ -42,7 +42,7 @@ class UserEmailChangePostRequestMapperTest extends \TestCase
                 'newEmailAddress' => 'test2@mail'
         ];
 
-        $expectedOut = new UserEmailChangePostRequest();
+        $expectedOut = new UserChangeEmailPostRequest();
         $expectedOut->setNewEmailAddress('test2@mail');
 
         $out = $this->mapper->map($in);

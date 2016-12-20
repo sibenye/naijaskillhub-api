@@ -4,26 +4,26 @@
  */
 namespace App\Mappers;
 
-use App\Models\Requests\UserEmailChangePostRequest;
+use App\Models\Requests\UserChangeEmailPostRequest;
 
 /**
- * UserEmailChangePostRequest Mapper.
+ * UserChangeEmailPostRequest Mapper.
  *
  * @author silver.ibenye
  *
  */
-class UserEmailChangePostRequestMapper implements IMapper
+class UserChangeEmailPostRequestMapper implements IMapper
 {
 
     /**
      * {@inheritDoc}
      * @see \App\Mappers\IMapper::map()
      * @param array $in
-     * @return UserEmailChangePostRequest
+     * @return UserChangeEmailPostRequest
      */
     public function map($in)
     {
-        $out = new UserEmailChangePostRequest();
+        $out = new UserChangeEmailPostRequest();
 
         $out->setNewEmailAddress(array_get($in, 'newEmailAddress', NULL));
 
