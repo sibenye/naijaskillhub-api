@@ -57,8 +57,10 @@ class UserPostRequest implements IPostRequest
     public function getValidationRules()
     {
         return [
-                'emailAddress' => 'required',
-                'password' => 'required'
+                'emailAddress' => 'required|email|max:200',
+                'password' => 'required|max:200|min:8',
+                'credentialType' => 'in:' . CredentialType::STANDARD . ',' . CredentialType::FACEBOOK .
+                         ',' . CredentialType::GOOGLE
         ];
     }
 

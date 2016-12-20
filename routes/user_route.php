@@ -55,6 +55,11 @@ $app->post('/users/{id}/activate',
                 'uses' => 'UserController@activateUser'
         ]);
 
+$app->post('/users/{id}/emailAddress/change',
+        [
+                'uses' => 'UserController@changeUserEmailAddress'
+        ]);
+
 $app->delete('/users/{id}/categories',
         [
                 'uses' => 'UserController@unlinkUserFromCategory'
