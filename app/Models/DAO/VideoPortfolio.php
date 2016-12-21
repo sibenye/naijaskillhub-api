@@ -1,10 +1,10 @@
 <?php
-
 namespace App\Models\DAO;
 
 use Illuminate\Database\Eloquent\Model;
 
-class VideoPortfolio extends Model {
+class VideoPortfolio extends Model
+{
     const CREATED_AT = 'createdDate';
     const UPDATED_AT = 'modifiedDate';
     /**
@@ -22,19 +22,10 @@ class VideoPortfolio extends Model {
     protected $guarded = [ ];
 
     /**
-     * All of the relationships to be touched.
-     *
-     * @var array
-     */
-    protected $touches = [
-            'user'
-    ];
-
-    /**
      * Get the user that this video belongs to.
      */
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo('App\Models\DAO\User', 'userId');
     }
-
 }

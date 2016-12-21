@@ -27,3 +27,4 @@ require __DIR__ . '/user_route.php';
 require __DIR__ . '/user_portfolio_route.php';
 require __DIR__ . '/upload_route.php';
 require __DIR__ . '/email_route.php';
+require __DIR__ . '/auth_route.php';

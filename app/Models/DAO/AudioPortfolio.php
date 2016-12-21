@@ -22,15 +22,6 @@ class AudioPortfolio extends Model
     protected $guarded = [ ];
 
     /**
-     * All of the relationships to be touched.
-     *
-     * @var array
-     */
-    protected $touches = [
-            'user'
-    ];
-
-    /**
      * Get the user that this voice clip belongs to.
      */
     public function user()
