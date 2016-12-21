@@ -14,6 +14,7 @@ use App\Repositories\CredentialTypeRepository;
 use App\Models\DAO\CredentialType;
 use App\Utilities\NSHCryptoUtil;
 use App\Models\Requests\UserPostRequest;
+use App\Services\AuthService;
 
 /**
  * UserService Tests.
@@ -78,6 +79,12 @@ class UserServiceTest extends \TestCase
 
     /**
      *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $authServiceMock;
+
+    /**
+     *
      * {@inheritDoc}
      * @see \Laravel\Lumen\Testing\TestCase::setUp()
      * @return void
@@ -111,9 +118,14 @@ class UserServiceTest extends \TestCase
                         'hashThis'
                 ])->getMock();
 
+        $this->authServiceMock = $this->getMockBuilder(AuthService::class)->disableOriginalConstructor()->setMethods(
+                [
+                        'generateAuthToken'
+                ])->getMock();
+
         $this->userService = new UserService($this->userRepositoryMock,
             $this->userAttributeRepositoryMock, $this->categoryRepositoryMock,
-            $this->credentialTypeRepositoryMock, $this->cryptoUtilMock);
+            $this->credentialTypeRepositoryMock, $this->cryptoUtilMock, $this->authServiceMock);
 
         $this->userModelMock = $this->getMockBuilder(User::class)->disableOriginalConstructor()->getMock();
         $this->userAttributeModelMock = $this->getMockBuilder(UserAttribute::class)->disableOriginalConstructor()->getMock();
@@ -168,6 +180,8 @@ class UserServiceTest extends \TestCase
         $this->cryptoUtilMock->method('hashThis')->with($userRegisterRequest->getPassword())->willReturn(
                 'password');
 
+        $this->authServiceMock->method('generateAuthToken')->willReturn('adklfjdldkf');
+
         $this->credentialTypeRepositoryMock->method('getCredentialTypeByName')->with(
                 $userRegisterRequest->getCredentialType())->willReturn($this->credentialTypeMock);
 
@@ -177,11 +191,14 @@ class UserServiceTest extends \TestCase
         $this->credentialTypeRepositoryMock->expects($this->once())->method(
                 'getCredentialTypeByName')->with($userRegisterRequest->getCredentialType());
 
+        $this->authServiceMock->expects($this->once())->method('generateAuthToken');
+
         $userDataRequest = [
                 "emailAddress" => "testUser@test.com",
                 "credentialType" => "standard",
                 "password" => "password",
-                "credentialTypeId" => $this->credentialTypeMock->id
+                "credentialTypeId" => $this->credentialTypeMock->id,
+                'authToken' => 'adklfjdldkf'
         ];
         $this->userRepositoryMock->expects($this->once())->method('createUser')->with(
                 $userDataRequest);

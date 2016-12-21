@@ -16,6 +16,7 @@ use App\Models\Requests\UserChangePasswordPostRequest;
 use App\Models\Requests\UserResetPasswordPostRequest;
 use App\Models\Requests\UserPostRequest;
 use App\Models\Requests\UserChangeEmailPostRequest;
+use App\Utilities\NSHConstants;
 
 /**
  * UserService class.
@@ -57,6 +58,12 @@ class UserService
 
     /**
      *
+     * @var AuthService
+     */
+    private $authService;
+
+    /**
+     *
      * @param UserRepository $repository
      * @param UserAttributeRepository $userAttributeRepository
      * @param CategoryRepository $categoryRepository
@@ -65,13 +72,15 @@ class UserService
      */
     public function __construct(UserRepository $repository,
             UserAttributeRepository $userAttributeRepository, CategoryRepository $categoryRepository,
-            CredentialTypeRepository $credentialTypeRepository, NSHCryptoUtil $cryptoUtil)
+            CredentialTypeRepository $credentialTypeRepository, NSHCryptoUtil $cryptoUtil,
+            AuthService $authService)
     {
         $this->userRepository = $repository;
         $this->userAttributeRepository = $userAttributeRepository;
         $this->categoryRepository = $categoryRepository;
         $this->credentialTypeRepository = $credentialTypeRepository;
         $this->cryptoUtil = $cryptoUtil;
+        $this->authService = $authService;
     }
 
     /**
@@ -261,6 +270,7 @@ class UserService
         $userModelAttr = $request->buildModelAttributes();
 
         $userModelAttr ['credentialTypeId'] = $credentialType->id;
+        $userModelAttr ['authToken'] = $this->authService->generateAuthToken();
 
         $user = $this->userRepository->createUser($userModelAttr);
 
@@ -280,9 +290,10 @@ class UserService
         $user = $this->userRepository->get($userId);
 
         // password change is only for standard credentials.
-        $existingUserCredentials = $this->userRepository->getUserCredentials($userId, 'standard');
+        $existingUserCredentials = $this->userRepository->getUserCredentials($userId,
+                CredentialType::STANDARD);
 
-        if (empty($existingUserCredentials)) {
+        if (count($existingUserCredentials) == 0) {
             throw new ValidationException(null, 'User does not have standard credential.');
         }
 
@@ -294,7 +305,8 @@ class UserService
 
         $newPasswordHash = $this->cryptoUtil->hashThis($request->getNewPassword());
 
-        $credentialTypeId = $this->credentialTypeRepository->getCredentialTypeByName('standard')->id;
+        $credentialTypeId = $this->credentialTypeRepository->getCredentialTypeByName(
+                CredentialType::STANDARD)->id;
 
         $userCred = array ();
         $userCred ['credentialType'] = 'standard';
@@ -319,7 +331,7 @@ class UserService
         // password reset is only for standard credentials.
         $existingUserCredentials = $this->userRepository->getUserCredentials($userId, 'standard');
 
-        if (empty($existingUserCredentials)) {
+        if (count($existingUserCredentials) == 0) {
             throw new ValidationException(null, 'User does not have standard credential.');
         }
 

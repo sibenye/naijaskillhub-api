@@ -29,4 +29,11 @@ class NSHCryptoUtil
     {
         return app('hash')->check($secret, $hash);
     }
+
+    public function secureRandomString($length)
+    {
+        $factory = new \RandomLib\Factory();
+        $generator = $factory->getLowStrengthGenerator();
+        return $generator->generateString($length);
+    }
 }

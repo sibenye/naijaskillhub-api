@@ -36,6 +36,11 @@ class UserRepository extends BaseRepository
         return $this->model->where('emailAddress', $emailAddress)->first();
     }
 
+    public function getUserByAuthToken($authToken)
+    {
+        return $this->model->where('authToken', $authToken)->first();
+    }
+
     /**
      *
      * @param integer $userId
@@ -185,6 +190,7 @@ class UserRepository extends BaseRepository
     {
         $userModelAttributes = array ();
         $userModelAttributes ['emailAddress'] = $requestBody ['emailAddress'];
+        $userModelAttributes ['authToken'] = $requestBody ['authToken'];
 
         $user = $this->create($userModelAttributes);
 

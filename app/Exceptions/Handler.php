@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Exceptions;
 
 use Exception;
@@ -12,7 +11,8 @@ use Illuminate\Http\Response;
 use App\Models\Responses\NSHResponse;
 use phpDocumentor\Reflection\Types\String_;
 
-class Handler extends ExceptionHandler {
+class Handler extends ExceptionHandler
+{
     /**
      * A list of the exception types that should not be reported.
      *
@@ -33,7 +33,8 @@ class Handler extends ExceptionHandler {
      * @param  \Exception  $e
      * @return void
      */
-    public function report(Exception $e) {
+    public function report(Exception $e)
+    {
         parent::report($e);
     }
 
@@ -44,26 +45,28 @@ class Handler extends ExceptionHandler {
      * @param  \Exception  $e
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e) {
+    public function render($request, Exception $e)
+    {
         $status = 'Error. ' . $e->getMessage();
         Switch (get_class($e)) {
             case 'Illuminate\Database\Eloquent\ModelNotFoundException' :
-                $errorResponse = new NSHResponse(404, $status,
-                    'Resource Not Found');
+                $errorResponse = new NSHResponse(404, $status, 'Resource Not Found');
                 return $errorResponse->render();
                 break;
             case 'Illuminate\Validation\ValidationException' :
                 $validationMessage = $e->getResponse();
-                if (! is_string($e->getResponse())) {
+                if (!is_string($e->getResponse())) {
                     $validationMessage = $e->getResponse()->getContent();
                 }
-                $errorResponse = new NSHResponse(400, $status,
-                    $validationMessage);
+                $errorResponse = new NSHResponse(400, $status, $validationMessage);
+                return $errorResponse->render();
+                break;
+            case 'App\Exceptions\NSHAuthenticationException' :
+                $errorResponse = new NSHResponse($e->getHttpStatus(), $status, $e->getErrorMessage());
                 return $errorResponse->render();
                 break;
             default :
                 return parent::render($request, $e);
         }
     }
-
 }

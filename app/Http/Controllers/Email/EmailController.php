@@ -18,9 +18,24 @@ use Illuminate\Http\Request;
  */
 class EmailController extends Controller
 {
+    /**
+     *
+     * @var EmailSendService
+     */
     private $emailSendService;
+
+    /**
+     *
+     * @var EmailTransactionalSendRequestMapper
+     */
     private $emailTransactionalSendRequestMapper;
 
+    /**
+     *
+     * @param Request $request
+     * @param EmailSendService $emailSendService
+     * @param EmailTransactionalSendRequestMapper $emailTransactionalSendRequestMapper
+     */
     public function __construct(Request $request, EmailSendService $emailSendService,
             EmailTransactionalSendRequestMapper $emailTransactionalSendRequestMapper)
     {
