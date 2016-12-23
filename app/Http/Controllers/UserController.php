@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use App\Mappers\UserChangePasswordPostRequestMapper;
 use App\Mappers\UserResetPasswordPostRequestMapper;
 use App\Mappers\UserChangeEmailPostRequestMapper;
+use App\Mappers\UserForgotPasswordPostRequestMapper;
 
 class UserController extends Controller
 {
@@ -37,6 +38,12 @@ class UserController extends Controller
 
     /**
      *
+     * @var UserForgotPasswordPostRequestMapper
+     */
+    private $userForgotPasswordPostRequestMapper;
+
+    /**
+     *
      * @var UserChangeEmailPostRequestMapper
      */
     private $userChangeEmailPostRequestMapper;
@@ -54,6 +61,7 @@ class UserController extends Controller
             UserPostRequestMapper $userPostMapper,
             UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper,
             UserResetPasswordPostRequestMapper $userResetPasswordPostRequestMapper,
+            UserForgotPasswordPostRequestMapper $userForgotPasswordPostRequestMapper,
             UserChangeEmailPostRequestMapper $userChangeEmailPostRequestMapper)
     {
         parent::__construct($request);
@@ -61,6 +69,7 @@ class UserController extends Controller
         $this->userPostMapper = $userPostMapper;
         $this->userChangePasswordPostRequestMapper = $userChangePasswordPostRequestMapper;
         $this->userResetPasswordPostRequestMapper = $userResetPasswordPostRequestMapper;
+        $this->userForgotPasswordPostRequestMapper = $userForgotPasswordPostRequestMapper;
         $this->userChangeEmailPostRequestMapper = $userChangeEmailPostRequestMapper;
     }
 
@@ -183,27 +192,37 @@ class UserController extends Controller
     }
 
     /**
+     * During a forgot password scenario, after the user has click on the link in the reset password email,
+     * The UI then makes the user to put in a new password and then calls this endpoint.
+     * This endpoint resets the user's password to the specified new password.
+     *
      * @param integer $id User Id.
      * @return Response
      */
-    public function resetUserPassword($id)
+    public function resetUserPassword()
     {
         $postRequest = $this->userResetPasswordPostRequestMapper->map($this->request->all());
         $this->validateRequest($postRequest->getValidationRules());
 
-        $this->service->resetUserPassword($id, $postRequest);
+        $this->service->resetUserPassword($postRequest);
         return $this->response();
     }
 
     /**
+     * This endpoint is called during a 'forgot password' scenario.
+     * The UI makes the user put in their emailAddress,
+     * and then it generates a token and calls this endpoint.
+     * This endpoint associates the token with the user.
+     *
      * @param integer $id User Id.
      * @return Response
      */
-    public function resetRequest($id)
+    public function forgotPassword()
     {
-        $resetToken = $this->request->input('resetToken', NULL);
+        $postRequest = $this->userForgotPasswordPostRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
 
-        $this->service->insertResetToken($id, $resetToken);
+        $this->service->forgotUserPassword($postRequest);
         return $this->response();
     }
 

@@ -6,17 +6,19 @@ namespace Tests\unitTests\Mappers;
 
 use App\Mappers\UserResetPasswordPostRequestMapper;
 use App\Models\Requests\UserResetPasswordPostRequest;
+use App\Mappers\UserForgotPasswordPostRequestMapper;
+use App\Models\Requests\UserForgotPasswordPostRequest;
 
 /**
- * UserResetPasswordPostRequestMapper Tests.
+ * UserForgotPasswordPostRequestMapper Tests.
  *
  * @author silver.ibenye
  *
  */
-class UserResetPasswordPostRequestMapperTest extends \TestCase
+class UserForgotPasswordPostRequestMapperTest extends \TestCase
 {
     /**
-     * @var UserResetPasswordPostRequestMapper
+     * @var UserForgotPasswordPostRequestMapper
      */
     private $mapper;
 
@@ -28,7 +30,7 @@ class UserResetPasswordPostRequestMapperTest extends \TestCase
      */
     public function setUp()
     {
-        $this->mapper = new UserResetPasswordPostRequestMapper();
+        $this->mapper = new UserForgotPasswordPostRequestMapper();
     }
 
     /**
@@ -39,13 +41,11 @@ class UserResetPasswordPostRequestMapperTest extends \TestCase
     public function testMapping()
     {
         $in = [
-                "newPassword" => 'newPasswordTest',
                 "resetToken" => 'testToken',
                 "emailAddress" => 'testEmail'
         ];
 
-        $expectedOut = new UserResetPasswordPostRequest();
-        $expectedOut->setNewPassword('newPasswordTest');
+        $expectedOut = new UserForgotPasswordPostRequest();
         $expectedOut->setResetToken("testToken");
         $expectedOut->setEmailAddress('testEmail');
 

@@ -43,14 +43,14 @@ $app->post('/users/{id}/password/change',
                 'middleware' => 'auth'
         ]);
 
-$app->post('/users/{id}/password/reset',
+$app->post('/users/password/reset',
         [
                 'uses' => 'UserController@resetUserPassword'
         ]);
 
-$app->post('/users/{id}/password/reset_request',
+$app->post('/users/password/forgot',
         [
-                'uses' => 'UserController@resetRequest'
+                'uses' => 'UserController@forgotPassword'
         ]);
 
 $app->post('/users/{id}/activate',

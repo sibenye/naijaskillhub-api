@@ -4,28 +4,27 @@
  */
 namespace App\Mappers;
 
-use App\Models\Requests\UserResetPasswordPostRequest;
+use App\Models\Requests\UserForgotPasswordPostRequest;
 
 /**
- * UserResetPasswordPostRequest Mapper.
+ * UserForgotPasswordPostRequest Mapper.
  *
  * @author silver.ibenye
  *
  */
-class UserResetPasswordPostRequestMapper implements IMapper
+class UserForgotPasswordPostRequestMapper implements IMapper
 {
 
     /**
      * {@inheritDoc}
      * @see \App\Mappers\IMapper::map()
      * @param array
-     * @return UserResetPasswordPostRequest
+     * @return UserForgotPasswordPostRequest
      */
     public function map($in)
     {
-        $out = new UserResetPasswordPostRequest();
+        $out = new UserForgotPasswordPostRequest();
 
-        $out->setNewPassword(array_get($in, 'newPassword', NULL));
         $out->setResetToken(array_get($in, 'resetToken', NULL));
         $out->setEmailAddress(array_get($in, 'emailAddress', NULL));
 

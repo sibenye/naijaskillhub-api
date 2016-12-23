@@ -5,19 +5,13 @@
 namespace App\Models\Requests;
 
 /**
- * UserResetPassword Post Request.
+ * UserForgotPassword Post Request.
  *
  * @author silver.ibenye
  *
  */
-class UserResetPasswordPostRequest implements IPostRequest
+class UserForgotPasswordPostRequest implements IPostRequest
 {
-    /**
-     *
-     * @var string
-     */
-    private $newPassword;
-
     /**
      *
      * @var string
@@ -38,7 +32,6 @@ class UserResetPasswordPostRequest implements IPostRequest
     public function buildModelAttributes()
     {
         return [
-                'newPassword' => $this->newPassword,
                 'resetToken' => $this->resetToken,
                 'emailAddress' => $this->emailAddress
         ];
@@ -52,26 +45,9 @@ class UserResetPasswordPostRequest implements IPostRequest
     public function getValidationRules()
     {
         return [
-                'newPassword' => 'required|max:200',
                 'resetToken' => 'required|max:250',
                 'emailAddress' => 'required'
         ];
-    }
-
-    /**
-     * @return string
-     */
-    public function getNewPassword()
-    {
-        return $this->newPassword;
-    }
-
-    /**
-     * @param  $newPassword
-     */
-    public function setNewPassword($newPassword)
-    {
-        $this->newPassword = $newPassword;
     }
 
     /**

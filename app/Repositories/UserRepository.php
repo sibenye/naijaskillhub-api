@@ -166,7 +166,7 @@ class UserRepository extends BaseRepository
 
     public function upsertUserCredential(Model $user, $credential)
     {
-        $userCredentials = $user->credentialTypes->where('name', $credential ['credentialType']);
+        $userCredentials = $user->credentialTypes->where('name', $credential ['credentialType'])->first();
 
         if (empty($userCredentials)) {
             $user->credentialTypes()->attach($credential ['credentialTypeId'],
