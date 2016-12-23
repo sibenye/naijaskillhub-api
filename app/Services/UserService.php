@@ -17,6 +17,8 @@ use App\Models\Requests\UserResetPasswordPostRequest;
 use App\Models\Requests\UserPostRequest;
 use App\Models\Requests\UserChangeEmailPostRequest;
 use App\Utilities\NSHConstants;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\Requests\UserForgotPasswordPostRequest;
 
 /**
  * UserService class.
@@ -323,13 +325,20 @@ class UserService
      * @return void
      * @throws ValidationException
      */
-    public function resetUserPassword($userId, UserResetPasswordPostRequest $request)
+    public function resetUserPassword(UserResetPasswordPostRequest $request)
     {
         // verify user
-        $user = $this->userRepository->get($userId);
+        $user = $this->userRepository->getUserByEmailAddress($request->getEmailAddress());
+
+        if (empty($user)) {
+            throw new ValidationException(null, 'Invalid EmailAddress');
+        }
+
+        $userId = $user->id;
 
         // password reset is only for standard credentials.
-        $existingUserCredentials = $this->userRepository->getUserCredentials($userId, 'standard');
+        $existingUserCredentials = $this->userRepository->getUserCredentials($userId,
+                CredentialType::STANDARD);
 
         if (count($existingUserCredentials) == 0) {
             throw new ValidationException(null, 'User does not have standard credential.');
@@ -345,7 +354,7 @@ class UserService
         $credentialTypeId = $this->credentialTypeRepository->getCredentialTypeByName('standard')->id;
 
         $userCred = array ();
-        $userCred ['credentialType'] = 'Standard';
+        $userCred ['credentialType'] = CredentialType::STANDARD;
         $userCred ['credentialTypeId'] = $credentialTypeId;
         $userCred ['password'] = $newPasswordHash;
 
@@ -365,14 +374,26 @@ class UserService
      * @return void
      * @throws ValidationException
      */
-    public function insertResetToken($userId, $resetToken)
+    public function forgotUserPassword(UserForgotPasswordPostRequest $request)
     {
-        if (empty($resetToken)) {
-            throw new ValidationException(null, 'resetToken is required');
+        // verify user
+        $user = $this->userRepository->getUserByEmailAddress($request->getEmailAddress());
+
+        if (empty($user)) {
+            throw new ValidationException(null, 'Invalid EmailAddress');
         }
 
-        // verify user
-        $this->userRepository->get($userId);
+        $userId = $user->id;
+
+        // forgot password is only for standard credentials.
+        $existingUserCredentials = $this->userRepository->getUserCredentials($userId,
+                CredentialType::STANDARD);
+
+        if (count($existingUserCredentials) == 0) {
+            throw new ValidationException(null, 'User does not have standard credential.');
+        }
+
+        $resetToken = $request->getResetToken();
 
         // save the resetToken
         $updateAttributes = array ();
