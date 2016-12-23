@@ -28,33 +28,41 @@ $app->get('/users/{id}/portfolios/credits',
         ]);
 $app->post('/users/{id}/portfolios/images',
         [
-                'uses' => 'UserPortfolioController@upsertUserImagePortfolio'
+                'uses' => 'UserPortfolioController@upsertUserImagePortfolio',
+                'middleware' => 'auth'
         ]);
 $app->post('/users/{id}/portfolios/videos',
         [
-                'uses' => 'UserPortfolioController@upsertUserVideoPortfolio'
+                'uses' => 'UserPortfolioController@upsertUserVideoPortfolio',
+                'middleware' => 'auth'
         ]);
 $app->post('/users/{id}/portfolios/audios',
         [
-                'uses' => 'UserPortfolioController@upsertUserAudioPortfolio'
+                'uses' => 'UserPortfolioController@upsertUserAudioPortfolio',
+                'middleware' => 'auth'
         ]);
 $app->post('/users/{id}/portfolios/credits',
         [
-                'uses' => 'UserPortfolioController@upsertUserCreditPortfolio'
+                'uses' => 'UserPortfolioController@upsertUserCreditPortfolio',
+                'middleware' => 'auth'
         ]);
 $app->delete('/users/{id}/portfolios/images',
         [
-                'uses' => 'UserPortfolioController@deleteUserImagePortfolio'
+                'uses' => 'UserPortfolioController@deleteUserImagePortfolio',
+                'middleware' => 'auth'
         ]);
 $app->delete('/users/{id}/portfolios/videos',
         [
-                'uses' => 'UserPortfolioController@deleteUserVideoPortfolio'
+                'uses' => 'UserPortfolioController@deleteUserVideoPortfolio',
+                'middleware' => 'auth'
         ]);
 $app->delete('/users/{id}/portfolios/audios',
         [
-                'uses' => 'UserPortfolioController@deleteUserAudioPortfolio'
+                'uses' => 'UserPortfolioController@deleteUserAudioPortfolio',
+                'middleware' => 'auth'
         ]);
 $app->delete('/users/{id}/portfolios/credits',
         [
-                'uses' => 'UserPortfolioController@deleteUserCreditPortfolio'
+                'uses' => 'UserPortfolioController@deleteUserCreditPortfolio',
+                'middleware' => 'auth'
         ]);

@@ -23,12 +23,14 @@ $app->get('/users/{id}/credentialTypes',
 
 $app->post('/users/{id}/attributes',
         [
-                'uses' => 'UserController@upsertUserAttributeValue'
+                'uses' => 'UserController@upsertUserAttributeValue',
+                'middleware' => 'auth'
         ]);
 
 $app->post('/users/{id}/categories',
         [
-                'uses' => 'UserController@linkUserToCategory'
+                'uses' => 'UserController@linkUserToCategory',
+                'middleware' => 'auth'
         ]);
 
 $app->post('/users', [
@@ -37,7 +39,8 @@ $app->post('/users', [
 
 $app->post('/users/{id}/password/change',
         [
-                'uses' => 'UserController@changeUserPassword'
+                'uses' => 'UserController@changeUserPassword',
+                'middleware' => 'auth'
         ]);
 
 $app->post('/users/{id}/password/reset',
@@ -57,10 +60,12 @@ $app->post('/users/{id}/activate',
 
 $app->post('/users/{id}/emailAddress/change',
         [
-                'uses' => 'UserController@changeUserEmailAddress'
+                'uses' => 'UserController@changeUserEmailAddress',
+                'middleware' => 'auth'
         ]);
 
 $app->delete('/users/{id}/categories',
         [
-                'uses' => 'UserController@unlinkUserFromCategory'
+                'uses' => 'UserController@unlinkUserFromCategory',
+                'middleware' => 'auth'
         ]);
