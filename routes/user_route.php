@@ -60,6 +60,17 @@ $app->post('/users/{id}/emailAddress/change',
                 'middleware' => 'auth'
         ]);
 
+$app->post('/users/{id}/addStandardCredential',
+        [
+                'uses' => 'UserController@addStandardCredential',
+                'middleware' => 'auth'
+        ]);
+
+$app->post('/users/addSocialCredential',
+        [
+                'uses' => 'UserController@addSocialCredential'
+        ]);
+
 $app->delete('/users/{id}/categories',
         [
                 'uses' => 'UserController@unlinkUserFromCategory',

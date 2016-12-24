@@ -19,6 +19,7 @@ use App\Models\Requests\UserChangeEmailPostRequest;
 use App\Utilities\NSHConstants;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Requests\UserForgotPasswordPostRequest;
+use App\Models\Requests\AddCredentialRequest;
 
 /**
  * UserService class.
@@ -276,7 +277,7 @@ class UserService
                 CredentialType::STANDARD)->id;
 
         $userCred = array ();
-        $userCred ['credentialType'] = 'standard';
+        $userCred ['credentialType'] = CredentialType::STANDARD;
         $userCred ['credentialTypeId'] = $credentialTypeId;
         $userCred ['password'] = $newPasswordHash;
 
@@ -402,5 +403,71 @@ class UserService
             ];
             $this->userRepository->update($userId, $modelAttr);
         }
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @param AddCredentialRequest $request
+     * @return void
+     * @throws ValidationException
+     */
+    public function addStandardCredential($userId, AddCredentialRequest $request)
+    {
+        // verify user
+        $user = $this->userRepository->get($userId);
+
+        if (strtolower($user->emailAddress) != strtolower($request->getEmailAddress())) {
+            throw new ValidationException(null, 'EmailAddress does not belong to user');
+        }
+
+        if ($request->getCredntialType() != CredentialType::STANDARD) {
+            throw new ValidationException(null, 'Invalid CredentialType. Expecting standard');
+        }
+
+        $passwordHash = $this->cryptoUtil->hashThis($request->getPassword());
+
+        $credentialTypeId = $this->credentialTypeRepository->getCredentialTypeByName(
+                CredentialType::STANDARD)->id;
+
+        $userCred = array ();
+        $userCred ['credentialType'] = CredentialType::STANDARD;
+        $userCred ['credentialTypeId'] = $credentialTypeId;
+        $userCred ['password'] = $passwordHash;
+
+        $this->userRepository->upsertUserCredential($user, $userCred);
+    }
+
+    /**
+     *
+     * @param AddCredentialRequest $request
+     * @return void
+     * @throws ValidationException
+     */
+    public function addSocialCredential(AddCredentialRequest $request)
+    {
+        // verify user email
+        $user = $this->userRepository->getUserByEmailAddress($request->getEmailAddress());
+
+        if (empty($user)) {
+            throw new ValidationException(null, 'Invalid EmailAddress');
+        }
+
+        // verify cred type
+        if ($request->getCredntialType() != CredentialType::FACEBOOK &&
+                 $request->getCredntialType() != CredentialType::GOOGLE) {
+            throw new ValidationException(null,
+                'Invalid CredentialType. Expecting either google or facebook');
+        }
+
+        $credentialTypeId = $this->credentialTypeRepository->getCredentialTypeByName(
+                $request->getCredntialType())->id;
+
+        $userCred = array ();
+        $userCred ['credentialType'] = $request->getCredntialType();
+        $userCred ['credentialTypeId'] = $credentialTypeId;
+        $userCred ['password'] = $request->getPassword();
+
+        $this->userRepository->upsertUserCredential($user, $userCred);
     }
 }

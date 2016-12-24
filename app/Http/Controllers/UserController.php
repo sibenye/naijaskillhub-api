@@ -9,6 +9,7 @@ use App\Mappers\UserChangePasswordPostRequestMapper;
 use App\Mappers\UserResetPasswordPostRequestMapper;
 use App\Mappers\UserChangeEmailPostRequestMapper;
 use App\Mappers\UserForgotPasswordPostRequestMapper;
+use App\Mappers\AddCredentialRequestMapper;
 
 class UserController extends Controller
 {
@@ -44,18 +45,26 @@ class UserController extends Controller
 
     /**
      *
+     * @var AddCredentialRequestMapper
+     */
+    private $addCredentialRequestMapper;
+
+    /**
+     *
      * @param Request                             $request
      * @param UserService                         $service
      * @param UserPostRequestMapper               $userPostMapper
      * @param UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper
      * @param UserResetPasswordPostRequestMapper  $userResetPasswordPostRequestMapper
      * @param UserChangeEmailPostRequestMapper    $userChangeEmailPostRequestMapper
+     * @param AddCredentialRequestMapper          $addCredentialRequestMapper
      */
     public function __construct(Request $request, UserService $service,
             UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper,
             UserResetPasswordPostRequestMapper $userResetPasswordPostRequestMapper,
             UserForgotPasswordPostRequestMapper $userForgotPasswordPostRequestMapper,
-            UserChangeEmailPostRequestMapper $userChangeEmailPostRequestMapper)
+            UserChangeEmailPostRequestMapper $userChangeEmailPostRequestMapper,
+            AddCredentialRequestMapper $addCredentialRequestMapper)
     {
         parent::__construct($request);
         $this->service = $service;
@@ -63,6 +72,7 @@ class UserController extends Controller
         $this->userResetPasswordPostRequestMapper = $userResetPasswordPostRequestMapper;
         $this->userForgotPasswordPostRequestMapper = $userForgotPasswordPostRequestMapper;
         $this->userChangeEmailPostRequestMapper = $userChangeEmailPostRequestMapper;
+        $this->addCredentialRequestMapper = $addCredentialRequestMapper;
     }
 
     /**
@@ -227,6 +237,33 @@ class UserController extends Controller
         $this->validateRequest($postRequest->getValidationRules());
 
         $this->service->changeUserEmailAddress($id, $postRequest);
+        return $this->response();
+    }
+
+    /**
+     *
+     * @param integer $id User Id.
+     * @return Response
+     */
+    public function addStandardCredential($id)
+    {
+        $postRequest = $this->addCredentialRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
+
+        $this->service->addStandardCredential($id, $postRequest);
+        return $this->response();
+    }
+
+    /**
+     *
+     * @return Response
+     */
+    public function addSocialCredential()
+    {
+        $postRequest = $this->addCredentialRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
+
+        $this->service->addSocialCredential($postRequest);
         return $this->response();
     }
 }
