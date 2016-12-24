@@ -4,12 +4,12 @@ namespace App\Models\Requests;
 use App\Enums\CredentialType;
 
 /**
- * UserPost Request.
+ * Register Request.
  *
  * @author silver.ibenye
  *
  */
-class UserPostRequest implements IPostRequest
+class RegisterRequest implements IPostRequest
 {
     /**
      *
@@ -28,6 +28,18 @@ class UserPostRequest implements IPostRequest
      * @var string
      */
     private $password;
+
+    /**
+     *
+     * @var string
+     */
+    private $firstName;
+
+    /**
+     *
+     * @var string
+     */
+    private $lastName;
 
     /**
      * {@inheritDoc}
@@ -59,6 +71,8 @@ class UserPostRequest implements IPostRequest
         return [
                 'emailAddress' => 'required|email|max:200',
                 'password' => 'required|max:200|min:8',
+                'firstName' => 'max:80',
+                'lastName' => 'max:80',
                 'credentialType' => 'in:' . CredentialType::STANDARD . ',' . CredentialType::FACEBOOK .
                          ',' . CredentialType::GOOGLE
         ];
@@ -95,5 +109,39 @@ class UserPostRequest implements IPostRequest
     {
         $this->password = $password;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
+
+    /**
+     * @param  $firstName
+     * @return void
+     */
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * @param  $lastName
+     * @return void
+     */
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
     }
 }

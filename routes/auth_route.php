@@ -10,3 +10,7 @@ $app->post('/logout', [
         'uses' => 'AuthController@logout'
 ]);
 
+$app->post('/register', [
+        'uses' => 'AuthController@register'
+]);
+

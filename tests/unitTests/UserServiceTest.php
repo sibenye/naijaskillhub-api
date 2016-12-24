@@ -161,48 +161,4 @@ class UserServiceTest extends \TestCase
 
         $this->userService->upsertUserAttributeValue($userId, $userAttributeValueRequest);
     }
-
-    /**
-     * Test RegisterUser.
-     *
-     * @return void
-     */
-    public function testRegisterUser()
-    {
-        $userRegisterRequest = new UserPostRequest();
-        $userRegisterRequest->setCredentialType("standard");
-        $userRegisterRequest->setEmailAddress("testUser@test.com");
-        $userRegisterRequest->setPassword("password");
-
-        $this->userRepositoryMock->method('getUserByEmailAddress')->with(
-                $userRegisterRequest->getEmailAddress())->willReturn([ ]);
-
-        $this->cryptoUtilMock->method('hashThis')->with($userRegisterRequest->getPassword())->willReturn(
-                'password');
-
-        $this->authServiceMock->method('generateAuthToken')->willReturn('adklfjdldkf');
-
-        $this->credentialTypeRepositoryMock->method('getCredentialTypeByName')->with(
-                $userRegisterRequest->getCredentialType())->willReturn($this->credentialTypeMock);
-
-        $this->userRepositoryMock->expects($this->once())->method('getUserByEmailAddress')->with(
-                $userRegisterRequest->getEmailAddress());
-
-        $this->credentialTypeRepositoryMock->expects($this->once())->method(
-                'getCredentialTypeByName')->with($userRegisterRequest->getCredentialType());
-
-        $this->authServiceMock->expects($this->once())->method('generateAuthToken');
-
-        $userDataRequest = [
-                "emailAddress" => "testUser@test.com",
-                "credentialType" => "standard",
-                "password" => "password",
-                "credentialTypeId" => $this->credentialTypeMock->id,
-                'authToken' => 'adklfjdldkf'
-        ];
-        $this->userRepositoryMock->expects($this->once())->method('createUser')->with(
-                $userDataRequest);
-
-        $this->userService->registerUser($userRegisterRequest);
-    }
 }

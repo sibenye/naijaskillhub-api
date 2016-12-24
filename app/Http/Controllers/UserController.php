@@ -20,12 +20,6 @@ class UserController extends Controller
 
     /**
      *
-     * @var UserPostRequestMapper
-     */
-    private $userPostMapper;
-
-    /**
-     *
      * @var UserChangePasswordPostRequestMapper
      */
     private $userChangePasswordPostRequestMapper;
@@ -58,7 +52,6 @@ class UserController extends Controller
      * @param UserChangeEmailPostRequestMapper    $userChangeEmailPostRequestMapper
      */
     public function __construct(Request $request, UserService $service,
-            UserPostRequestMapper $userPostMapper,
             UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper,
             UserResetPasswordPostRequestMapper $userResetPasswordPostRequestMapper,
             UserForgotPasswordPostRequestMapper $userForgotPasswordPostRequestMapper,
@@ -66,7 +59,6 @@ class UserController extends Controller
     {
         parent::__construct($request);
         $this->service = $service;
-        $this->userPostMapper = $userPostMapper;
         $this->userChangePasswordPostRequestMapper = $userChangePasswordPostRequestMapper;
         $this->userResetPasswordPostRequestMapper = $userResetPasswordPostRequestMapper;
         $this->userForgotPasswordPostRequestMapper = $userForgotPasswordPostRequestMapper;
@@ -163,19 +155,6 @@ class UserController extends Controller
         $this->service->unlinkUserFromCategory($id, $requestBody);
 
         return $this->response();
-    }
-
-    /**
-     *
-     * @return Response
-     */
-    public function registerUser()
-    {
-        $postRequest = $this->userPostMapper->map($this->request->all());
-        $this->validateRequest($postRequest->getValidationRules());
-
-        $user = $this->service->registerUser($postRequest);
-        return $this->response($user);
     }
 
     /**
