@@ -245,41 +245,6 @@ class UserService
     }
 
     /**
-     * Register or Create a User.
-     *
-     * @param array $request
-     * @throws ValidationException
-     * @return array Associative array.
-     */
-    public function registerUser(UserPostRequest $request)
-    {
-        // ensure emailAddress is not already in use
-        if ($this->userRepository->getUserByEmailAddress($request->getEmailAddress())) {
-            throw new ValidationException(NULL, 'The emailAddress is already in use.');
-        }
-
-        // ensure credentialType is valid
-        $credentialType = $this->credentialTypeRepository->getCredentialTypeByName(
-                $request->getCredentialType());
-        if (empty($credentialType)) {
-            throw new ValidationException(NULL, 'The credentialType is invalid.');
-        }
-
-        if ($request->getCredentialType() == CredentialType::STANDARD) {
-            $request->setPassword($this->cryptoUtil->hashThis($request->getPassword()));
-        }
-
-        $userModelAttr = $request->buildModelAttributes();
-
-        $userModelAttr ['credentialTypeId'] = $credentialType->id;
-        $userModelAttr ['authToken'] = $this->authService->generateAuthToken();
-
-        $user = $this->userRepository->createUser($userModelAttr);
-
-        return $user;
-    }
-
-    /**
      *
      * @param integer $userId
      * @param UserChangePasswordPostRequest $request

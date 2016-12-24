@@ -11,6 +11,10 @@ use App\Models\Requests\LoginRequest;
 use App\Enums\CredentialType;
 use Illuminate\Validation\ValidationException;
 use App\Exceptions\NSHAuthenticationException;
+use App\Models\Requests\UserPostRequest;
+use App\Models\Requests\RegisterRequest;
+use App\Repositories\CredentialTypeRepository;
+use App\Repositories\UserAttributeRepository;
 
 /**
  * AuthService class.
@@ -33,25 +37,26 @@ class AuthService
      */
     private $userRepository;
 
-    public function __construct(UserRepository $repository, NSHCryptoUtil $cryptoUtil)
+    /**
+     *
+     * @var CredentialTypeRepository
+     */
+    private $credentialTypeRepository;
+
+    /**
+     *
+     * @var UserAttributeRepository
+     */
+    private $userAttributeRepository;
+
+    public function __construct(UserRepository $repository,
+            CredentialTypeRepository $credentialTypeRepository,
+            UserAttributeRepository $userAttributeRepository, NSHCryptoUtil $cryptoUtil)
     {
         $this->userRepository = $repository;
         $this->cryptoUtil = $cryptoUtil;
-    }
-
-    /**
-     * Generate user authentication token.
-     *
-     * @return string
-     */
-    public function generateAuthToken()
-    {
-        $authToken = null;
-        do {
-            $authToken = $this->cryptoUtil->secureRandomString(NSHConstants::AUTH_TOKEN_LENGTH);
-        } while ( !empty($this->userRepository->getUserByAuthToken($authToken)) );
-
-        return $authToken;
+        $this->credentialTypeRepository = $credentialTypeRepository;
+        $this->userAttributeRepository = $userAttributeRepository;
     }
 
     /**
@@ -77,11 +82,14 @@ class AuthService
                 'User does not have ' . $request->getCredntialType() . ' credential.');
         }
 
+        // verify password
         if ($request->getCredntialType() == CredentialType::STANDARD) {
-
-            // verify password
             if (!$this->cryptoUtil->hashMatches($request->getPassword(),
                     $existingUserCredentials [0]->pivot->password)) {
+                throw new NSHAuthenticationException('Invalid password');
+            }
+        } else {
+            if ($request->getPassword() != $existingUserCredentials [0]->pivot->password) {
                 throw new NSHAuthenticationException('Invalid password');
             }
         }
@@ -121,5 +129,83 @@ class AuthService
         $userModelAttr ['authToken'] = '';
 
         $this->userRepository->update($user->id, $userModelAttr);
+    }
+
+    /**
+     * Register/Create a User.
+     *
+     * @param array $request
+     * @throws ValidationException
+     * @return array Associative array.
+     */
+    public function register(RegisterRequest $request)
+    {
+        // ensure emailAddress is not already in use
+        if ($this->userRepository->getUserByEmailAddress($request->getEmailAddress())) {
+            throw new ValidationException(NULL, 'The emailAddress is already in use.');
+        }
+
+        // ensure credentialType is valid
+        $credentialType = $this->credentialTypeRepository->getCredentialTypeByName(
+                $request->getCredentialType());
+        if (empty($credentialType)) {
+            throw new ValidationException(NULL, 'The credentialType is invalid.');
+        }
+
+        if ($request->getCredentialType() == CredentialType::STANDARD) {
+            $request->setPassword($this->cryptoUtil->hashThis($request->getPassword()));
+        }
+
+        $userModelAttr = $request->buildModelAttributes();
+
+        $userModelAttr ['credentialTypeId'] = $credentialType->id;
+        $userModelAttr ['authToken'] = $this->generateAuthToken();
+
+        $user = $this->userRepository->createUser($userModelAttr);
+
+        if (!empty($request->getFirstName()) || !empty($request->getLastName())) {
+            $attributesCollection = array ();
+            if (!empty($request->getFirstName())) {
+                $firstNameAttr = array ();
+                $userAttribute = $this->userAttributeRepository->getUserAttributeByName('firstName');
+
+                if (!empty($userAttribute)) {
+                    $firstNameAttr ['attributeId'] = $userAttribute->id;
+                    $firstNameAttr ['attributeValue'] = $request->getFirstName();
+                    $attributesCollection [] = $firstNameAttr;
+                }
+            }
+            if (!empty($request->getLastName())) {
+                $lastNameAttr = array ();
+                $userAttribute = $this->userAttributeRepository->getUserAttributeByName('lastName');
+
+                if (!empty($userAttribute)) {
+                    $lastNameAttr ['attributeId'] = $userAttribute->id;
+                    $lastNameAttr ['attributeValue'] = $request->getLastName();
+                    $attributesCollection [] = $lastNameAttr;
+                }
+            }
+
+            if (!empty($attributesCollection)) {
+                $this->userRepository->upsertUserAttributeValue($user, $attributesCollection);
+            }
+        }
+
+        return $user;
+    }
+
+    /**
+     * Generate user authentication token.
+     *
+     * @return string
+     */
+    private function generateAuthToken()
+    {
+        $authToken = null;
+        do {
+            $authToken = $this->cryptoUtil->secureRandomString(NSHConstants::AUTH_TOKEN_LENGTH);
+        } while ( !empty($this->userRepository->getUserByAuthToken($authToken)) );
+
+        return $authToken;
     }
 }

@@ -4,16 +4,16 @@
  */
 namespace Tests\unitTests\Mappers;
 
-use App\Mappers\UserPostRequestMapper;
-use App\Models\Requests\UserPostRequest;
+use App\Mappers\RegisterRequestMapper;
+use App\Models\Requests\RegisterRequest;
 
 /**
- * UserPostRequestMapper Tests
+ * RegisterRequestMapper Tests
  *
  * @author silver.ibenye
  *
  */
-class UserPostRequestMapperTest extends \TestCase
+class RegisterRequestMapperTest extends \TestCase
 {
     /**
      * @var UserPostRequestMapper
@@ -28,7 +28,7 @@ class UserPostRequestMapperTest extends \TestCase
      */
     public function setUp()
     {
-        $this->mapper = new UserPostRequestMapper();
+        $this->mapper = new RegisterRequestMapper();
     }
 
     /**
@@ -41,13 +41,17 @@ class UserPostRequestMapperTest extends \TestCase
         $in = [
                 "emailAddress" => "testEmail",
                 "credentialType" => "credType",
-                "password" => "testPassword"
+                "password" => "testPassword",
+                "firstName" => "test",
+                "lastName" => "user"
         ];
 
-        $expectedOut = new UserPostRequest();
+        $expectedOut = new RegisterRequest();
         $expectedOut->setEmailAddress("testEmail");
         $expectedOut->setCredentialType("credType");
         $expectedOut->setPassword("testPassword");
+        $expectedOut->setFirstName("test");
+        $expectedOut->setLastName("user");
 
         $out = $this->mapper->map($in);
 

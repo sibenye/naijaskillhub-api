@@ -33,10 +33,6 @@ $app->post('/users/{id}/categories',
                 'middleware' => 'auth'
         ]);
 
-$app->post('/users', [
-        'uses' => 'UserController@registerUser'
-]);
-
 $app->post('/users/{id}/password/change',
         [
                 'uses' => 'UserController@changeUserPassword',
