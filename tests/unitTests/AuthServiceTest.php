@@ -85,6 +85,7 @@ class AuthServiceTest extends \TestCase
                 [
                         'get',
                         'getUserByEmailAddress',
+                        'getUserWhere',
                         'getUserAttributes',
                         'upsertUserAttributeValue',
                         'createUser',

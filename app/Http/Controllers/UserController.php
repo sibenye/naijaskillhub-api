@@ -89,6 +89,18 @@ class UserController extends Controller
 
     /**
      *
+     * @param integer $authToken Auth Token..
+     * @return Response
+     */
+    public function getUserByAuthToken($authToken)
+    {
+        $user = $this->service->getUserByAuthToken($authToken);
+
+        return $this->response($user);
+    }
+
+    /**
+     *
      * @param integer $id User Id.
      * @return Response
      */
