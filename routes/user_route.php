@@ -6,6 +6,11 @@ $app->get('/users/{id}', [
         'uses' => 'UserController@getUser'
 ]);
 
+$app->get('/users/byAuthToken/{authToken}',
+        [
+                'uses' => 'UserController@getUserByAuthToken'
+        ]);
+
 $app->get('/users/{id}/attributes',
         [
                 'uses' => 'UserController@getUserAttributes'

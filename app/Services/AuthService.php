@@ -204,7 +204,7 @@ class AuthService
         $authToken = null;
         do {
             $authToken = $this->cryptoUtil->secureRandomString(NSHConstants::AUTH_TOKEN_LENGTH);
-        } while ( !empty($this->userRepository->getUserByAuthToken($authToken)) );
+        } while ( !empty($this->userRepository->getUserWhere('authToken', $authToken)) );
 
         return $authToken;
     }

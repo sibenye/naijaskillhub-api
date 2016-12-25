@@ -29,16 +29,22 @@ class UserRepository extends BaseRepository
     /**
      *
      * @param string $emailAddress
-     * @return Model
+     * @return Model|null
      */
     public function getUserByEmailAddress($emailAddress)
     {
-        return $this->model->where('emailAddress', $emailAddress)->first();
+        return $this->getUserWhere('emailAddress', $emailAddress);
     }
 
-    public function getUserByAuthToken($authToken)
+    /**
+     *
+     *@param string $field
+     * @param string $value
+     * @return Model|null
+     */
+    public function getUserWhere($field, $value)
     {
-        return $this->model->where('authToken', $authToken)->first();
+        return $this->model->where($field, $value)->first();
     }
 
     /**

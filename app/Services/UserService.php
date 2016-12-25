@@ -6,20 +6,18 @@
 namespace App\Services;
 
 use App\Enums\CredentialType;
+use App\Models\Requests\AddCredentialRequest;
+use App\Models\Requests\UserChangeEmailPostRequest;
+use App\Models\Requests\UserChangePasswordPostRequest;
+use App\Models\Requests\UserForgotPasswordPostRequest;
+use App\Models\Requests\UserResetPasswordPostRequest;
 use App\Repositories\CategoryRepository;
 use App\Repositories\CredentialTypeRepository;
 use App\Repositories\UserAttributeRepository;
 use App\Repositories\UserRepository;
 use App\Utilities\NSHCryptoUtil;
 use Illuminate\Validation\ValidationException;
-use App\Models\Requests\UserChangePasswordPostRequest;
-use App\Models\Requests\UserResetPasswordPostRequest;
-use App\Models\Requests\UserPostRequest;
-use App\Models\Requests\UserChangeEmailPostRequest;
-use App\Utilities\NSHConstants;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\Requests\UserForgotPasswordPostRequest;
-use App\Models\Requests\AddCredentialRequest;
 
 /**
  * UserService class.
@@ -95,10 +93,51 @@ class UserService
     {
         $user = $this->userRepository->get($id);
 
+        $userCredentialTypes = $user->credentialTypes;
+
+        $userCredentialTypesContent = array ();
+
+        foreach ($userCredentialTypes as $key => $value) {
+            $userCredentialTypesContent [$key] = $value->name;
+        }
+
         $userContent = array ();
         $userContent ['userId'] = $user->id;
         $userContent ['isActive'] = $user->isActive;
         $userContent ['emailAddress'] = $user->emailAddress;
+        $userContent ['credentialTypes'] = $userCredentialTypesContent;
+        $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
+        $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
+
+        return $userContent;
+    }
+
+    /**
+     *
+     * @param integer $id
+     * @return array
+     */
+    public function getUserByAuthToken($authToken)
+    {
+        $user = $this->userRepository->getUserWhere('authToken', $authToken);
+
+        if (empty($user)) {
+            throw new ModelNotFoundException();
+        }
+
+        $userCredentialTypes = $user->credentialTypes;
+
+        $userCredentialTypesContent = array ();
+
+        foreach ($userCredentialTypes as $key => $value) {
+            $userCredentialTypesContent [$key] = $value->name;
+        }
+
+        $userContent = array ();
+        $userContent ['userId'] = $user->id;
+        $userContent ['isActive'] = $user->isActive;
+        $userContent ['emailAddress'] = $user->emailAddress;
+        $userContent ['credentialTypes'] = $userCredentialTypesContent;
         $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
         $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
 
