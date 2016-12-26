@@ -114,7 +114,7 @@ class UserService
 
     /**
      *
-     * @param integer $id
+     * @param string $emailAddress
      * @return array
      */
     public function getUserByEmailAddress($emailAddress)
@@ -146,7 +146,7 @@ class UserService
 
     /**
      *
-     * @param integer $id
+     * @param string $authToken
      * @return array
      */
     public function getUserByAuthToken($authToken)
