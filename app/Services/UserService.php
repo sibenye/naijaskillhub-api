@@ -117,6 +117,38 @@ class UserService
      * @param integer $id
      * @return array
      */
+    public function getUserByEmailAddress($emailAddress)
+    {
+        $user = $this->userRepository->getUserByEmailAddress($emailAddress);
+
+        if (empty($user)) {
+            throw new ModelNotFoundException();
+        }
+
+        $userCredentialTypes = $user->credentialTypes;
+
+        $userCredentialTypesContent = array ();
+
+        foreach ($userCredentialTypes as $key => $value) {
+            $userCredentialTypesContent [$key] = $value->name;
+        }
+
+        $userContent = array ();
+        $userContent ['userId'] = $user->id;
+        $userContent ['isActive'] = $user->isActive;
+        $userContent ['emailAddress'] = $user->emailAddress;
+        $userContent ['credentialTypes'] = $userCredentialTypesContent;
+        $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
+        $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
+
+        return $userContent;
+    }
+
+    /**
+     *
+     * @param integer $id
+     * @return array
+     */
     public function getUserByAuthToken($authToken)
     {
         $user = $this->userRepository->getUserWhere('authToken', $authToken);
