@@ -89,7 +89,7 @@ class UserController extends Controller
 
     /**
      *
-     * @param integer $email EmailAddress.
+     * @param string $email EmailAddress.
      * @return Response
      */
     public function getUserByEmailAddress($email)
@@ -101,7 +101,7 @@ class UserController extends Controller
 
     /**
      *
-     * @param integer $authToken Auth Token.
+     * @param string $authToken Auth Token.
      * @return Response
      */
     public function getUserByAuthToken($authToken)
