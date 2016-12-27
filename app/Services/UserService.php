@@ -105,6 +105,7 @@ class UserService
         $userContent ['userId'] = $user->id;
         $userContent ['isActive'] = $user->isActive;
         $userContent ['emailAddress'] = $user->emailAddress;
+        $userContent ['vanityName'] = $user->vanityName;
         $userContent ['credentialTypes'] = $userCredentialTypesContent;
         $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
         $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
@@ -137,6 +138,7 @@ class UserService
         $userContent ['userId'] = $user->id;
         $userContent ['isActive'] = $user->isActive;
         $userContent ['emailAddress'] = $user->emailAddress;
+        $userContent ['vanityName'] = $user->vanityName;
         $userContent ['credentialTypes'] = $userCredentialTypesContent;
         $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
         $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
@@ -169,6 +171,40 @@ class UserService
         $userContent ['userId'] = $user->id;
         $userContent ['isActive'] = $user->isActive;
         $userContent ['emailAddress'] = $user->emailAddress;
+        $userContent ['vanityName'] = $user->vanityName;
+        $userContent ['credentialTypes'] = $userCredentialTypesContent;
+        $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
+        $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
+
+        return $userContent;
+    }
+
+    /**
+     *
+     * @param string $vanityName
+     * @return array
+     */
+    public function getUserByVanityName($vanityName)
+    {
+        $user = $this->userRepository->getUserWhere('vanityName', $vanityName);
+
+        if (empty($user)) {
+            throw new ModelNotFoundException();
+        }
+
+        $userCredentialTypes = $user->credentialTypes;
+
+        $userCredentialTypesContent = array ();
+
+        foreach ($userCredentialTypes as $key => $value) {
+            $userCredentialTypesContent [$key] = $value->name;
+        }
+
+        $userContent = array ();
+        $userContent ['userId'] = $user->id;
+        $userContent ['isActive'] = $user->isActive;
+        $userContent ['emailAddress'] = $user->emailAddress;
+        $userContent ['vanityName'] = $user->vanityName;
         $userContent ['credentialTypes'] = $userCredentialTypesContent;
         $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
         $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
