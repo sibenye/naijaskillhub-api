@@ -113,6 +113,18 @@ class UserController extends Controller
 
     /**
      *
+     * @param string $vanityName Vanity name.
+     * @return Response
+     */
+    public function getUserByVanityName($vanityName)
+    {
+        $user = $this->service->getUserByVanityName($vanityName);
+
+        return $this->response($user);
+    }
+
+    /**
+     *
      * @param integer $id User Id.
      * @return Response
      */

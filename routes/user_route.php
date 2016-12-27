@@ -16,6 +16,11 @@ $app->get('/users/byAuthToken/{authToken}',
                 'uses' => 'UserController@getUserByAuthToken'
         ]);
 
+$app->get('/users/byVanityName/{vanityName}',
+        [
+                'uses' => 'UserController@getUserByVanityName'
+        ]);
+
 $app->get('/users/{id}/attributes',
         [
                 'uses' => 'UserController@getUserAttributes'
