@@ -10,6 +10,7 @@ use App\Mappers\UserResetPasswordPostRequestMapper;
 use App\Mappers\UserChangeEmailPostRequestMapper;
 use App\Mappers\UserForgotPasswordPostRequestMapper;
 use App\Mappers\AddCredentialRequestMapper;
+use App\Mappers\UserChangeVanityNamePostRequestMapper;
 
 class UserController extends Controller
 {
@@ -45,25 +46,33 @@ class UserController extends Controller
 
     /**
      *
+     * @var UserChangeVanityNamePostRequestMapper
+     */
+    private $userChangeVanityNamePostRequestMapper;
+
+    /**
+     *
      * @var AddCredentialRequestMapper
      */
     private $addCredentialRequestMapper;
 
     /**
      *
-     * @param Request                             $request
-     * @param UserService                         $service
-     * @param UserPostRequestMapper               $userPostMapper
-     * @param UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper
-     * @param UserResetPasswordPostRequestMapper  $userResetPasswordPostRequestMapper
-     * @param UserChangeEmailPostRequestMapper    $userChangeEmailPostRequestMapper
-     * @param AddCredentialRequestMapper          $addCredentialRequestMapper
+     * @param Request                               $request
+     * @param UserService                           $service
+     * @param UserPostRequestMapper                 $userPostMapper
+     * @param UserChangePasswordPostRequestMapper   $userChangePasswordPostRequestMapper
+     * @param UserResetPasswordPostRequestMapper    $userResetPasswordPostRequestMapper
+     * @param UserChangeEmailPostRequestMapper      $userChangeEmailPostRequestMapper
+     * @param UserChangeVanityNamePostRequestMapper $userChangeVanityNamePostRequestMapper
+     * @param AddCredentialRequestMapper            $addCredentialRequestMapper
      */
     public function __construct(Request $request, UserService $service,
             UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper,
             UserResetPasswordPostRequestMapper $userResetPasswordPostRequestMapper,
             UserForgotPasswordPostRequestMapper $userForgotPasswordPostRequestMapper,
             UserChangeEmailPostRequestMapper $userChangeEmailPostRequestMapper,
+            UserChangeVanityNamePostRequestMapper $userChangeVanityNamePostRequestMapper,
             AddCredentialRequestMapper $addCredentialRequestMapper)
     {
         parent::__construct($request);
@@ -72,6 +81,7 @@ class UserController extends Controller
         $this->userResetPasswordPostRequestMapper = $userResetPasswordPostRequestMapper;
         $this->userForgotPasswordPostRequestMapper = $userForgotPasswordPostRequestMapper;
         $this->userChangeEmailPostRequestMapper = $userChangeEmailPostRequestMapper;
+        $this->userChangeVanityNamePostRequestMapper = $userChangeVanityNamePostRequestMapper;
         $this->addCredentialRequestMapper = $addCredentialRequestMapper;
     }
 
@@ -273,6 +283,20 @@ class UserController extends Controller
         $this->validateRequest($postRequest->getValidationRules());
 
         $this->service->changeUserEmailAddress($id, $postRequest);
+        return $this->response();
+    }
+
+    /**
+     *
+     * @param integer $id User Id.
+     * @return Response
+     */
+    public function changeUserVanityName($id)
+    {
+        $postRequest = $this->userChangeVanityNamePostRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
+
+        $this->service->changeUserVanityName($id, $postRequest);
         return $this->response();
     }
 

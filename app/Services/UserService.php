@@ -18,6 +18,7 @@ use App\Repositories\UserRepository;
 use App\Utilities\NSHCryptoUtil;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\Requests\UserChangeVanityNamePostRequest;
 
 /**
  * UserService class.
@@ -500,13 +501,50 @@ class UserService
      */
     public function changeUserEmailAddress($userId, UserChangeEmailPostRequest $request)
     {
+
         // verify user
         $user = $this->userRepository->get($userId);
+
+        // ensure emailAddress is not already in use
+        $existingUserWithEmailAddress = $this->userRepository->getUserByEmailAddress(
+                $request->getNewEmailAddress());
+
+        if (!empty($existingUserWithEmailAddress) && ($existingUserWithEmailAddress->id != $user->id)) {
+            throw new ValidationException(null, 'EmailAddress is already in use');
+        }
 
         if (strtolower($user->emailAddress) != strtolower($request->getNewEmailAddress())) {
             $modelAttr = [
                     'emailAddress' => $request->getNewEmailAddress(),
                     'isActive' => false
+            ];
+            $this->userRepository->update($userId, $modelAttr);
+        }
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @param UserChangeVanityNamePostRequest $request
+     * @return void
+     */
+    public function changeUserVanityName($userId, UserChangeVanityNamePostRequest $request)
+    {
+
+        // verify user
+        $user = $this->userRepository->get($userId);
+
+        // ensure vanityName is not already in use
+        $existingUserWithVanityName = $this->userRepository->getUserWhere('vanityName',
+                $request->getNewVanityName());
+
+        if (!empty($existingUserWithVanityName) && ($existingUserWithVanityName->id != $user->id)) {
+            throw new ValidationException(null, 'VanityName is already in use');
+        }
+
+        if (strtolower($user->vanityName) != strtolower($request->getNewVanityName())) {
+            $modelAttr = [
+                    'vanityName' => $request->getNewVanityName()
             ];
             $this->userRepository->update($userId, $modelAttr);
         }

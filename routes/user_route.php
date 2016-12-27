@@ -75,6 +75,12 @@ $app->post('/users/{id}/emailAddress/change',
                 'middleware' => 'auth'
         ]);
 
+$app->post('/users/{id}/vanityName/change',
+        [
+                'uses' => 'UserController@changeUserVanityName',
+                'middleware' => 'auth'
+        ]);
+
 $app->post('/users/{id}/addStandardCredential',
         [
                 'uses' => 'UserController@addStandardCredential',
