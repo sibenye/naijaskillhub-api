@@ -148,7 +148,7 @@ class UserService
 
     /**
      *
-     * @param string $vanityName
+     * @param string $authToken
      * @return array
      */
     public function getUserByAuthToken($authToken)
