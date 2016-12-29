@@ -36,10 +36,7 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         if ($this->auth->guard($guard)->guest()) {
-            $nsh_response = new NSHResponse();
-            $nsh_response->setMessage("User must be authenticated");
-            $nsh_response->setHttpStatus(401);
-            $nsh_response->setStatus('error');
+            $nsh_response = new NSHResponse(401, 101);
             return $nsh_response->render();
         }
 

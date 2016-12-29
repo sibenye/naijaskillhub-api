@@ -22,6 +22,12 @@ class NSHResponse
      *
      * @var integer
      */
+    protected $code;
+
+    /**
+     *
+     * @var integer
+     */
     protected $http_status;
 
     /**
@@ -30,17 +36,25 @@ class NSHResponse
      */
     protected $message;
 
+    /**
+     *
+     * @var string
+     */
+    protected $messageDetail;
+
     public function __toString()
     {
         return json_encode(get_object_vars($this));
     }
 
-    public function __construct($http_status = 200, $status = 'success', $message = NULL, $content = NULL)
+    public function __construct($http_status = 200, $code = 0, $messageDetail = NULL, $content = NULL)
     {
         $this->response = $content;
         $this->http_status = $http_status;
-        $this->status = $status;
-        $this->message = $message;
+        $this->code = $code;
+        $this->message = NSHCodedMessages::messages [$code];
+        $this->messageDetail = $messageDetail;
+        $this->status = $code == 0 ? 'success' : 'error';
     }
 
     public function render()
@@ -93,5 +107,39 @@ class NSHResponse
     {
         $this->message = $message;
         return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param integer $code
+     * @return void
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessageDetail()
+    {
+        return $this->messageDetail;
+    }
+
+    /**
+     * @param  $messageDetail
+     * @return void
+     */
+    public function setMessageDetail($messageDetail)
+    {
+        $this->messageDetail = $messageDetail;
     }
 }

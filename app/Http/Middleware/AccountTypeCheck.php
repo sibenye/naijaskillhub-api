@@ -36,10 +36,7 @@ class AccountTypeCheck
     {
         $userId = $request->segment(2, NULL);
         if (empty($userId) || !$this->hasTalentAccountType($userId)) {
-            $nsh_response = new NSHResponse();
-            $nsh_response->setMessage("User must have accountType of 'talent'");
-            $nsh_response->setHttpStatus(401);
-            $nsh_response->setStatus('error');
+            $nsh_response = new NSHResponse(401, 110);
             return $nsh_response->render();
         }
 

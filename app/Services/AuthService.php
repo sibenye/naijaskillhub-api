@@ -95,14 +95,13 @@ class AuthService
         if ($request->getCredntialType() == CredentialType::STANDARD) {
             if (!$this->cryptoUtil->hashMatches($request->getPassword(),
                     $existingUserCredentials [0]->pivot->password)) {
-                throw new NSHAuthenticationException('Invalid password');
+                throw new ValidationException(NULL, 'Invalid password');
             }
         } else {
             if ($request->getPassword() != $existingUserCredentials [0]->pivot->password) {
-                throw new NSHAuthenticationException('Invalid password');
+                throw new ValidationException(NULL, 'Invalid social Identifier');
             }
         }
-        // TODO: handle google and facebook credentials
 
         // generate AuthToken
         $userModelAttr = array ();
@@ -131,7 +130,8 @@ class AuthService
         $user = $this->userRepository->getUserByEmailAddress($emailAddress);
 
         if (empty($user)) {
-            throw new NSHAuthenticationException('Invalid emailAddress');
+            throw new ValidationException(NULL,
+                'Invalid emailAddress. No User with emailAddress was found');
         }
         // clear AuthToken
         $userModelAttr = array ();
