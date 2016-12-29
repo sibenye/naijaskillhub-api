@@ -15,6 +15,7 @@ use App\Models\DAO\CredentialType;
 use App\Utilities\NSHCryptoUtil;
 use App\Models\Requests\UserPostRequest;
 use App\Services\AuthService;
+use App\Repositories\AccountTypeRepository;
 
 /**
  * UserService Tests.
@@ -85,6 +86,12 @@ class UserServiceTest extends \TestCase
 
     /**
      *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $accountTypeRepositoryMock;
+
+    /**
+     *
      * {@inheritDoc}
      * @see \Laravel\Lumen\Testing\TestCase::setUp()
      * @return void
@@ -113,6 +120,11 @@ class UserServiceTest extends \TestCase
                         'getCredentialTypeByName'
                 ])->getMock();
 
+        $this->accountTypeRepositoryMock = $this->getMockBuilder(AccountTypeRepository::class)->disableOriginalConstructor()->setMethods(
+                [
+                        'getAccountTypeByName'
+                ])->getMock();
+
         $this->cryptoUtilMock = $this->getMockBuilder(NSHCryptoUtil::class)->disableOriginalConstructor()->setMethods(
                 [
                         'hashThis'
@@ -125,7 +137,8 @@ class UserServiceTest extends \TestCase
 
         $this->userService = new UserService($this->userRepositoryMock,
             $this->userAttributeRepositoryMock, $this->categoryRepositoryMock,
-            $this->credentialTypeRepositoryMock, $this->cryptoUtilMock, $this->authServiceMock);
+            $this->credentialTypeRepositoryMock, $this->accountTypeRepositoryMock,
+            $this->cryptoUtilMock, $this->authServiceMock);
 
         $this->userModelMock = $this->getMockBuilder(User::class)->disableOriginalConstructor()->getMock();
         $this->userAttributeModelMock = $this->getMockBuilder(UserAttribute::class)->disableOriginalConstructor()->getMock();

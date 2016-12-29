@@ -19,6 +19,9 @@ use App\Utilities\NSHCryptoUtil;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Requests\UserChangeVanityNamePostRequest;
+use App\Models\DAO\User;
+use App\Models\Requests\UserAddAccountTypeRequest;
+use App\Repositories\AccountTypeRepository;
 
 /**
  * UserService class.
@@ -66,6 +69,12 @@ class UserService
 
     /**
      *
+     * @var AccountTypeRepository
+     */
+    private $accountTypeRepository;
+
+    /**
+     *
      * @param UserRepository $repository
      * @param UserAttributeRepository $userAttributeRepository
      * @param CategoryRepository $categoryRepository
@@ -74,13 +83,15 @@ class UserService
      */
     public function __construct(UserRepository $repository,
             UserAttributeRepository $userAttributeRepository, CategoryRepository $categoryRepository,
-            CredentialTypeRepository $credentialTypeRepository, NSHCryptoUtil $cryptoUtil,
+            CredentialTypeRepository $credentialTypeRepository,
+            AccountTypeRepository $accountTypeRepository, NSHCryptoUtil $cryptoUtil,
             AuthService $authService)
     {
         $this->userRepository = $repository;
         $this->userAttributeRepository = $userAttributeRepository;
         $this->categoryRepository = $categoryRepository;
         $this->credentialTypeRepository = $credentialTypeRepository;
+        $this->accountTypeRepository = $accountTypeRepository;
         $this->cryptoUtil = $cryptoUtil;
         $this->authService = $authService;
     }
@@ -94,24 +105,7 @@ class UserService
     {
         $user = $this->userRepository->get($id);
 
-        $userCredentialTypes = $user->credentialTypes;
-
-        $userCredentialTypesContent = array ();
-
-        foreach ($userCredentialTypes as $key => $value) {
-            $userCredentialTypesContent [$key] = $value->name;
-        }
-
-        $userContent = array ();
-        $userContent ['userId'] = $user->id;
-        $userContent ['isActive'] = $user->isActive;
-        $userContent ['emailAddress'] = $user->emailAddress;
-        $userContent ['vanityName'] = $user->vanityName;
-        $userContent ['credentialTypes'] = $userCredentialTypesContent;
-        $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
-        $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
-
-        return $userContent;
+        return $this->mapUsersResponse($user);
     }
 
     /**
@@ -127,24 +121,7 @@ class UserService
             throw new ModelNotFoundException();
         }
 
-        $userCredentialTypes = $user->credentialTypes;
-
-        $userCredentialTypesContent = array ();
-
-        foreach ($userCredentialTypes as $key => $value) {
-            $userCredentialTypesContent [$key] = $value->name;
-        }
-
-        $userContent = array ();
-        $userContent ['userId'] = $user->id;
-        $userContent ['isActive'] = $user->isActive;
-        $userContent ['emailAddress'] = $user->emailAddress;
-        $userContent ['vanityName'] = $user->vanityName;
-        $userContent ['credentialTypes'] = $userCredentialTypesContent;
-        $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
-        $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
-
-        return $userContent;
+        return $this->mapUsersResponse($user);
     }
 
     /**
@@ -160,24 +137,7 @@ class UserService
             throw new ModelNotFoundException();
         }
 
-        $userCredentialTypes = $user->credentialTypes;
-
-        $userCredentialTypesContent = array ();
-
-        foreach ($userCredentialTypes as $key => $value) {
-            $userCredentialTypesContent [$key] = $value->name;
-        }
-
-        $userContent = array ();
-        $userContent ['userId'] = $user->id;
-        $userContent ['isActive'] = $user->isActive;
-        $userContent ['emailAddress'] = $user->emailAddress;
-        $userContent ['vanityName'] = $user->vanityName;
-        $userContent ['credentialTypes'] = $userCredentialTypesContent;
-        $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
-        $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
-
-        return $userContent;
+        return $this->mapUsersResponse($user);
     }
 
     /**
@@ -193,24 +153,7 @@ class UserService
             throw new ModelNotFoundException();
         }
 
-        $userCredentialTypes = $user->credentialTypes;
-
-        $userCredentialTypesContent = array ();
-
-        foreach ($userCredentialTypes as $key => $value) {
-            $userCredentialTypesContent [$key] = $value->name;
-        }
-
-        $userContent = array ();
-        $userContent ['userId'] = $user->id;
-        $userContent ['isActive'] = $user->isActive;
-        $userContent ['emailAddress'] = $user->emailAddress;
-        $userContent ['vanityName'] = $user->vanityName;
-        $userContent ['credentialTypes'] = $userCredentialTypesContent;
-        $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
-        $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
-
-        return $userContent;
+        return $this->mapUsersResponse($user);
     }
 
     /**
@@ -614,5 +557,77 @@ class UserService
         $userCred ['password'] = $request->getPassword();
 
         $this->userRepository->upsertUserCredential($user, $userCred);
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @param UserAddAccountTypeRequest $request
+     * @throws ValidationException
+     * @return void
+     */
+    public function addAccountType($userId, UserAddAccountTypeRequest $request)
+    {
+        // verify user
+        $user = $this->userRepository->get($userId);
+
+        // verify account type
+        $accountType = $this->accountTypeRepository->getAccountTypeByName(
+                $request->getAccountType());
+        if (empty($accountType)) {
+            throw new ValidationException(NULL, 'The accountType is invalid.');
+        }
+
+        $this->userRepository->addAccountType($user, $accountType);
+    }
+
+    /**
+     *
+     * @param User $user
+     * @return array
+     */
+    private function mapUsersResponse(User $user)
+    {
+        $userCredentialTypes = $user->credentialTypes;
+
+        $userCredentialTypesContent = array ();
+
+        foreach ($userCredentialTypes as $key => $value) {
+            $userCredentialTypesContent [$key] = $value->name;
+        }
+
+        $userAccountTypes = $user->accountTypes;
+
+        $userAccountTypesContent = array ();
+
+        foreach ($userAccountTypes as $key => $value) {
+            $userAccountTypesContent [$key] = $value->name;
+        }
+
+        $userAttributes = $user->userAttributes;
+
+        $userAttributesContent = array ();
+        $i = 0;
+
+        foreach ($userAttributes as $value) {
+            $userAttributesContent [$i] ['attributeId'] = $value->id;
+            $userAttributesContent [$i] ['attributeName'] = $value->name;
+            $userAttributesContent [$i] ['attributeValue'] = $value->pivot->attributeValue;
+
+            $i++;
+        }
+
+        $userContent = array ();
+        $userContent ['userId'] = $user->id;
+        $userContent ['isActive'] = $user->isActive;
+        $userContent ['emailAddress'] = $user->emailAddress;
+        $userContent ['vanityName'] = $user->vanityName;
+        $userContent ['credentialTypes'] = $userCredentialTypesContent;
+        $userContent ['accountTypes'] = $userAccountTypesContent;
+        $userContent ['attributes'] = $userAttributesContent;
+        $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
+        $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
+
+        return $userContent;
     }
 }

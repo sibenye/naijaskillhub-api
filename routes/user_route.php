@@ -87,6 +87,12 @@ $app->post('/users/{id}/addStandardCredential',
                 'middleware' => 'auth'
         ]);
 
+$app->post('/users/{id}/addAccountType',
+        [
+                'uses' => 'UserController@addAccountType',
+                'middleware' => 'auth'
+        ]);
+
 $app->post('/users/addSocialCredential',
         [
                 'uses' => 'UserController@addSocialCredential'

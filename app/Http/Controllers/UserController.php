@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Mappers\UserPostRequestMapper;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -11,6 +10,7 @@ use App\Mappers\UserChangeEmailPostRequestMapper;
 use App\Mappers\UserForgotPasswordPostRequestMapper;
 use App\Mappers\AddCredentialRequestMapper;
 use App\Mappers\UserChangeVanityNamePostRequestMapper;
+use App\Mappers\UserAddAccountTypeRequestMapper;
 
 class UserController extends Controller
 {
@@ -58,6 +58,12 @@ class UserController extends Controller
 
     /**
      *
+     * @var UserAddAccountTypeRequestMappers
+     */
+    private $userAddAccoutTypeRequestMapper;
+
+    /**
+     *
      * @param Request                               $request
      * @param UserService                           $service
      * @param UserPostRequestMapper                 $userPostMapper
@@ -66,6 +72,7 @@ class UserController extends Controller
      * @param UserChangeEmailPostRequestMapper      $userChangeEmailPostRequestMapper
      * @param UserChangeVanityNamePostRequestMapper $userChangeVanityNamePostRequestMapper
      * @param AddCredentialRequestMapper            $addCredentialRequestMapper
+     * @param UserAddAccountTypeRequestMapper      $userAddAccoutTypeRequestMapper
      */
     public function __construct(Request $request, UserService $service,
             UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper,
@@ -73,7 +80,8 @@ class UserController extends Controller
             UserForgotPasswordPostRequestMapper $userForgotPasswordPostRequestMapper,
             UserChangeEmailPostRequestMapper $userChangeEmailPostRequestMapper,
             UserChangeVanityNamePostRequestMapper $userChangeVanityNamePostRequestMapper,
-            AddCredentialRequestMapper $addCredentialRequestMapper)
+            AddCredentialRequestMapper $addCredentialRequestMapper,
+            UserAddAccountTypeRequestMapper $userAddAccoutTypeRequestMapper)
     {
         parent::__construct($request);
         $this->service = $service;
@@ -83,6 +91,7 @@ class UserController extends Controller
         $this->userChangeEmailPostRequestMapper = $userChangeEmailPostRequestMapper;
         $this->userChangeVanityNamePostRequestMapper = $userChangeVanityNamePostRequestMapper;
         $this->addCredentialRequestMapper = $addCredentialRequestMapper;
+        $this->userAddAccoutTypeRequestMapper = $userAddAccoutTypeRequestMapper;
     }
 
     /**
@@ -324,6 +333,20 @@ class UserController extends Controller
         $this->validateRequest($postRequest->getValidationRules());
 
         $this->service->addSocialCredential($postRequest);
+        return $this->response();
+    }
+
+    /**
+     *
+     * @param integer $id User Id.
+     * @return Response
+     */
+    public function addAccountType($id)
+    {
+        $postRequest = $this->userAddAccoutTypeRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
+
+        $this->service->addAccountType($id, $postRequest);
         return $this->response();
     }
 }

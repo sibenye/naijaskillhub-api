@@ -56,6 +56,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
+     * The accountTypes that this user has.
+     */
+    public function accountTypes()
+    {
+        return $this->belongsToMany('App\Models\DAO\AccountType', 'nsh_users_accounttypes_link',
+                'userId', 'accountTypeId');
+    }
+
+    /**
      * The credits that this user has.
      */
     public function credits()
