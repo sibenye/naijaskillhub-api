@@ -54,9 +54,11 @@ $app->singleton(Illuminate\Contracts\Console\Kernel::class, App\Console\Kernel::
 // App\Http\Middleware\ExampleMiddleware::class
 // ]);
 
-$app->routeMiddleware([
-        'auth' => App\Http\Middleware\Authenticate::class
-]);
+$app->routeMiddleware(
+        [
+                'auth' => App\Http\Middleware\Authenticate::class,
+                'acctType' => App\Http\Middleware\AccountTypeCheck::class
+        ]);
 
 /*
  * |--------------------------------------------------------------------------

@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Mappers\UserPostRequestMapper;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -11,7 +10,7 @@ use App\Mappers\UserChangeEmailPostRequestMapper;
 use App\Mappers\UserForgotPasswordPostRequestMapper;
 use App\Mappers\AddCredentialRequestMapper;
 use App\Mappers\UserChangeVanityNamePostRequestMapper;
-use App\Mappers\UserAddAccountTypeRequestMappers;
+use App\Mappers\UserAddAccountTypeRequestMapper;
 
 class UserController extends Controller
 {
@@ -73,7 +72,7 @@ class UserController extends Controller
      * @param UserChangeEmailPostRequestMapper      $userChangeEmailPostRequestMapper
      * @param UserChangeVanityNamePostRequestMapper $userChangeVanityNamePostRequestMapper
      * @param AddCredentialRequestMapper            $addCredentialRequestMapper
-     * @param UserAddAccountTypeRequestMappers      $userAddAccoutTypeRequestMapper
+     * @param UserAddAccountTypeRequestMapper      $userAddAccoutTypeRequestMapper
      */
     public function __construct(Request $request, UserService $service,
             UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper,
@@ -82,7 +81,7 @@ class UserController extends Controller
             UserChangeEmailPostRequestMapper $userChangeEmailPostRequestMapper,
             UserChangeVanityNamePostRequestMapper $userChangeVanityNamePostRequestMapper,
             AddCredentialRequestMapper $addCredentialRequestMapper,
-            UserAddAccountTypeRequestMappers $userAddAccoutTypeRequestMapper)
+            UserAddAccountTypeRequestMapper $userAddAccoutTypeRequestMapper)
     {
         parent::__construct($request);
         $this->service = $service;

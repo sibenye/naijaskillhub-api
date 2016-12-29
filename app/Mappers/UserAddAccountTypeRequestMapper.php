@@ -6,7 +6,7 @@ namespace App\Mappers;
 
 use App\Models\Requests\UserAddAccountTypeRequest;
 
-class UserAddAccountTypeRequestMappers implements IMapper
+class UserAddAccountTypeRequestMapper implements IMapper
 {
 
     /**
@@ -20,6 +20,8 @@ class UserAddAccountTypeRequestMappers implements IMapper
         $out = new UserAddAccountTypeRequest();
 
         $out->setAccountType(array_get($in, 'accountType', NULL));
+
+        return $out;
     }
 }
 

@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use App\Models\Responses\NSHResponse;
 
 class Authenticate
 {
@@ -36,7 +36,11 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         if ($this->auth->guard($guard)->guest()) {
-            return response('Unauthorized.', 401);
+            $nsh_response = new NSHResponse();
+            $nsh_response->setMessage("User must be authenticated");
+            $nsh_response->setHttpStatus(401);
+            $nsh_response->setStatus('error');
+            return $nsh_response->render();
         }
 
         return $next($request);
