@@ -11,6 +11,7 @@ use App\Mappers\UserForgotPasswordPostRequestMapper;
 use App\Mappers\AddCredentialRequestMapper;
 use App\Mappers\UserChangeVanityNamePostRequestMapper;
 use App\Mappers\UserAddAccountTypeRequestMapper;
+use App\Mappers\LinkOrUnlinkCategoryRequestMapper;
 
 class UserController extends Controller
 {
@@ -64,6 +65,12 @@ class UserController extends Controller
 
     /**
      *
+     * @var LinkOrUnlinkCategoryRequestMapper
+     */
+    private $linkOrUnlinkCategoryRequestMapper;
+
+    /**
+     *
      * @param Request                               $request
      * @param UserService                           $service
      * @param UserPostRequestMapper                 $userPostMapper
@@ -72,7 +79,8 @@ class UserController extends Controller
      * @param UserChangeEmailPostRequestMapper      $userChangeEmailPostRequestMapper
      * @param UserChangeVanityNamePostRequestMapper $userChangeVanityNamePostRequestMapper
      * @param AddCredentialRequestMapper            $addCredentialRequestMapper
-     * @param UserAddAccountTypeRequestMapper      $userAddAccoutTypeRequestMapper
+     * @param UserAddAccountTypeRequestMapper       $userAddAccoutTypeRequestMapper
+     * @param LinkOrUnlinkCategoryRequestMapper     $linkOrUnlinkCategoryRequestMapper
      */
     public function __construct(Request $request, UserService $service,
             UserChangePasswordPostRequestMapper $userChangePasswordPostRequestMapper,
@@ -81,7 +89,8 @@ class UserController extends Controller
             UserChangeEmailPostRequestMapper $userChangeEmailPostRequestMapper,
             UserChangeVanityNamePostRequestMapper $userChangeVanityNamePostRequestMapper,
             AddCredentialRequestMapper $addCredentialRequestMapper,
-            UserAddAccountTypeRequestMapper $userAddAccoutTypeRequestMapper)
+            UserAddAccountTypeRequestMapper $userAddAccoutTypeRequestMapper,
+            LinkOrUnlinkCategoryRequestMapper $linkOrUnlinkCategoryRequestMapper)
     {
         parent::__construct($request);
         $this->service = $service;
@@ -92,6 +101,7 @@ class UserController extends Controller
         $this->userChangeVanityNamePostRequestMapper = $userChangeVanityNamePostRequestMapper;
         $this->addCredentialRequestMapper = $addCredentialRequestMapper;
         $this->userAddAccoutTypeRequestMapper = $userAddAccoutTypeRequestMapper;
+        $this->linkOrUnlinkCategoryRequestMapper = $linkOrUnlinkCategoryRequestMapper;
     }
 
     /**
@@ -201,9 +211,10 @@ class UserController extends Controller
      */
     public function linkUserToCategory($id)
     {
-        $requestBody = $this->request->all();
+        $postRequest = $this->linkOrUnlinkCategoryRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
 
-        $this->service->linkUserToCategory($id, $requestBody);
+        $this->service->linkUserToCategory($id, $postRequest);
 
         return $this->response();
     }
@@ -215,9 +226,10 @@ class UserController extends Controller
      */
     public function unlinkUserFromCategory($id)
     {
-        $requestBody = $this->request->all();
+        $postRequest = $this->linkOrUnlinkCategoryRequestMapper->map($this->request->all());
+        $this->validateRequest($postRequest->getValidationRules());
 
-        $this->service->unlinkUserFromCategory($id, $requestBody);
+        $this->service->unlinkUserFromCategory($id, $postRequest);
 
         return $this->response();
     }

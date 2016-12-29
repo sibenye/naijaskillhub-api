@@ -22,6 +22,7 @@ use App\Models\Requests\UserChangeVanityNamePostRequest;
 use App\Models\DAO\User;
 use App\Models\Requests\UserAddAccountTypeRequest;
 use App\Repositories\AccountTypeRepository;
+use App\Models\Requests\LinkOrUnlinkCategoryRequest;
 
 /**
  * UserService class.
@@ -270,14 +271,14 @@ class UserService
      * @param array $categoriesRequest
      * @return void
      */
-    public function linkUserToCategory($userId, $categoriesRequest)
+    public function linkUserToCategory($userId, LinkOrUnlinkCategoryRequest $categoriesRequest)
     {
         // ensure the categoryIds are valid
-        foreach ($categoriesRequest as $request) {
-            $this->categoryRepository->get($request ['categoryId']);
+        foreach ($categoriesRequest->getCategoryIds() as $categoryId) {
+            $this->categoryRepository->get($categoryId);
         }
 
-        $this->userRepository->linkUserToCategory($userId, $categoriesRequest);
+        $this->userRepository->linkUserToCategory($userId, $categoriesRequest->getCategoryIds());
     }
 
     /**
@@ -286,14 +287,14 @@ class UserService
      * @param array $categoriesRequest
      * @return void
      */
-    public function unlinkUserFromCategory($userId, $categoriesRequest)
+    public function unlinkUserFromCategory($userId, LinkOrUnlinkCategoryRequest $categoriesRequest)
     {
         // ensure the categoryIds are valid
-        foreach ($categoriesRequest as $request) {
-            $this->categoryRepository->get($request ['categoryId']);
+        foreach ($categoriesRequest->getCategoryIds() as $categoryId) {
+            $this->categoryRepository->get($categoryId);
         }
 
-        $this->userRepository->unlinkUserFromCategory($userId, $categoriesRequest);
+        $this->userRepository->unlinkUserFromCategory($userId, $categoriesRequest->getCategoryIds());
     }
 
     /**
@@ -617,6 +618,15 @@ class UserService
             $i++;
         }
 
+        $userCategories = $user->categories;
+
+        $userCategoriesContent = array ();
+
+        foreach ($userCategories as $key => $value) {
+            $userCategoriesContent [$key] ['categoryId'] = $value->id;
+            $userCategoriesContent [$key] ['categoryName'] = $value->name;
+        }
+
         $userContent = array ();
         $userContent ['userId'] = $user->id;
         $userContent ['isActive'] = $user->isActive;
@@ -625,6 +635,7 @@ class UserService
         $userContent ['credentialTypes'] = $userCredentialTypesContent;
         $userContent ['accountTypes'] = $userAccountTypesContent;
         $userContent ['attributes'] = $userAttributesContent;
+        $userContent ['categories'] = $userCategoriesContent;
         $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
         $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
 
