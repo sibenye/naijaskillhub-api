@@ -4,32 +4,27 @@
  */
 $app->get('/users/{id}/portfolios',
         [
-                'uses' => 'UserPortfolioController@getAllUserPortfolios',
-                'middleware' => 'acctType'
+                'uses' => 'UserPortfolioController@getAllUserPortfolios'
         ]);
 
 $app->get('/users/{id}/portfolios/images',
         [
-                'uses' => 'UserPortfolioController@getUserImagesPortfolio',
-                'middleware' => 'acctType'
+                'uses' => 'UserPortfolioController@getUserImagesPortfolio'
         ]);
 
 $app->get('/users/{id}/portfolios/videos',
         [
-                'uses' => 'UserPortfolioController@getUserVideosPortfolio',
-                'middleware' => 'acctType'
+                'uses' => 'UserPortfolioController@getUserVideosPortfolio'
         ]);
 
 $app->get('/users/{id}/portfolios/audios',
         [
-                'uses' => 'UserPortfolioController@getUserAudiosPortfolio',
-                'middleware' => 'acctType'
+                'uses' => 'UserPortfolioController@getUserAudiosPortfolio'
         ]);
 
 $app->get('/users/{id}/portfolios/credits',
         [
-                'uses' => 'UserPortfolioController@getUserCreditsPortfolio',
-                'middleware' => 'acctType'
+                'uses' => 'UserPortfolioController@getUserCreditsPortfolio'
         ]);
 $app->post('/users/{id}/portfolios/images',
         [
