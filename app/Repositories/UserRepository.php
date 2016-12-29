@@ -90,10 +90,10 @@ class UserRepository extends BaseRepository
     /**
      *
      * @param integer $userId
-     * @param string $categoriesCollection
+     * @param string $categoryIdsCollection
      * @return void
      */
-    public function linkUserToCategory($userId, $categoriesCollection)
+    public function linkUserToCategory($userId, $categoryIdsCollection)
     {
         $user = $this->get($userId);
 
@@ -104,9 +104,9 @@ class UserRepository extends BaseRepository
             $alreadyLinkedCategoryIds [] = $alreadyLinkedCategory->id;
         }
 
-        foreach ($categoriesCollection as $category) {
-            if (!in_array($category ['categoryId'], $alreadyLinkedCategoryIds)) {
-                $user->categories()->attach($category ['categoryId']);
+        foreach ($categoryIdsCollection as $categoryId) {
+            if (!in_array($categoryId, $alreadyLinkedCategoryIds)) {
+                $user->categories()->attach($categoryId);
             }
         }
     }
@@ -114,10 +114,10 @@ class UserRepository extends BaseRepository
     /**
      *
      * @param integer $userId
-     * @param string $categoriesCollection
+     * @param string $categoryIdsCollection
      * @return string
      */
-    public function unlinkUserFromCategory($userId, $categoriesCollection)
+    public function unlinkUserFromCategory($userId, $categoryIdsCollection)
     {
         $user = $this->get($userId);
 
@@ -128,9 +128,9 @@ class UserRepository extends BaseRepository
             $alreadyLinkedCategoryIds [] = $alreadyLinkedCategory->id;
         }
 
-        foreach ($categoriesCollection as $category) {
-            if (in_array($category ['categoryId'], $alreadyLinkedCategoryIds)) {
-                $user->categories()->detach($category ['categoryId']);
+        foreach ($categoryIdsCollection as $categoryId) {
+            if (in_array($categoryId, $alreadyLinkedCategoryIds)) {
+                $user->categories()->detach($categoryId);
             }
         }
     }
