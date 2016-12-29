@@ -6,6 +6,8 @@ namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\DAO\User;
+use App\Models\DAO\AccountType;
 
 /**
  * User Repository.
@@ -208,6 +210,15 @@ class UserRepository extends BaseRepository
         $user->accountTypes()->attach($requestBody ['accountTypeId']);
 
         return $user;
+    }
+
+    public function addAccountType(User $user, AccountType $accountType)
+    {
+        $existingUserAccountType = $user->accountTypes->where('name', $accountType->name)->first();
+
+        if (empty($existingUserAccountType)) {
+            $user->accountTypes()->attach($accountType->id);
+        }
     }
 }
 
