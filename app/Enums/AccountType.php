@@ -1,7 +1,7 @@
 <?php
 namespace App\Enums;
 
-class CredentialType
+class AccountType
 {
     const TALENT = 'talent';
     const HUNTER = 'hunter';

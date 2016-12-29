@@ -15,6 +15,7 @@ use App\Models\Requests\UserPostRequest;
 use App\Models\Requests\RegisterRequest;
 use App\Repositories\CredentialTypeRepository;
 use App\Repositories\UserAttributeRepository;
+use App\Repositories\AccountTypeRepository;
 
 /**
  * AuthService class.
@@ -45,18 +46,26 @@ class AuthService
 
     /**
      *
+     * @var AccountTypeRepository
+     */
+    private $accountTypeRepository;
+
+    /**
+     *
      * @var UserAttributeRepository
      */
     private $userAttributeRepository;
 
     public function __construct(UserRepository $repository,
             CredentialTypeRepository $credentialTypeRepository,
-            UserAttributeRepository $userAttributeRepository, NSHCryptoUtil $cryptoUtil)
+            UserAttributeRepository $userAttributeRepository,
+            AccountTypeRepository $accountTypeRepository, NSHCryptoUtil $cryptoUtil)
     {
         $this->userRepository = $repository;
         $this->cryptoUtil = $cryptoUtil;
         $this->credentialTypeRepository = $credentialTypeRepository;
         $this->userAttributeRepository = $userAttributeRepository;
+        $this->accountTypeRepository = $accountTypeRepository;
     }
 
     /**
@@ -152,6 +161,13 @@ class AuthService
             throw new ValidationException(NULL, 'The credentialType is invalid.');
         }
 
+        // ensure accountType is valid
+        $accountType = $this->accountTypeRepository->getAccountTypeByName(
+                $request->getAccountType());
+        if (empty($accountType)) {
+            throw new ValidationException(NULL, 'The accountType is invalid.');
+        }
+
         if ($request->getCredentialType() == CredentialType::STANDARD) {
             $request->setPassword($this->cryptoUtil->hashThis($request->getPassword()));
         }
@@ -159,6 +175,7 @@ class AuthService
         $userModelAttr = $request->buildModelAttributes();
 
         $userModelAttr ['credentialTypeId'] = $credentialType->id;
+        $userModelAttr ['accountTypeId'] = $accountType->id;
         $userModelAttr ['authToken'] = $this->generateAuthToken();
 
         $user = $this->userRepository->createUser($userModelAttr);

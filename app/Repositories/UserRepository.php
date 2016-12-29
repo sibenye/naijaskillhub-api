@@ -205,6 +205,8 @@ class UserRepository extends BaseRepository
                         'password' => $requestBody ['password']
                 ]);
 
+        $user->accountTypes()->attach($requestBody ['accountTypeId']);
+
         return $user;
     }
 }

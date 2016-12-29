@@ -2,6 +2,7 @@
 namespace App\Models\Requests;
 
 use App\Enums\CredentialType;
+use App\Enums\AccountType;
 
 /**
  * Register Request.
@@ -42,6 +43,12 @@ class RegisterRequest implements IPostRequest
     private $lastName;
 
     /**
+     *
+     * @var string
+     */
+    private $accountType = AccountType::TALENT;
+
+    /**
      * {@inheritDoc}
      * @see \App\Models\Requests\IPostRequest::buildModelAttributes()
      */
@@ -59,6 +66,8 @@ class RegisterRequest implements IPostRequest
             $attr ['password'] = $this->password;
         }
 
+        $attr ['accountType'] = $this->accountType;
+
         return $attr;
     }
 
@@ -74,7 +83,8 @@ class RegisterRequest implements IPostRequest
                 'firstName' => 'max:80',
                 'lastName' => 'max:80',
                 'credentialType' => 'in:' . CredentialType::STANDARD . ',' . CredentialType::FACEBOOK .
-                         ',' . CredentialType::GOOGLE
+                         ',' . CredentialType::GOOGLE,
+                        'accountType' => 'in:' . AccountType::TALENT . ',' . AccountType::HUNTER
         ];
     }
 
@@ -143,5 +153,22 @@ class RegisterRequest implements IPostRequest
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccountType()
+    {
+        return $this->accountType;
+    }
+
+    /**
+     * @param  $accountType
+     * @return void
+     */
+    public function setAccountType($accountType)
+    {
+        $this->accountType = $accountType;
     }
 }
