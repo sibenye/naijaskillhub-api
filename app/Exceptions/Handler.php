@@ -60,6 +60,10 @@ class Handler extends ExceptionHandler
                 $errorResponse = new NSHResponse(400, 111, $validationMessage);
                 return $errorResponse->render();
                 break;
+            case 'PDOException' :
+                $errorResponse = new NSHResponse(500, 190, $e->getMessage());
+                return $errorResponse->render();
+                break;
             default :
                 return parent::render($request, $e);
         }
