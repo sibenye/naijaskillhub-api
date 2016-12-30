@@ -14,6 +14,10 @@ $app->get('/', function () use ($app) {
     return $app->version();
 });
 
+$app->get('/status', [
+        'uses' => 'StatusController@status'
+]);
+
 $app->group([
         'namespace' => 'Admin',
         'prefix' => 'admin'
