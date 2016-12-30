@@ -1,0 +1,17 @@
+{
+  "name": "naijaskillhub-api",
+  "description": "App json file",
+  "scripts": {
+    "postdeploy": "composer install"
+  },
+  "env": {
+  },
+  "formation": {
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+
+  ]
+}
