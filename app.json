@@ -6,13 +6,16 @@
   },
   "env": {
 		"APP_ENV": "local",
-		"APP_DEBUG": true,
+		"APP_DEBUG": "true",
 		"CACHE_DRIVER": "memcached",
 		"QUEUE_DRIVER": "sync",
 		"APP_TIMEZONE": "Africa/Lagos",
 		"APP_KEY": {
 			"required": true
 		},
+		"API_KEY": {
+            "required": true
+        },
 		"DB_CONNECTION": {
             "required": true
         },
