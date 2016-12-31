@@ -49,11 +49,12 @@ $app->singleton(Illuminate\Contracts\Console\Kernel::class, App\Console\Kernel::
  * | route or middleware that'll be assigned to some specific routes.
  * |
  */
+// Global middleware
+$app->middleware([
+        App\Http\Middleware\ApiKeyCheck::class
+]);
 
-// $app->middleware([
-// App\Http\Middleware\ExampleMiddleware::class
-// ]);
-
+// Route assigned middleware
 $app->routeMiddleware(
         [
                 'auth' => App\Http\Middleware\Authenticate::class,

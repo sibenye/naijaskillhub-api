@@ -13,6 +13,8 @@ class NSHCodedMessages
             102 => "User Not Authorized To Perform Action",
             110 => "User must have accountType of 'talent'",
             111 => "Invalid Request",
+            177 => "API Key is required",
+            179 => "Invalid API Key",
             190 => "Error Connecting to the Database"
     ];
 }

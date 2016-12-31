@@ -13,6 +13,9 @@
 		"APP_KEY": {
 			"required": true
 		},
+		"API_KEY": {
+            "required": true
+        },
 		"DB_CONNECTION": {
             "required": true
         },
