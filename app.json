@@ -6,7 +6,7 @@
   },
   "env": {
 		"APP_ENV": "local",
-		"APP_DEBUG": true,
+		"APP_DEBUG": "true",
 		"CACHE_DRIVER": "memcached",
 		"QUEUE_DRIVER": "sync",
 		"APP_TIMEZONE": "Africa/Lagos",
