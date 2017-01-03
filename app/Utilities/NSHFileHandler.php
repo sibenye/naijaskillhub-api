@@ -7,6 +7,7 @@ namespace App\Utilities;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\Facades\Image;
 use Illuminate\Http\File;
+use App\Utilities\NSHSFTPClientWrapper;
 
 /**
  *
@@ -15,6 +16,12 @@ use Illuminate\Http\File;
  */
 class NSHFileHandler
 {
+    private $sftpClientWrapper;
+
+    public function __construct(NSHSFTPClientWrapper $sftpClientWrapper)
+    {
+        $this->sftpClientWrapper = $sftpClientWrapper;
+    }
 
     /**
      *
@@ -86,5 +93,15 @@ class NSHFileHandler
     public function deleteFile($filename)
     {
         unlink($filename);
+    }
+
+    public function uploadFileToFTP($fileResource, $destinationFolder)
+    {
+        // check if destination folder exists, if not create it
+        if (!$this->sftpClientWrapper->fileExists($destinationFolder)) {
+            $this->sftpClientWrapper->makeDirectory($destinationFolder);
+        }
+        // change directory to destination folder
+        // upload the file.
     }
 }
