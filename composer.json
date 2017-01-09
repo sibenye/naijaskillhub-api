@@ -13,7 +13,8 @@
         "intervention/imagecache": "^2.3",
         "illuminate/mail": "^5.3",
         "guzzlehttp/guzzle": "^6.2",
-        "ircmaxell/random-lib": "^1.2"
+        "ircmaxell/random-lib": "^1.2",
+        "phpseclib/phpseclib": "^2.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

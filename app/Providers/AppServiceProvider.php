@@ -2,6 +2,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Utilities\NSHSFTPClientWrapper;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
                     $app->configure('services');
                     return $app->loadComponent('mail', 'Illuminate\Mail\MailServiceProvider',
                             'mailer');
+                });
+        $this->app->singleton('App\Utilities\NSHSFTPClientWrapper',
+                function ($app) {
+                    return new NSHSFTPClientWrapper();
                 });
     }
 }
