@@ -79,15 +79,14 @@ class AuthService
         $user = $this->userRepository->getUserByEmailAddress($request->getEmailAddress());
 
         if (empty($user)) {
-            throw new NSHAuthenticationException('Invalid emailAddress');
+            throw new ValidationException(NULL, 'Invalid emailAddress');
         }
 
         $existingUserCredentials = $this->userRepository->getUserCredentials($user->id,
                 $request->getCredntialType());
 
-        var_dump($existingUserCredentials);
         if (count($existingUserCredentials) == 0) {
-            throw new NSHAuthenticationException(
+            throw new ValidationException(NULL,
                 'User does not have ' . $request->getCredntialType() . ' credential.');
         }
 
