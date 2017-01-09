@@ -44,13 +44,13 @@ class NSHSFTPClientWrapper
     /**
      * Upload file to FTP.
      *
-     * @param string $destinationFilename
-     * @param resource $sourceFile
+     * @param string $fileName
+     * @param resource $fileToUpload
      * @return void
      */
-    public function uploadFile($destinationFilename, $sourceFile)
+    public function uploadFile($fileName, $fileToUpload)
     {
-        $this->sftpClient->put($destinationFilename, $sourceFile);
+        $this->sftpClient->put($fileName, $fileToUpload, SFTP::SOURCE_LOCAL_FILE);
     }
 
     /**
@@ -72,7 +72,7 @@ class NSHSFTPClientWrapper
      */
     public function fileExists($fileOrDirectoryPath)
     {
-        return $this->fileExists($fileOrDirectoryPath);
+        return $this->sftpClient->file_exists($fileOrDirectoryPath);
     }
 
     /**

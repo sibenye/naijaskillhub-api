@@ -185,30 +185,29 @@ class UserPortfolioService
             throw new ValidationException(NULL, 'The image was not uploaded successfully.');
         }
 
-        // TODO: ensure image size is not more than 2MB
+        // ensure image size is not more than 2MB
+        if ($image->getSize() > 2048000) {
+            throw new ValidationException(NULL, 'The image size is more than 2MB.');
+        }
 
         // save image file.
         $filename = $userId . '_' . time() . '.' . $image->getClientOriginalExtension();
 
         $relativeDirPath = 'media/' . $userId . '/images';
 
-        $dirPath = public_path($relativeDirPath);
+        $imageObject = $this->fileHandler->makeImage($image);
 
-        if (!$this->fileHandler->directoryExists($dirPath)) {
-            $this->fileHandler->makeDirectory($dirPath);
-        }
-
-        $savedImage = $this->fileHandler->saveImageFile($image, $filename, $dirPath);
+        $this->fileHandler->uploadFile($filename, $image, $relativeDirPath);
 
         // save image portfolio.
         $modelAttribute = array ();
         $modelAttribute ['userId'] = $userId;
         $modelAttribute ['caption'] = $request->getCaption();
         $modelAttribute ['fileName'] = $filename;
-        $modelAttribute ['fileSize'] = $savedImage->filesize();
+        $modelAttribute ['fileSize'] = $image->getSize();
         $modelAttribute ['filePath'] = $relativeDirPath . '/' . $filename;
-        $modelAttribute ['width'] = $savedImage->width();
-        $modelAttribute ['height'] = $savedImage->height();
+        $modelAttribute ['width'] = $imageObject->width();
+        $modelAttribute ['height'] = $imageObject->height();
 
         $this->userImagePortfolioRepository->create($modelAttribute);
 
@@ -326,20 +325,17 @@ class UserPortfolioService
             throw new ValidationException(NULL, 'The audio file was not uploaded successfully.');
         }
 
-        // TODO: ensure audio file size is not more than 2MB
+        // ensure audio file size is not more than 2MB
+        if ($audio->getSize() > 2048000) {
+            throw new ValidationException(NULL, 'The audio file size is more than 2MB.');
+        }
 
         // save audio file.
         $filename = $userId . '_' . time() . '.' . $audio->getClientOriginalExtension();
 
         $relativeDirPath = 'media/' . $userId . '/audios';
 
-        $dirPath = public_path($relativeDirPath);
-
-        if (!$this->fileHandler->directoryExists($dirPath)) {
-            $this->fileHandler->makeDirectory($dirPath);
-        }
-
-        $savedAudio = $this->fileHandler->saveAudioFile($audio, $filename, $dirPath);
+        $this->fileHandler->uploadFile($filename, $audio, $relativeDirPath);
 
         $caption = '';
         if (empty($request->getCaption())) {
@@ -353,7 +349,7 @@ class UserPortfolioService
         $modelAttribute ['userId'] = $userId;
         $modelAttribute ['caption'] = $caption;
         $modelAttribute ['fileName'] = $filename;
-        $modelAttribute ['fileSize'] = $savedAudio->getSize();
+        $modelAttribute ['fileSize'] = $audio->getSize();
         $modelAttribute ['filePath'] = $relativeDirPath . '/' . $filename;
 
         $this->userAudioPortfolioRepository->create($modelAttribute);
@@ -492,12 +488,9 @@ class UserPortfolioService
         $this->userImagePortfolioRepository->delete($imageId);
 
         // delete image file from directory.
-        $relativeDirPath = $existingImage [0]->filePath;
-        if (!empty($relativeDirPath)) {
-            $absolutePath = public_path($relativeDirPath);
-            if ($this->fileHandler->fileExists($absolutePath)) {
-                $this->fileHandler->deleteFile($absolutePath);
-            }
+        $filePath = $existingImage [0]->filePath;
+        if (!empty($filePath)) {
+            $this->fileHandler->deleteFile($filePath);
         }
     }
 
@@ -553,12 +546,9 @@ class UserPortfolioService
         $this->userAudioPortfolioRepository->delete($audioId);
 
         // delete audio file from directory.
-        $relativeDirPath = $existingAudio [0]->filePath;
-        if (!empty($relativeDirPath)) {
-            $absolutePath = public_path($relativeDirPath);
-            if ($this->fileHandler->fileExists($absolutePath)) {
-                $this->fileHandler->deleteFile($absolutePath);
-            }
+        $filePath = $existingAudio [0]->filePath;
+        if (!empty($filePath)) {
+            $this->fileHandler->deleteFile($filePath);
         }
     }
 
