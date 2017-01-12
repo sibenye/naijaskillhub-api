@@ -18,12 +18,12 @@ class ApiKeyCheck
     {
         if (app()->environment('production', 'staging')) {
             // Require API Key when environment is either production OR staging...
-            if (empty($request->header('nsh-api-key'))) {
+            if (empty($request->header('NSH-API-KEY'))) {
                 $nsh_response = new NSHResponse(403, 177);
                 return $nsh_response->render();
             }
 
-            if ($request->header('nsh-api-key') != env('API_KEY')) {
+            if ($request->header('NSH-API-KEY') != env('API_KEY')) {
                 $nsh_response = new NSHResponse(403, 179);
                 return $nsh_response->render();
             }

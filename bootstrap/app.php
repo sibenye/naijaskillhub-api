@@ -50,9 +50,11 @@ $app->singleton(Illuminate\Contracts\Console\Kernel::class, App\Console\Kernel::
  * |
  */
 // Global middleware
-$app->middleware([
-        App\Http\Middleware\ApiKeyCheck::class
-]);
+$app->middleware(
+        [
+                App\Http\Middleware\ApiKeyCheck::class,
+                App\Http\Middleware\AfterMiddleware::class
+        ]);
 
 // Route assigned middleware
 $app->routeMiddleware(
