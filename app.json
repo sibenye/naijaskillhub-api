@@ -63,7 +63,16 @@
 		},
 		"MAILGUN_SECRET": {
 			"required": true
-		}
+		},
+        "SFTP_HOST": {
+            "required": true
+        },
+        "SFTP_USER": {
+            "required": true
+        },
+        "SFTP_PWD": {
+            "required": true
+        }
 	},
 	"formation": {
 		
