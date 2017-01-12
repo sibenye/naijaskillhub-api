@@ -72,6 +72,9 @@
         },
         "SFTP_PWD": {
             "required": true
+        },
+        "ALLOW_ORIGIN": {
+            "required": true
         }
 	},
 	"formation": {

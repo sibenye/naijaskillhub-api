@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 use App\Enums\AccountType;
 use App\Repositories\UserRepository;
 use Closure;
-use App\Models\Responses\NSHResponse;
 
 class AfterMiddleware
 {
