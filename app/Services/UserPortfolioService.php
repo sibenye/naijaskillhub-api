@@ -17,6 +17,7 @@ use App\Models\Requests\UserCreditPortfolioPostRequest;
 use App\Models\Requests\UserAudioPortfolioPostRequest;
 use App\Models\Requests\UserVideoPortfolioPostRequest;
 use App\Models\Requests\UserImagePortfolioPostRequest;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * UserPortfolio Service.
@@ -229,7 +230,9 @@ class UserPortfolioService
         $imageId = $request->getImageId();
 
         // ensure that the imageId is valid
-        $existingImage = $user->images()->where('id', $imageId)->get();
+        $existingImage = $user->images()
+            ->where('id', $imageId)
+            ->get();
         if (count($existingImage) == 0) {
             throw new ValidationException(NULL, 'Invalid imageId');
         }
@@ -289,7 +292,9 @@ class UserPortfolioService
         $videoId = $request->getVideoId();
 
         // ensure that the videoId is valid
-        $existingVideo = $user->videos()->where('id', $videoId)->get();
+        $existingVideo = $user->videos()
+            ->where('id', $videoId)
+            ->get();
         if (count($existingVideo) == 0) {
             throw new ValidationException(NULL, 'Invalid videoId');
         }
@@ -372,7 +377,9 @@ class UserPortfolioService
         $audioId = $request->getAudioId();
 
         // ensure that the audioId is valid
-        $existingAudio = $user->audios()->where('id', $audioId)->get();
+        $existingAudio = $user->audios()
+            ->where('id', $audioId)
+            ->get();
         if (count($existingAudio) == 0) {
             throw new ValidationException(NULL, 'Invalid audioId');
         }
@@ -479,7 +486,9 @@ class UserPortfolioService
         }
 
         // ensure that the imageId is valid
-        $existingImage = $user->images()->where('id', $imageId)->get();
+        $existingImage = $user->images()
+            ->where('id', $imageId)
+            ->get();
         if (count($existingImage) == 0) {
             throw new ValidationException(NULL, 'Invalid imageId');
         }
@@ -511,7 +520,9 @@ class UserPortfolioService
         }
 
         // ensure that the imageId is valid
-        $existingVideo = $user->videos()->where('id', $videoId)->get();
+        $existingVideo = $user->videos()
+            ->where('id', $videoId)
+            ->get();
         if (count($existingVideo) == 0) {
             throw new ValidationException(NULL, 'Invalid videoId');
         }
@@ -537,7 +548,9 @@ class UserPortfolioService
         }
 
         // ensure that the imageId is valid
-        $existingAudio = $user->audios()->where('id', $audioId)->get();
+        $existingAudio = $user->audios()
+            ->where('id', $audioId)
+            ->get();
         if (count($existingAudio) == 0) {
             throw new ValidationException(NULL, 'Invalid audioId');
         }

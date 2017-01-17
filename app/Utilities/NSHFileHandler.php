@@ -17,12 +17,12 @@ use App\Utilities\NSHSFTPClientWrapper;
 class NSHFileHandler
 {
     private $sftpClientWrapper;
-    private $environ;
+    private $sftpEnabled;
 
     public function __construct(NSHSFTPClientWrapper $sftpClientWrapper)
     {
         $this->sftpClientWrapper = $sftpClientWrapper;
-        $this->environ = app()->environment();
+        $this->sftpEnabled = env("SFTP_ENABLED");
     }
 
     /**
@@ -68,14 +68,11 @@ class NSHFileHandler
 
     public function deleteFile($filePath)
     {
-        switch ($this->environ) {
-            case 'local' :
-                $filePath = public_path($filePath);
-                $this->deleteLocalFile($filePath);
-                break;
-            default :
-                $this->deleteFileOnFTP($filePath);
-                break;
+        if ($this->sftpEnabled) {
+            $this->deleteFileOnFTP($filePath);
+        } else {
+            $filePath = public_path($filePath);
+            $this->deleteLocalFile($filePath);
         }
     }
 
@@ -112,14 +109,11 @@ class NSHFileHandler
      */
     public function uploadFile($fileName, UploadedFile $file, $destinationFolder)
     {
-        switch ($this->environ) {
-            case 'local' :
-                $destinationFolder = public_path($destinationFolder);
-                $this->uploadFileToLocal($fileName, $file, $destinationFolder);
-                break;
-            default :
-                $this->uploadFileToFTP($fileName, $file, $destinationFolder);
-                break;
+        if ($this->sftpEnabled) {
+            $this->uploadFileToFTP($fileName, $file, $destinationFolder);
+        } else {
+            $destinationFolder = public_path($destinationFolder);
+            $this->uploadFileToLocal($fileName, $file, $destinationFolder);
         }
     }
 

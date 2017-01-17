@@ -22,12 +22,13 @@ class NSHSFTPClientWrapper
 
     public function __construct()
     {
-        $this->sftpHost = env('SFTP_HOST');
-        $this->sftpUsername = env('SFTP_USER');
-        $this->sftpPwd = env('SFTP_PWD');
-
-        $this->sftpClient = new SFTP($this->sftpHost);
-        $this->isConnected = $this->sftpClient->login($this->sftpUsername, $this->sftpPwd);
+        if (env('SFTP_ENABLED')) {
+            $this->sftpHost = env('SFTP_HOST');
+            $this->sftpUsername = env('SFTP_USER');
+            $this->sftpPwd = env('SFTP_PWD');
+            $this->sftpClient = new SFTP($this->sftpHost);
+            $this->isConnected = $this->sftpClient->login($this->sftpUsername, $this->sftpPwd);
+        }
     }
 
     /**

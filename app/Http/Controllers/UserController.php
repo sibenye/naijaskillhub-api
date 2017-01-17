@@ -303,8 +303,8 @@ class UserController extends Controller
         $postRequest = $this->userChangeEmailPostRequestMapper->map($this->request->all());
         $this->validateRequest($postRequest->getValidationRules());
 
-        $this->service->changeUserEmailAddress($id, $postRequest);
-        return $this->response();
+        $response = $this->service->changeUserEmailAddress($id, $postRequest);
+        return $this->response($response);
     }
 
     /**

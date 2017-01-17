@@ -198,7 +198,6 @@ class UserRepository extends BaseRepository
     {
         $userModelAttributes = array ();
         $userModelAttributes ['emailAddress'] = $requestBody ['emailAddress'];
-        $userModelAttributes ['authToken'] = $requestBody ['authToken'];
 
         $user = $this->create($userModelAttributes);
 

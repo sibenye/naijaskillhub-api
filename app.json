@@ -64,6 +64,9 @@
 		"MAILGUN_SECRET": {
 			"required": true
 		},
+        "SFTP_ENABLED": {
+            "required": true
+        },
         "SFTP_HOST": {
             "required": true
         },
@@ -74,6 +77,18 @@
             "required": true
         },
         "ALLOW_ORIGIN": {
+            "required": true
+        },
+        "JWT_ID": {
+            "required": true
+        },
+        "JWT_ISSUER": {
+            "required": true
+        },
+        "JWT_AUDIENCE": {
+            "required": true
+        },
+        "JWT_DURATION": {
             "required": true
         }
 	},
