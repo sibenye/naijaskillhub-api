@@ -464,6 +464,12 @@ class UserService
             ];
             $this->userRepository->update($userId, $modelAttr);
         }
+
+        // generate and return new JWT token.
+        $response = [
+                'authToken' => $this->cryptoUtil->generateJWToken($request->getNewEmailAddress())
+        ];
+        return $response;
     }
 
     /**

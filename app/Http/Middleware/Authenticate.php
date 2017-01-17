@@ -2,8 +2,11 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Contracts\Auth\Factory as Auth;
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Responses\NSHResponse;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 
 class Authenticate
 {
@@ -20,7 +23,7 @@ class Authenticate
      * @param  \Illuminate\Contracts\Auth\Factory  $auth
      * @return void
      */
-    public function __construct(Auth $auth)
+    public function __construct(AuthFactory $auth)
     {
         $this->auth = $auth;
     }
@@ -36,8 +39,24 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         if ($this->auth->guard($guard)->guest()) {
-            $nsh_response = new NSHResponse(401, 101);
-            return $nsh_response->render();
+            throw new AuthenticationException();
+        }
+
+        // if user id is in url path,
+        // ensure that it is the same as that of the Auth User
+        $path = $request->path();
+        if ($path) {
+            $pathInfo = preg_split('/\//', $path);
+            if (count($pathInfo) > 1) {
+                $info1 = strtolower($pathInfo [0]);
+                $info2 = strtolower($pathInfo [1]);
+
+                if ($info1 == 'users' && is_numeric($info2)) {
+                    if ($info2 != Auth::user()->id) {
+                        throw new AuthorizationException("id does not match Auth User ID");
+                    }
+                }
+            }
         }
 
         return $next($request);

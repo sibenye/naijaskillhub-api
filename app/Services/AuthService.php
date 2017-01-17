@@ -102,14 +102,8 @@ class AuthService
             }
         }
 
-        // generate AuthToken
-        $userModelAttr = array ();
-        $userModelAttr ['authToken'] = $this->generateAuthToken();
-
-        $this->userRepository->update($user->id, $userModelAttr);
-
         $response = array ();
-        $response ['authToken'] = $userModelAttr ['authToken'];
+        $response ['authToken'] = $this->generateAuthToken($request->getEmailAddress());
 
         return $response;
     }
@@ -175,7 +169,6 @@ class AuthService
 
         $userModelAttr ['credentialTypeId'] = $credentialType->id;
         $userModelAttr ['accountTypeId'] = $accountType->id;
-        $userModelAttr ['authToken'] = $this->generateAuthToken();
 
         $user = $this->userRepository->createUser($userModelAttr);
 
@@ -207,6 +200,8 @@ class AuthService
             }
         }
 
+        $user ['authToken'] = $this->generateAuthToken($request->getEmailAddress());
+
         return $user;
     }
 
@@ -215,13 +210,8 @@ class AuthService
      *
      * @return string
      */
-    private function generateAuthToken()
+    private function generateAuthToken($emailAddress)
     {
-        $authToken = null;
-        do {
-            $authToken = $this->cryptoUtil->secureRandomString(NSHConstants::AUTH_TOKEN_LENGTH);
-        } while ( !empty($this->userRepository->getUserWhere('authToken', $authToken)) );
-
-        return $authToken;
+        return $this->cryptoUtil->generateJWToken($emailAddress);
     }
 }

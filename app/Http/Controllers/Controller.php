@@ -1,13 +1,13 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use Laravel\Lumen\Routing\Controller as BaseController;
-use Illuminate\Http\Response;
-use Illuminate\Http\Request;
 use App\Models\Responses\NSHResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Laravel\Lumen\Routing\Controller as BaseController;
 
-class Controller extends BaseController {
+class Controller extends BaseController
+{
 
     /**
      * @var Request
@@ -15,18 +15,19 @@ class Controller extends BaseController {
     protected $request;
 
     public function __construct(Request $request) // Dependency injection
-{
+    {
         $this->request = $request;
     }
 
-    public function response($content = NULL) {
+    public function response($content = NULL)
+    {
         $nsh_response = new NSHResponse();
         $nsh_response->setResponse($content);
         return $nsh_response->render();
     }
 
-    public function validateRequest($validationRules) {
+    public function validateRequest($validationRules)
+    {
         $this->validate($this->request, $validationRules);
     }
-
 }

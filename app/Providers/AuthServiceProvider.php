@@ -3,6 +3,7 @@ namespace App\Providers;
 
 use App\Models\DAO\User;
 use Illuminate\Support\ServiceProvider;
+use App\Utilities\NSHJWTClientWrapper;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -30,20 +31,21 @@ class AuthServiceProvider extends ServiceProvider
         // the User instance via an API token or any other method necessary.
         $this->app ['auth']->viaRequest('api',
                 function ($request) {
-                    if ($request->header('AUTH-TOKEN') && $request->header('AUTH-EMAIL')) {
-                        return User::where(
-                                [
-                                        [
-                                                'authToken',
-                                                "=",
-                                                $request->header('AUTH-TOKEN')
-                                        ],
-                                        [
-                                                "emailAddress",
-                                                "=",
-                                                $request->header('AUTH-EMAIL')
-                                        ]
-                                ])->first();
+                    if ($request->header('AUTH-TOKEN')) {
+                        // parse the token
+                        $jwtClient = new NSHJWTClientWrapper();
+                        $token = $jwtClient->parseToken($request->header('AUTH-TOKEN'));
+                        // check if expired
+                        if ($jwtClient->tokenIsExpired($token)) {
+                            return null;
+                        }
+                        // verify token's claim
+                        if (!$jwtClient->verifyToken($token)) {
+                            return null;
+                        }
+                        // return user
+                        $email = $token->getClaim("email", "");
+                        return User::where("emailAddress", $email)->first();
                     } else {
                         return null;
                     }

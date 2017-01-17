@@ -20,9 +20,11 @@ class AppServiceProvider extends ServiceProvider
                     return $app->loadComponent('mail', 'Illuminate\Mail\MailServiceProvider',
                             'mailer');
                 });
-        $this->app->singleton('App\Utilities\NSHSFTPClientWrapper',
-                function ($app) {
-                    return new NSHSFTPClientWrapper();
-                });
+        if (env("SFTP_ENABLED")) {
+            $this->app->singleton('App\Utilities\NSHSFTPClientWrapper',
+                    function ($app) {
+                        return new NSHSFTPClientWrapper();
+                    });
+        }
     }
 }

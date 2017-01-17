@@ -48,6 +48,14 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         Switch (get_class($e)) {
+            case 'Illuminate\Auth\AuthenticationException' :
+                $errorResponse = new NSHResponse(401, 101, $e->getMessage());
+                return $errorResponse->render();
+                break;
+            case 'Illuminate\Auth\Access\AuthorizationException' :
+                $errorResponse = new NSHResponse(401, 102, $e->getMessage());
+                return $errorResponse->render();
+                break;
             case 'Illuminate\Database\Eloquent\ModelNotFoundException' :
                 $errorResponse = new NSHResponse(404, 100, $e->getMessage());
                 return $errorResponse->render();
