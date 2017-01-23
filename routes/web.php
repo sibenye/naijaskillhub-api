@@ -10,7 +10,7 @@
  * | and give it the Closure to call when that URI is requested.
  * |
  */
-$app->options('/{any}', function () use ($app) {
+$app->options('/{any:.*}', function () use ($app) {
     return $app->version();
 });
 
