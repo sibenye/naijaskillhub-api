@@ -104,6 +104,7 @@ class AuthService
 
         $response = array ();
         $response ['authToken'] = $this->generateAuthToken($request->getEmailAddress());
+        $response ['userId'] = $user->id;
 
         return $response;
     }
