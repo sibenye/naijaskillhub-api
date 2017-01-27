@@ -16,6 +16,7 @@ use App\Utilities\NSHCryptoUtil;
 use App\Models\Requests\UserPostRequest;
 use App\Services\AuthService;
 use App\Repositories\AccountTypeRepository;
+use App\Utilities\NSHFileHandler;
 
 /**
  * UserService Tests.
@@ -92,6 +93,12 @@ class UserServiceTest extends \TestCase
 
     /**
      *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $fileHandlerMock;
+
+    /**
+     *
      * {@inheritDoc}
      * @see \Laravel\Lumen\Testing\TestCase::setUp()
      * @return void
@@ -100,49 +107,77 @@ class UserServiceTest extends \TestCase
     {
         parent::setUp();
 
-        $this->userRepositoryMock = $this->getMockBuilder(UserRepository::class)->disableOriginalConstructor()->setMethods(
+        $this->userRepositoryMock = $this->getMockBuilder(UserRepository::class)
+            ->disableOriginalConstructor()
+            ->setMethods(
                 [
                         'get',
                         'getUserByEmailAddress',
                         'getUserAttributes',
                         'upsertUserAttributeValue',
                         'createUser'
-                ])->getMock();
-        $this->userAttributeRepositoryMock = $this->getMockBuilder(UserAttributeRepository::class)->disableOriginalConstructor()->setMethods(
-                [
-                        'getUserAttributeByName'
-                ])->getMock();
+                ])
+            ->getMock();
+        $this->userAttributeRepositoryMock = $this->getMockBuilder(UserAttributeRepository::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getUserAttributeByName'
+        ])
+            ->getMock();
 
-        $this->categoryRepositoryMock = $this->getMockBuilder(CategoryRepository::class)->disableOriginalConstructor()->getMock();
+        $this->categoryRepositoryMock = $this->getMockBuilder(CategoryRepository::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $this->credentialTypeRepositoryMock = $this->getMockBuilder(CredentialTypeRepository::class)->disableOriginalConstructor()->setMethods(
-                [
-                        'getCredentialTypeByName'
-                ])->getMock();
+        $this->credentialTypeRepositoryMock = $this->getMockBuilder(CredentialTypeRepository::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getCredentialTypeByName'
+        ])
+            ->getMock();
 
-        $this->accountTypeRepositoryMock = $this->getMockBuilder(AccountTypeRepository::class)->disableOriginalConstructor()->setMethods(
-                [
-                        'getAccountTypeByName'
-                ])->getMock();
+        $this->accountTypeRepositoryMock = $this->getMockBuilder(AccountTypeRepository::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getAccountTypeByName'
+        ])
+            ->getMock();
 
-        $this->cryptoUtilMock = $this->getMockBuilder(NSHCryptoUtil::class)->disableOriginalConstructor()->setMethods(
-                [
-                        'hashThis'
-                ])->getMock();
+        $this->cryptoUtilMock = $this->getMockBuilder(NSHCryptoUtil::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'hashThis'
+        ])
+            ->getMock();
 
-        $this->authServiceMock = $this->getMockBuilder(AuthService::class)->disableOriginalConstructor()->setMethods(
-                [
-                        'generateAuthToken'
-                ])->getMock();
+        $this->authServiceMock = $this->getMockBuilder(AuthService::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'generateAuthToken'
+        ])
+            ->getMock();
+
+        $this->fileHandlerMock = $this->getMockBuilder(NSHFileHandler::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'uploadFile'
+        ])
+            ->getMock();
 
         $this->userService = new UserService($this->userRepositoryMock,
             $this->userAttributeRepositoryMock, $this->categoryRepositoryMock,
             $this->credentialTypeRepositoryMock, $this->accountTypeRepositoryMock,
-            $this->cryptoUtilMock, $this->authServiceMock);
+            $this->cryptoUtilMock, $this->authServiceMock, $this->fileHandlerMock);
 
-        $this->userModelMock = $this->getMockBuilder(User::class)->disableOriginalConstructor()->getMock();
-        $this->userAttributeModelMock = $this->getMockBuilder(UserAttribute::class)->disableOriginalConstructor()->getMock();
-        $this->credentialTypeMock = $this->getMockBuilder(CredentialType::class)->disableOriginalConstructor()->getMock();
+        $this->userModelMock = $this->getMockBuilder(User::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->userAttributeModelMock = $this->getMockBuilder(UserAttribute::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->credentialTypeMock = $this->getMockBuilder(CredentialType::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
@@ -160,17 +195,23 @@ class UserServiceTest extends \TestCase
         $userModel = $this->userModelMock;
         $userAttributeModel = $this->userAttributeModelMock;
 
-        $this->userRepositoryMock->method('get')->with($userId)->willReturn($userModel);
+        $this->userRepositoryMock->method('get')
+            ->with($userId)
+            ->willReturn($userModel);
 
         $this->userAttributeRepositoryMock->method('getUserAttributeByName')->willReturn(
                 $userAttributeModel);
 
-        $this->userRepositoryMock->expects($this->once())->method('get')->with($userId);
-        $this->userAttributeRepositoryMock->expects($this->atMost(2))->method(
-                'getUserAttributeByName')->with($this->isType('string'), $this->isType('boolean'));
+        $this->userRepositoryMock->expects($this->once())
+            ->method('get')
+            ->with($userId);
+        $this->userAttributeRepositoryMock->expects($this->atMost(2))
+            ->method('getUserAttributeByName')
+            ->with($this->isType('string'), $this->isType('boolean'));
 
-        $this->userRepositoryMock->expects($this->once())->method('upsertUserAttributeValue')->with(
-                $userModel, $this->isType('array'));
+        $this->userRepositoryMock->expects($this->once())
+            ->method('upsertUserAttributeValue')
+            ->with($userModel, $this->isType('array'));
 
         $this->userService->upsertUserAttributeValue($userId, $userAttributeValueRequest);
     }
