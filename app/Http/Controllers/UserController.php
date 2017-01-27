@@ -12,6 +12,7 @@ use App\Mappers\AddCredentialRequestMapper;
 use App\Mappers\UserChangeVanityNamePostRequestMapper;
 use App\Mappers\UserAddAccountTypeRequestMapper;
 use App\Mappers\LinkOrUnlinkCategoryRequestMapper;
+use App\Mappers\UserProfileImagePostRequestMapper;
 
 class UserController extends Controller
 {
@@ -71,6 +72,12 @@ class UserController extends Controller
 
     /**
      *
+     * @var UserProfileImagePostRequestMapper
+     */
+    private $userProfileImagePostRequestMapper;
+
+    /**
+     *
      * @param Request                               $request
      * @param UserService                           $service
      * @param UserPostRequestMapper                 $userPostMapper
@@ -90,7 +97,8 @@ class UserController extends Controller
             UserChangeVanityNamePostRequestMapper $userChangeVanityNamePostRequestMapper,
             AddCredentialRequestMapper $addCredentialRequestMapper,
             UserAddAccountTypeRequestMapper $userAddAccoutTypeRequestMapper,
-            LinkOrUnlinkCategoryRequestMapper $linkOrUnlinkCategoryRequestMapper)
+            LinkOrUnlinkCategoryRequestMapper $linkOrUnlinkCategoryRequestMapper,
+            UserProfileImagePostRequestMapper $userProfileImagePostRequestMapper)
     {
         parent::__construct($request);
         $this->service = $service;
@@ -102,6 +110,7 @@ class UserController extends Controller
         $this->addCredentialRequestMapper = $addCredentialRequestMapper;
         $this->userAddAccoutTypeRequestMapper = $userAddAccoutTypeRequestMapper;
         $this->linkOrUnlinkCategoryRequestMapper = $linkOrUnlinkCategoryRequestMapper;
+        $this->userProfileImagePostRequestMapper = $userProfileImagePostRequestMapper;
     }
 
     /**
@@ -360,5 +369,20 @@ class UserController extends Controller
 
         $this->service->addAccountType($id, $postRequest);
         return $this->response();
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @return Reponse
+     */
+    public function uploadUserProfileImage($userId)
+    {
+        $postRequest = $this->userProfileImagePostRequestMapper->map($this->request->all());
+
+        $this->validateRequest($postRequest->getValidationRules());
+        $response = $this->service->uploadUserProfileImage($userId, $postRequest);
+
+        return $this->response($response);
     }
 }

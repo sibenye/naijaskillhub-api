@@ -95,7 +95,9 @@ class AuthServiceTest extends \TestCase
     {
         parent::setUp();
 
-        $this->userRepositoryMock = $this->getMockBuilder(UserRepository::class)->disableOriginalConstructor()->setMethods(
+        $this->userRepositoryMock = $this->getMockBuilder(UserRepository::class)
+            ->disableOriginalConstructor()
+            ->setMethods(
                 [
                         'get',
                         'getUserByEmailAddress',
@@ -105,37 +107,55 @@ class AuthServiceTest extends \TestCase
                         'createUser',
                         'update',
                         'getUserByAuthToken'
-                ])->getMock();
+                ])
+            ->getMock();
 
-        $this->userAttributeRepositoryMock = $this->getMockBuilder(UserAttributeRepository::class)->disableOriginalConstructor()->setMethods(
-                [
-                        'getUserAttributeByName'
-                ])->getMock();
+        $this->userAttributeRepositoryMock = $this->getMockBuilder(UserAttributeRepository::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getUserAttributeByName'
+        ])
+            ->getMock();
 
-        $this->credentialTypeRepositoryMock = $this->getMockBuilder(CredentialTypeRepository::class)->disableOriginalConstructor()->setMethods(
-                [
-                        'getCredentialTypeByName'
-                ])->getMock();
+        $this->credentialTypeRepositoryMock = $this->getMockBuilder(CredentialTypeRepository::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getCredentialTypeByName'
+        ])
+            ->getMock();
 
-        $this->accountTypeRepositoryMock = $this->getMockBuilder(AccountTypeRepository::class)->disableOriginalConstructor()->setMethods(
-                [
-                        'getAccountTypeByName'
-                ])->getMock();
+        $this->accountTypeRepositoryMock = $this->getMockBuilder(AccountTypeRepository::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getAccountTypeByName'
+        ])
+            ->getMock();
 
-        $this->cryptoUtilMock = $this->getMockBuilder(NSHCryptoUtil::class)->disableOriginalConstructor()->setMethods(
+        $this->cryptoUtilMock = $this->getMockBuilder(NSHCryptoUtil::class)
+            ->disableOriginalConstructor()
+            ->setMethods(
                 [
                         'hashThis',
-                        'secureRandomString'
-                ])->getMock();
+                        'generateJWToken'
+                ])
+            ->getMock();
 
         $this->authService = new AuthService($this->userRepositoryMock,
             $this->credentialTypeRepositoryMock, $this->userAttributeRepositoryMock,
             $this->accountTypeRepositoryMock, $this->cryptoUtilMock);
 
-        $this->credentialTypeMock = $this->getMockBuilder(CredentialType::class)->disableOriginalConstructor()->getMock();
-        $this->userModelMock = $this->getMockBuilder(User::class)->disableOriginalConstructor()->getMock();
-        $this->userAttributeModelMock = $this->getMockBuilder(UserAttribute::class)->disableOriginalConstructor()->getMock();
-        $this->accountTypeMock = $this->getMockBuilder(AccountType::class)->disableOriginalConstructor()->getMock();
+        $this->credentialTypeMock = $this->getMockBuilder(CredentialType::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->userModelMock = $this->getMockBuilder(User::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->userAttributeModelMock = $this->getMockBuilder(UserAttribute::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->accountTypeMock = $this->getMockBuilder(AccountType::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
@@ -151,33 +171,42 @@ class AuthServiceTest extends \TestCase
         $registerRequest->setPassword("password");
         $registerRequest->setAccountType('talent');
 
-        $this->userRepositoryMock->method('getUserByEmailAddress')->with(
-                $registerRequest->getEmailAddress())->willReturn([ ]);
+        $this->userRepositoryMock->method('getUserByEmailAddress')
+            ->with($registerRequest->getEmailAddress())
+            ->willReturn([ ]);
 
-        $this->cryptoUtilMock->method('hashThis')->with($registerRequest->getPassword())->willReturn(
-                'password');
+        $this->cryptoUtilMock->method('hashThis')
+            ->with($registerRequest->getPassword())
+            ->willReturn('password');
 
-        $this->cryptoUtilMock->method('secureRandomString')->willReturn('adklfjdldkf');
+        $this->cryptoUtilMock->method('generateJWToken')->willReturn('adklfjdldkf');
 
-        $this->userRepositoryMock->method('getUserByAuthToken')->with('adklfjdldkf')->willReturn(
-                [ ]);
+        $this->userRepositoryMock->method('getUserByAuthToken')
+            ->with('adklfjdldkf')
+            ->willReturn([ ]);
 
-        $this->credentialTypeRepositoryMock->method('getCredentialTypeByName')->with(
-                $registerRequest->getCredentialType())->willReturn($this->credentialTypeMock);
+        $this->credentialTypeRepositoryMock->method('getCredentialTypeByName')
+            ->with($registerRequest->getCredentialType())
+            ->willReturn($this->credentialTypeMock);
 
-        $this->accountTypeRepositoryMock->method('getAccountTypeByName')->with(
-                $registerRequest->getAccountType())->willReturn($this->accountTypeMock);
+        $this->accountTypeRepositoryMock->method('getAccountTypeByName')
+            ->with($registerRequest->getAccountType())
+            ->willReturn($this->accountTypeMock);
 
-        $this->userRepositoryMock->expects($this->once())->method('getUserByEmailAddress')->with(
-                $registerRequest->getEmailAddress());
+        $this->userRepositoryMock->expects($this->once())
+            ->method('getUserByEmailAddress')
+            ->with($registerRequest->getEmailAddress());
 
-        $this->credentialTypeRepositoryMock->expects($this->once())->method(
-                'getCredentialTypeByName')->with($registerRequest->getCredentialType());
+        $this->credentialTypeRepositoryMock->expects($this->once())
+            ->method('getCredentialTypeByName')
+            ->with($registerRequest->getCredentialType());
 
-        $this->accountTypeRepositoryMock->expects($this->once())->method('getAccountTypeByName')->with(
-                $registerRequest->getAccountType());
+        $this->accountTypeRepositoryMock->expects($this->once())
+            ->method('getAccountTypeByName')
+            ->with($registerRequest->getAccountType());
 
-        $this->cryptoUtilMock->expects($this->once())->method('secureRandomString');
+        $this->cryptoUtilMock->expects($this->once())
+            ->method('generateJWToken');
 
         $userDataRequest = [
                 "emailAddress" => "testUser@test.com",
@@ -185,11 +214,11 @@ class AuthServiceTest extends \TestCase
                 "accountType" => "talent",
                 "password" => "password",
                 "credentialTypeId" => $this->credentialTypeMock->id,
-                'authToken' => 'adklfjdldkf',
                 'accountTypeId' => $this->accountTypeMock->id
         ];
-        $this->userRepositoryMock->expects($this->once())->method('createUser')->with(
-                $userDataRequest);
+        $this->userRepositoryMock->expects($this->once())
+            ->method('createUser')
+            ->with($userDataRequest);
 
         $this->authService->register($registerRequest);
     }
@@ -212,39 +241,49 @@ class AuthServiceTest extends \TestCase
         $userModel = $this->userModelMock;
         $userAttributeModel = $this->userAttributeModelMock;
 
-        $this->userRepositoryMock->method('getUserByEmailAddress')->with(
-                $registerRequest->getEmailAddress())->willReturn([ ]);
+        $this->userRepositoryMock->method('getUserByEmailAddress')
+            ->with($registerRequest->getEmailAddress())
+            ->willReturn([ ]);
 
-        $this->cryptoUtilMock->method('hashThis')->with($registerRequest->getPassword())->willReturn(
-                'password');
+        $this->cryptoUtilMock->method('hashThis')
+            ->with($registerRequest->getPassword())
+            ->willReturn('password');
 
-        $this->cryptoUtilMock->method('secureRandomString')->willReturn('adklfjdldkf');
+        $this->cryptoUtilMock->method('generateJWToken')->willReturn('adklfjdldkf');
 
-        $this->userRepositoryMock->method('getUserByAuthToken')->with('adklfjdldkf')->willReturn(
-                [ ]);
+        $this->userRepositoryMock->method('getUserByAuthToken')
+            ->with('adklfjdldkf')
+            ->willReturn([ ]);
 
-        $this->credentialTypeRepositoryMock->method('getCredentialTypeByName')->with(
-                $registerRequest->getCredentialType())->willReturn($this->credentialTypeMock);
+        $this->credentialTypeRepositoryMock->method('getCredentialTypeByName')
+            ->with($registerRequest->getCredentialType())
+            ->willReturn($this->credentialTypeMock);
 
-        $this->accountTypeRepositoryMock->method('getAccountTypeByName')->with(
-                $registerRequest->getAccountType())->willReturn($this->accountTypeMock);
+        $this->accountTypeRepositoryMock->method('getAccountTypeByName')
+            ->with($registerRequest->getAccountType())
+            ->willReturn($this->accountTypeMock);
 
         $this->userAttributeRepositoryMock->method('getUserAttributeByName')->willReturn(
                 $userAttributeModel);
 
-        $this->userRepositoryMock->expects($this->once())->method('getUserByEmailAddress')->with(
-                $registerRequest->getEmailAddress());
+        $this->userRepositoryMock->expects($this->once())
+            ->method('getUserByEmailAddress')
+            ->with($registerRequest->getEmailAddress());
 
-        $this->credentialTypeRepositoryMock->expects($this->once())->method(
-                'getCredentialTypeByName')->with($registerRequest->getCredentialType());
+        $this->credentialTypeRepositoryMock->expects($this->once())
+            ->method('getCredentialTypeByName')
+            ->with($registerRequest->getCredentialType());
 
-        $this->accountTypeRepositoryMock->expects($this->once())->method('getAccountTypeByName')->with(
-                $registerRequest->getAccountType());
+        $this->accountTypeRepositoryMock->expects($this->once())
+            ->method('getAccountTypeByName')
+            ->with($registerRequest->getAccountType());
 
-        $this->cryptoUtilMock->expects($this->once())->method('secureRandomString');
+        $this->cryptoUtilMock->expects($this->once())
+            ->method('generateJWToken');
 
-        $this->userAttributeRepositoryMock->expects($this->atMost(2))->method(
-                'getUserAttributeByName')->with($this->isType('string'), $this->isType('boolean'));
+        $this->userAttributeRepositoryMock->expects($this->atMost(2))
+            ->method('getUserAttributeByName')
+            ->with($this->isType('string'), $this->isType('boolean'));
 
         $this->userRepositoryMock->method('createUser')->willReturn($userModel);
 
@@ -254,14 +293,15 @@ class AuthServiceTest extends \TestCase
                 "accountType" => "talent",
                 "password" => "password",
                 "credentialTypeId" => $this->credentialTypeMock->id,
-                'authToken' => 'adklfjdldkf',
                 'accountTypeId' => $this->accountTypeMock->id
         ];
-        $this->userRepositoryMock->expects($this->once())->method('createUser')->with(
-                $userDataRequest);
+        $this->userRepositoryMock->expects($this->once())
+            ->method('createUser')
+            ->with($userDataRequest);
 
-        $this->userRepositoryMock->expects($this->once())->method('upsertUserAttributeValue')->with(
-                $userModel, $this->isType('array'));
+        $this->userRepositoryMock->expects($this->once())
+            ->method('upsertUserAttributeValue')
+            ->with($userModel, $this->isType('array'));
 
         $this->authService->register($registerRequest);
     }
