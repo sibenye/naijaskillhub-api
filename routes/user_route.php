@@ -106,5 +106,6 @@ $app->delete('/users/{id}/categories',
 
 $app->post('/users/{id}/profileImage',
         [
-                'uses' => 'UserController@uploadUserProfileImage'
+                'uses' => 'UserController@uploadUserProfileImage',
+                'middleware' => 'auth'
         ]);
