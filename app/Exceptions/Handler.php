@@ -62,7 +62,8 @@ class Handler extends ExceptionHandler
                 break;
             case 'Illuminate\Validation\ValidationException' :
                 $validationMessage = $e->getResponse();
-                if (!is_string($e->getResponse())) {
+                if (is_object($e->getResponse()) &&
+                         get_class($e->getResponse()) == 'Symfony\Component\HttpFoundation\Response') {
                     $validationMessage = $e->getResponse()->getContent();
                 }
                 $errorResponse = new NSHResponse(400, 111, $validationMessage);

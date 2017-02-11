@@ -611,7 +611,7 @@ class UserService
 
         // ensure image was uploaded successfully.
         $image = $request->getImage();
-        if (!$image->isValid()) {
+        if (get_class($image) != 'UploadedFile' || !$image->isValid()) {
             throw new ValidationException(NULL, 'The image was not uploaded successfully.');
         }
 
