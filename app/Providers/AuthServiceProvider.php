@@ -31,10 +31,10 @@ class AuthServiceProvider extends ServiceProvider
         // the User instance via an API token or any other method necessary.
         $this->app ['auth']->viaRequest('api',
                 function ($request) {
-                    if ($request->header('AUTH-TOKEN')) {
+                    if ($request->header('NSH-AUTH-TOKEN')) {
                         // parse the token
                         $jwtClient = new NSHJWTClientWrapper();
-                        $token = $jwtClient->parseToken($request->header('AUTH-TOKEN'));
+                        $token = $jwtClient->parseToken($request->header('NSH-AUTH-TOKEN'));
                         // check if expired
                         if ($jwtClient->tokenIsExpired($token)) {
                             return null;

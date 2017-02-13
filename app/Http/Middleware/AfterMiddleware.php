@@ -22,7 +22,7 @@ class AfterMiddleware
                 [
                         "Access-Control-Allow-Origin" => env("ALLOW_ORIGIN"),
                         "Access-Control-Allow-Methods" => "GET,POST,PUT,DELETE,OPTIONS",
-                        "Access-Control-Allow-Headers" => "NSH-API-KEY,AUTH-TOKEN,Content-Type"
+                        "Access-Control-Allow-Headers" => "NSH-API-KEY,NSH-AUTH-TOKEN,Content-Type,Location"
                 ]);
         return $response;
     }

@@ -103,9 +103,3 @@ $app->delete('/users/{id}/categories',
                 'uses' => 'UserController@unlinkUserFromCategory',
                 'middleware' => 'auth'
         ]);
-
-$app->post('/users/{id}/profileImage',
-        [
-                'uses' => 'UserController@uploadUserProfileImage',
-                'middleware' => 'auth'
-        ]);

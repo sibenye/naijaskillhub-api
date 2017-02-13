@@ -26,8 +26,8 @@ class UserImagePortfolioPostRequestMapper implements IMapper
         $out = new UserImagePortfolioPostRequest();
 
         $out->setImageId(array_get($in, 'imageId', NULL));
-        $out->setImage(array_get($in, 'image', NULL));
         $out->setCaption(array_get($in, 'caption', NULL));
+        $out->setUploadContentType(array_get($in, 'uploadContentType', NULL));
 
         return $out;
     }

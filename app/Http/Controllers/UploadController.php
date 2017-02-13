@@ -7,6 +7,8 @@ namespace App\Http\Controllers;
 use App\Services\UploadService;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Mappers\FileUploadRequestMapper;
 
 /**
  * Upload Controller.
@@ -17,27 +19,102 @@ use Illuminate\Http\Request;
  */
 class UploadController extends Controller
 {
-    private $uploadService;
+    private $service;
 
     /**
      *
-     * @param UploadService $uploadService
+     * @var FileUploadRequestMapper
      */
-    public function __construct(Request $request, UploadService $uploadService)
+    private $fileUploadRequestMapper;
+
+    /**
+     *
+     * @param Request $request
+     * @param UploadService $uploadService
+     * @param FileUploadRequestMapper $fileUploadRequestMapper
+     */
+    public function __construct(Request $request, UploadService $uploadService,
+            FileUploadRequestMapper $fileUploadRequestMapper)
     {
         parent::__construct($request);
-        $this->uploadService = $uploadService;
+        $this->service = $uploadService;
+        $this->fileUploadRequestMapper = $fileUploadRequestMapper;
+    }
+
+    /**
+     *
+     * @param integer $userId
+     * @return Reponse
+     */
+    public function uploadUserProfileImage()
+    {
+        $postRequest = $this->mapFileUploadRequest();
+
+        $userId = Auth::user()->id;
+
+        $response = $this->service->uploadUserProfileImage($userId, $postRequest);
+
+        return $this->response($response);
     }
 
     /**
      *
      * @return Response
      */
-    public function uploadImage()
+    public function uploadUserPorfolioImage()
     {
-        $image = $this->request->file("image");
-        $meatdata = $this->uploadService->uploadImage($image);
+        $postRequest = $this->mapFileUploadRequest();
 
-        return $this->response($meatdata);
+        $userId = Auth::user()->id;
+
+        $location = $this->request->header('Location');
+
+        $response = $this->service->uploadUserPortfolioImage($userId, $location, $postRequest);
+
+        return $this->response($response);
+    }
+
+    /**
+     *
+     * @return Response
+     */
+    public function uploadUserPortfolioAudio()
+    {
+        $postRequest = $this->mapFileUploadRequest();
+
+        $userId = Auth::user()->id;
+
+        $location = $this->request->header('Location');
+
+        $response = $this->service->uploadUserPortfolioAudio($userId, $location, $postRequest);
+
+        return $this->response($response);
+    }
+
+    /**
+     *
+     * @return Response
+     */
+    public function validateFileUpload()
+    {
+        $postRequest = $this->mapFileUploadRequest();
+
+        $this->service->validateUploadRequest($postRequest);
+
+        return $this->response();
+    }
+
+    /**
+     *
+     * @return \App\Models\Requests\FileUploadRequest
+     */
+    private function mapFileUploadRequest()
+    {
+        $request = [
+                'file' => $this->request->getContent(),
+                'contentType' => $this->request->header('Content-Type'),
+                'contentLength' => $this->request->header('Content-Length')
+        ];
+        return $this->fileUploadRequestMapper->map($request);
     }
 }

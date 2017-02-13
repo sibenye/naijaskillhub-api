@@ -50,7 +50,7 @@ class NSHJWTClientWrapper
             ->setId($this->jti, true)
             ->setIssuedAt($now)
             ->setNotBefore($now)
-            ->setExpiration($now + 3600)
+            ->setExpiration($now + $this->duration)
             ->set('email', $emailAddress)
             ->sign($this->signer, $this->secretKey)
             ->getToken();
