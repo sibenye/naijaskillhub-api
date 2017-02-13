@@ -6,25 +6,24 @@
 namespace App\Services;
 
 use App\Enums\CredentialType;
+use App\Models\DAO\User;
 use App\Models\Requests\AddCredentialRequest;
+use App\Models\Requests\LinkOrUnlinkCategoryRequest;
+use App\Models\Requests\UserAddAccountTypeRequest;
 use App\Models\Requests\UserChangeEmailPostRequest;
 use App\Models\Requests\UserChangePasswordPostRequest;
+use App\Models\Requests\UserChangeVanityNamePostRequest;
 use App\Models\Requests\UserForgotPasswordPostRequest;
 use App\Models\Requests\UserResetPasswordPostRequest;
+use App\Repositories\AccountTypeRepository;
 use App\Repositories\CategoryRepository;
 use App\Repositories\CredentialTypeRepository;
 use App\Repositories\UserAttributeRepository;
 use App\Repositories\UserRepository;
 use App\Utilities\NSHCryptoUtil;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\Requests\UserChangeVanityNamePostRequest;
-use App\Models\DAO\User;
-use App\Models\Requests\UserAddAccountTypeRequest;
-use App\Repositories\AccountTypeRepository;
-use App\Models\Requests\LinkOrUnlinkCategoryRequest;
-use App\Models\Requests\FileUploadRequest;
 use App\Utilities\NSHFileHandler;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
 
 /**
  * UserService class.
@@ -595,73 +594,6 @@ class UserService
         }
 
         $this->userRepository->addAccountType($user, $accountType);
-    }
-
-    /**
-     *
-     * @param integer $userId
-     * @param FileUploadRequest $request
-     * @throws ValidationException
-     * @return array
-     */
-    public function uploadUserProfileImage($userId, $request)
-    {
-        // validate userId.
-        $user = $this->userRepository->get($userId);
-
-        if (empty($request ['image'])) {
-            throw new ValidationException(NULL, 'The Image content is required');
-        }
-
-        if (empty($request ['contentType'])) {
-            throw new ValidationException(NULL,
-                'The Content-type header is empty. Specify Content-type.');
-        }
-
-        // ensure the content is of type image.
-        $image = $request ['image'];
-        $contentType = $request ['contentType'];
-        if (!$this->fileHandler->contentTypeIsImage($contentType)) {
-            throw new ValidationException(NULL, 'The content is not an image.');
-        }
-
-        // TODO ensure image size is not more than 2MB
-
-        $userAttribute = $this->userAttributeRepository->getUserAttributeByName('profileImage',
-                true);
-
-        // delete exsiting profile image file if any
-        $attributeName = [
-                'profileImage'
-        ];
-        $existingProfileImage = $this->userRepository->getUserAttributes($user->id, $attributeName);
-
-        if (!$existingProfileImage->isEmpty()) {
-            $existingProfileImageFilePath = $existingProfileImage->first()->pivot->attributeValue;
-            $this->fileHandler->deleteFile($existingProfileImageFilePath);
-        }
-
-        // save image file.
-        $filename = $userId . '_profile_' . time() . '.' .
-                 $this->fileHandler->getImageExtension($contentType);
-
-        $relativeDirPath = 'media/';
-        $filePath = $filename;
-
-        $this->fileHandler->uploadFile($filename, $image, $relativeDirPath);
-
-        // save image filePath
-        $attributesCollection = array ();
-
-        $attributesCollection [0] ['attributeId'] = $userAttribute ['id'];
-        $attributesCollection [0] ['attributeValue'] = $filePath;
-
-        $this->userRepository->upsertUserAttributeValue($user, $attributesCollection);
-
-        $response = array ();
-        $response ['filePath'] = $filePath;
-
-        return $response;
     }
 
     /**

@@ -20,7 +20,7 @@ $app->post('/upload/portfolio/audio',
                 'middleware' => 'auth'
         ]);
 
-$app->post('/upload/validate',
+$app->post('/upload/validateFile',
         [
                 'uses' => 'UploadController@validateFileUpload'
         ]);

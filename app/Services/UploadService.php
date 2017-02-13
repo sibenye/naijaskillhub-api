@@ -127,6 +127,10 @@ class UploadService
             throw new ValidationException(NULL, 'The content is not an image file.');
         }
 
+        if (empty($location)) {
+            throw new ValidationException(NULL, 'The location header is required.');
+        }
+
         $filePath = $location;
 
         $this->fileHandler->uploadFile($filePath, $image);
@@ -150,6 +154,10 @@ class UploadService
 
         if (!$this->fileHandler->fileTypeIsAudio($contentType)) {
             throw new ValidationException(NULL, 'The content is not an audio file.');
+        }
+
+        if (empty($location)) {
+            throw new ValidationException(NULL, 'The location header is required.');
         }
 
         $filePath = $location;
