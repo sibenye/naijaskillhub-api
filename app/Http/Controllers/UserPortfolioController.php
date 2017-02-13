@@ -146,7 +146,8 @@ class UserPortfolioController extends Controller
         $userImagesPortfolio = array ();
 
         if (empty($imageId)) {
-            $this->validateRequest($postRequest->getValidationRules());
+            $this->validateRequest($postRequest->getValidationRules(),
+                    $postRequest->getCustomMessages());
             $userImagesPortfolio = $this->service->createUserImagePortfolio($userId, $postRequest);
         } else {
             $this->validateRequest($postRequest->getUpdateValidationRules());
@@ -167,7 +168,8 @@ class UserPortfolioController extends Controller
         $userVideosPortfolio = array ();
 
         if (empty($videoId)) {
-            $this->validateRequest($postRequest->getValidationRules());
+            $this->validateRequest($postRequest->getValidationRules(),
+                    $postRequest->getCustomMessages());
             $userVideosPortfolio = $this->service->createUserVideoPortfolio($userId, $postRequest);
         } else {
             $this->validateRequest($postRequest->getUpdateValidationRules());

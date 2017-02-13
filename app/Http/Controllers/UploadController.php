@@ -48,16 +48,73 @@ class UploadController extends Controller
      */
     public function uploadUserProfileImage()
     {
+        $postRequest = $this->mapFileUploadRequest();
+
         $userId = Auth::user()->id;
+
+        $response = $this->service->uploadUserProfileImage($userId, $postRequest);
+
+        return $this->response($response);
+    }
+
+    /**
+     *
+     * @return Response
+     */
+    public function uploadUserPorfolioImage()
+    {
+        $postRequest = $this->mapFileUploadRequest();
+
+        $userId = Auth::user()->id;
+
+        $location = $this->request->header('Location');
+
+        $response = $this->service->uploadUserPortfolioImage($userId, $location, $postRequest);
+
+        return $this->response($response);
+    }
+
+    /**
+     *
+     * @return Response
+     */
+    public function uploadUserPortfolioAudio()
+    {
+        $postRequest = $this->mapFileUploadRequest();
+
+        $userId = Auth::user()->id;
+
+        $location = $this->request->header('Location');
+
+        $response = $this->service->uploadUserPortfolioAudio($userId, $location, $postRequest);
+
+        return $this->response($response);
+    }
+
+    /**
+     *
+     * @return Response
+     */
+    public function validateFileUpload()
+    {
+        $postRequest = $this->mapFileUploadRequest();
+
+        $this->service->validateUploadRequest($postRequest);
+
+        return $this->response();
+    }
+
+    /**
+     *
+     * @return \App\Models\Requests\FileUploadRequest
+     */
+    private function mapFileUploadRequest()
+    {
         $request = [
                 'file' => $this->request->getContent(),
                 'contentType' => $this->request->header('Content-Type'),
                 'contentLength' => $this->request->header('Content-Length')
         ];
-        $postRequest = $this->fileUploadRequestMapper->map($request);
-
-        $response = $this->service->uploadUserProfileImage($userId, $postRequest);
-
-        return $this->response($response);
+        return $this->fileUploadRequestMapper->map($request);
     }
 }

@@ -180,35 +180,21 @@ class UserPortfolioService
         // validate userId.
         $this->userRepository->get($userId);
 
-        // ensure image was uploaded successfully.
-        $image = $request->getImage();
-        if (!$image->isValid()) {
-            throw new ValidationException(NULL, 'The image was not uploaded successfully.');
+        // ensure the uploadContentType is in the right format
+        if (!preg_match('/\w\/\w/', $request->getUploadContentType())) {
+            throw new ValidationException(NULL,
+                'The uploadContentType should be in this format "image/{image extension}".');
         }
 
-        // ensure image size is not more than 2MB
-        if ($image->getSize() > 2048000) {
-            throw new ValidationException(NULL, 'The image size is more than 2MB.');
-        }
-
-        // save image file.
-        $filename = $userId . '_' . time() . '.' . $image->getClientOriginalExtension();
-
-        $relativeDirPath = 'media/' . $userId . '/images';
-
-        $imageObject = $this->fileHandler->makeImage($image);
-
-        $this->fileHandler->uploadFile($filename, $image, $relativeDirPath);
+        $extension = $this->fileHandler->getFileExtension($request->getUploadContentType());
+        $filename = $userId . '_' . time() . '.' . $extension;
 
         // save image portfolio.
         $modelAttribute = array ();
         $modelAttribute ['userId'] = $userId;
         $modelAttribute ['caption'] = $request->getCaption();
         $modelAttribute ['fileName'] = $filename;
-        $modelAttribute ['fileSize'] = $image->getSize();
-        $modelAttribute ['filePath'] = $relativeDirPath . '/' . $filename;
-        $modelAttribute ['width'] = $imageObject->width();
-        $modelAttribute ['height'] = $imageObject->height();
+        $modelAttribute ['filePath'] = $filename;
 
         $this->userImagePortfolioRepository->create($modelAttribute);
 
@@ -324,38 +310,23 @@ class UserPortfolioService
         // validate userId.
         $this->userRepository->get($userId);
 
-        // ensure image was uploaded successfully.
-        $audio = $request->getAudio();
-        if (!$audio->isValid()) {
-            throw new ValidationException(NULL, 'The audio file was not uploaded successfully.');
+        // ensure the uploadContentType is in the right format
+        if (!preg_match('/\w\/\w/', $request->getUploadContentType())) {
+            throw new ValidationException(NULL,
+                'The uploadContentType should be in this format "audio/{audio extension}".');
         }
 
-        // ensure audio file size is not more than 2MB
-        if ($audio->getSize() > 2048000) {
-            throw new ValidationException(NULL, 'The audio file size is more than 2MB.');
-        }
+        $extension = $this->fileHandler->getFileExtension($request->getUploadContentType());
+        $filename = $userId . '_' . time() . '.' . $extension;
 
-        // save audio file.
-        $filename = $userId . '_' . time() . '.' . $audio->getClientOriginalExtension();
+        $caption = $request->getCaption();
 
-        $relativeDirPath = 'media/' . $userId . '/audios';
-
-        $this->fileHandler->uploadFile($filename, $audio, $relativeDirPath);
-
-        $caption = '';
-        if (empty($request->getCaption())) {
-            $caption = $audio->getClientOriginalName();
-        } else {
-            $caption = $request->getCaption();
-        }
-
-        // save image portfolio.
+        // save audio portfolio.
         $modelAttribute = array ();
         $modelAttribute ['userId'] = $userId;
         $modelAttribute ['caption'] = $caption;
         $modelAttribute ['fileName'] = $filename;
-        $modelAttribute ['fileSize'] = $audio->getSize();
-        $modelAttribute ['filePath'] = $relativeDirPath . '/' . $filename;
+        $modelAttribute ['filePath'] = $filename;
 
         $this->userAudioPortfolioRepository->create($modelAttribute);
 
@@ -605,10 +576,7 @@ class UserPortfolioService
             $imagesContent [$key] ['imageId'] = $value->id;
             $imagesContent [$key] ['filePath'] = $value->filePath;
             $imagesContent [$key] ['fileName'] = $value->fileName;
-            $imagesContent [$key] ['fileSize'] = $value->fileSize;
             $imagesContent [$key] ['caption'] = $value->caption;
-            $imagesContent [$key] ['width'] = $value->width;
-            $imagesContent [$key] ['height'] = $value->height;
             $imagesContent [$key] ['createdDate'] = $value->createdDate->toDateTimeString();
             $imagesContent [$key] ['modifiedDate'] = $value->modifiedDate->toDateTimeString();
             ;
@@ -652,7 +620,6 @@ class UserPortfolioService
             $audiosContent [$key] ['filePath'] = $value->filePath;
             $audiosContent [$key] ['caption'] = $value->caption;
             $audiosContent [$key] ['fileName'] = $value->fileName;
-            $audiosContent [$key] ['fileSize'] = $value->fileSize;
             $audiosContent [$key] ['createdDate'] = $value->createdDate->toDateTimeString();
             $audiosContent [$key] ['modifiedDate'] = $value->modifiedDate->toDateTimeString();
             ;

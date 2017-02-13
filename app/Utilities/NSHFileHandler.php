@@ -9,6 +9,7 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Http\File;
 use App\Utilities\NSHSFTPClientWrapper;
 use GrahamCampbell\Flysystem\FlysystemManager;
+use GrahamCampbell\Flysystem\Facades\Flysystem;
 
 /**
  *
@@ -17,8 +18,25 @@ use GrahamCampbell\Flysystem\FlysystemManager;
  */
 class NSHFileHandler
 {
+    const IMAGE_FILE_TYPE = 'image';
+    const AUDIO_FILE_TYPE = 'audio';
+
+    /**
+     *
+     * @var NSHSFTPClientWrapper
+     */
     private $sftpClientWrapper;
+
+    /**
+     *
+     * @var boolean
+     */
     private $sftpEnabled;
+
+    /**
+     *
+     * @var FlysystemManager
+     */
     private $flysystem;
 
     public function __construct(NSHSFTPClientWrapper $sftpClientWrapper, FlysystemManager $flysystem)
@@ -34,9 +52,20 @@ class NSHFileHandler
      * @param string $contentType
      * @return boolean
      */
-    public function contentTypeIsImage($contentType)
+    public function fileTypeIsImage($contentType)
     {
-        return (preg_split('/\//', $contentType) [0] == 'image');
+        return ($this->getFileType($contentType) == self::IMAGE_FILE_TYPE);
+    }
+
+    /**
+     * Checks if contentType is an audio.
+     *
+     * @param string $contentType
+     * @return boolean
+     */
+    public function fileTypeIsAudio($contentType)
+    {
+        return ($this->getFileType($contentType) == self::AUDIO_FILE_TYPE);
     }
 
     /**
@@ -44,7 +73,17 @@ class NSHFileHandler
      * @param string $contentType
      * @return string
      */
-    public function getImageExtension($contentType)
+    public function getFileType($contentType)
+    {
+        return preg_split('/\//', $contentType) [0];
+    }
+
+    /**
+     *
+     * @param string $contentType
+     * @return string
+     */
+    public function getFileExtension($contentType)
     {
         return preg_split('/\//', $contentType) [1];
     }
@@ -176,6 +215,12 @@ class NSHFileHandler
         $this->sftpClientWrapper->uploadFile($fileName, $file->getRealPath());
     }
 
+    /**
+     * Gets the size of a file.
+     *
+     * @param string $fileString
+     * @return mixed|int
+     */
     public function getFileSize($fileString)
     {
         if (function_exists('mb_strlen')) {

@@ -64,8 +64,8 @@ class UploadService
         $image = $request->getFile();
         $contentType = $request->getContentType();
 
-        if (!$this->fileHandler->contentTypeIsImage($contentType)) {
-            throw new ValidationException(NULL, 'The content is not an image.');
+        if (!$this->fileHandler->fileTypeIsImage($contentType)) {
+            throw new ValidationException(NULL, 'The content is not an image file.');
         }
 
         $userAttribute = $this->userAttributeRepository->getUserAttributeByName('profileImage',
@@ -84,11 +84,11 @@ class UploadService
 
         // save image file.
         $filename = $userId . '_profile_' . time() . '.' .
-                 $this->fileHandler->getImageExtension($contentType);
+                 $this->fileHandler->getFileExtension($contentType);
 
         $filePath = $filename;
 
-        $this->fileHandler->uploadFile($filename, $image);
+        $this->fileHandler->uploadFile($filePath, $image);
 
         // save image filePath
         $attributesCollection = array ();
@@ -105,12 +105,70 @@ class UploadService
     }
 
     /**
+     *
+     * @param integer $userId
+     * @param string $location
+     * @param FileUploadRequest $request
+     * @throws ValidationException
+     * @return array
+     */
+    public function uploadUserPortfolioImage($userId, $location, FileUploadRequest $request)
+    {
+        $this->validateUploadRequest($request);
+
+        // validate userId.
+        $this->userRepository->get($userId);
+
+        // ensure the content is of type image.
+        $image = $request->getFile();
+        $contentType = $request->getContentType();
+
+        if (!$this->fileHandler->fileTypeIsImage($contentType)) {
+            throw new ValidationException(NULL, 'The content is not an image file.');
+        }
+
+        $filePath = $location;
+
+        $this->fileHandler->uploadFile($filePath, $image);
+
+        $response = array ();
+        $response ['filePath'] = $filePath;
+
+        return $response;
+    }
+
+    public function uploadUserPortfolioAudio($userId, $location, FileUploadRequest $request)
+    {
+        $this->validateUploadRequest($request);
+
+        // validate userId.
+        $this->userRepository->get($userId);
+
+        // ensure the content is of type image.
+        $image = $request->getFile();
+        $contentType = $request->getContentType();
+
+        if (!$this->fileHandler->fileTypeIsAudio($contentType)) {
+            throw new ValidationException(NULL, 'The content is not an audio file.');
+        }
+
+        $filePath = $location;
+
+        $this->fileHandler->uploadFile($filePath, $image);
+
+        $response = array ();
+        $response ['filePath'] = $filePath;
+
+        return $response;
+    }
+
+    /**
      * Validates the upload request.
      *
      * @param FileUploadRequest $request
      * @throws ValidationException
      */
-    private function validateUploadRequest(FileUploadRequest $request)
+    public function validateUploadRequest(FileUploadRequest $request)
     {
         if (empty($request->getFile())) {
             throw new ValidationException(NULL, 'The File to be uploaded is required');
@@ -120,7 +178,12 @@ class UploadService
             throw new ValidationException(NULL, 'The Content-Type header is required');
         }
 
-        var_dump('SIZE: ' . $this->fileHandler->getFileSize($request->getFile()));
+        // ensure the contentType is in the right format
+        if (!preg_match('/\w\/\w/', $request->getContentType())) {
+            throw new ValidationException(NULL,
+                'The Content-Type header should be in this format "{type}/{type extension}".');
+        }
+
         if ($this->fileHandler->getFileSize($request->getFile()) > 2048000) {
             throw new ValidationException(NULL, 'The image size is more than 2MB.');
         }

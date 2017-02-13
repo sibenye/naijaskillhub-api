@@ -4,8 +4,6 @@
  */
 namespace App\Models\Requests;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 /**
  * UserImagePortfolioPost Request.
  *
@@ -22,15 +20,15 @@ class UserImagePortfolioPostRequest implements IPostRequest
 
     /**
      *
-     * @var UploadedFile
+     * @var string
      */
-    private $image;
+    private $caption;
 
     /**
      *
      * @var string
      */
-    private $caption;
+    private $uploadContentType;
 
     /**
      * {@inheritDoc}
@@ -42,9 +40,6 @@ class UserImagePortfolioPostRequest implements IPostRequest
 
         if (!empty($this->imageId)) {
             $attr ['imageId'] = $this->imageId;
-        }
-        if (!empty($this->image)) {
-            $attr ['image'] = $this->image;
         }
         if ($this->caption !== NULL) {
             $attr ['caption'] = $this->caption;
@@ -61,8 +56,8 @@ class UserImagePortfolioPostRequest implements IPostRequest
     public function getValidationRules()
     {
         return [
-                'image' => 'required',
-                'caption' => 'max:200'
+                'caption' => 'max:200',
+                'uploadContentType' => 'required|max:20'
         ];
     }
 
@@ -79,22 +74,15 @@ class UserImagePortfolioPostRequest implements IPostRequest
     }
 
     /**
+     * Get custom validation messages.
      *
-     * @return \Symfony\Component\HttpFoundation\File\UploadedFile|NULL
+     * @return array
      */
-    public function getImage()
+    public function getCustomMessages()
     {
-        return $this->image;
-    }
-
-    /**
-     *
-     * @param UploadedFile|NULL $image
-     * @return void
-     */
-    public function setImage($image)
-    {
-        $this->image = $image;
+        return [
+                'uploadContentType.required' => 'uploadContentType is required. And should be in this format "image/{image extension}"'
+        ];
     }
 
     /**
@@ -131,5 +119,24 @@ class UserImagePortfolioPostRequest implements IPostRequest
     public function setImageId($imageId)
     {
         $this->imageId = $imageId;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getUploadContentType()
+    {
+        return $this->uploadContentType;
+    }
+
+    /**
+     *
+     * @param string $uploadContentType
+     * return void
+     */
+    public function setUploadContentType($uploadContentType)
+    {
+        $this->uploadContentType = $uploadContentType;
     }
 }

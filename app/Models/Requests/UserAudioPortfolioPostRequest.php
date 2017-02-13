@@ -4,8 +4,6 @@
  */
 namespace App\Models\Requests;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 /**
  * UserAudioPortfolioPost Request.
  *
@@ -22,15 +20,15 @@ class UserAudioPortfolioPostRequest implements IPostRequest
 
     /**
      *
-     * @var UploadedFile
+     * @var string
      */
-    private $audio;
+    private $caption;
 
     /**
      *
      * @var string
      */
-    private $caption;
+    private $uploadContentType;
 
     /**
      * {@inheritDoc}
@@ -42,9 +40,6 @@ class UserAudioPortfolioPostRequest implements IPostRequest
 
         if (!empty($this->audioId)) {
             $attr ['audioId'] = $this->audioId;
-        }
-        if (!empty($this->audio)) {
-            $attr ['audio'] = $this->audio;
         }
         if ($this->caption !== NULL) {
             $attr ['caption'] = $this->caption;
@@ -61,8 +56,8 @@ class UserAudioPortfolioPostRequest implements IPostRequest
     public function getValidationRules()
     {
         return [
-                'audio' => 'required',
-                'caption' => 'max:200'
+                'caption' => 'required|max:200',
+                'uploadContentType' => 'required|max:20'
         ];
     }
 
@@ -75,6 +70,18 @@ class UserAudioPortfolioPostRequest implements IPostRequest
         return [
                 'audioId' => 'required',
                 'caption' => 'required|max:200'
+        ];
+    }
+
+    /**
+     * Get custom validation messages.
+     *
+     * @return array
+     */
+    public function getCustomMessages()
+    {
+        return [
+                'uploadContentType.required' => 'uploadContentType is required. And should be in this format "audio/{audio extension}"'
         ];
     }
 
@@ -96,24 +103,7 @@ class UserAudioPortfolioPostRequest implements IPostRequest
     }
 
     /**
-     * @return the UploadedFile
-     */
-    public function getAudio()
-    {
-        return $this->audio;
-    }
-
-    /**
-     * @param UploadedFile $audio
-     * @return void
-     */
-    public function setAudio(UploadedFile $audio)
-    {
-        $this->audio = $audio;
-    }
-
-    /**
-     * @return the string
+     * @return string
      */
     public function getCaption()
     {
@@ -127,5 +117,22 @@ class UserAudioPortfolioPostRequest implements IPostRequest
     public function setCaption($caption)
     {
         $this->caption = $caption;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUploadContentType()
+    {
+        return $this->uploadContentType;
+    }
+
+    /**
+     * @param string $uploadContentType
+     * return void
+     */
+    public function setUploadContentType($uploadContentType)
+    {
+        $this->uploadContentType = $uploadContentType;
     }
 }

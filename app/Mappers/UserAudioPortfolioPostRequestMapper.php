@@ -26,8 +26,8 @@ class UserAudioPortfolioPostRequestMapper implements IMapper
         $out = new UserAudioPortfolioPostRequest();
 
         $out->setAudioId(array_get($in, 'audioId', NULL));
-        $out->setAudio(array_get($in, 'audio', NULL));
         $out->setCaption(array_get($in, 'caption', NULL));
+        $out->setUploadContentType(array_get($in, 'uploadContentType', NULL));
 
         return $out;
     }
