@@ -2,6 +2,8 @@
 /**
  * Upload endpoint routes
  */
-$app->post('/upload/images', [
-        'uses' => 'UploadController@uploadImage'
-]);
+$app->post('/upload/profileImage',
+        [
+                'uses' => 'UploadController@uploadUserProfileImage',
+                'middleware' => 'auth'
+        ]);

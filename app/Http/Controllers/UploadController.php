@@ -7,6 +7,8 @@ namespace App\Http\Controllers;
 use App\Services\UploadService;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Mappers\FileUploadRequestMapper;
 
 /**
  * Upload Controller.
@@ -17,27 +19,45 @@ use Illuminate\Http\Request;
  */
 class UploadController extends Controller
 {
-    private $uploadService;
+    private $service;
 
     /**
      *
-     * @param UploadService $uploadService
+     * @var FileUploadRequestMapper
      */
-    public function __construct(Request $request, UploadService $uploadService)
+    private $fileUploadRequestMapper;
+
+    /**
+     *
+     * @param Request $request
+     * @param UploadService $uploadService
+     * @param FileUploadRequestMapper $fileUploadRequestMapper
+     */
+    public function __construct(Request $request, UploadService $uploadService,
+            FileUploadRequestMapper $fileUploadRequestMapper)
     {
         parent::__construct($request);
-        $this->uploadService = $uploadService;
+        $this->service = $uploadService;
+        $this->fileUploadRequestMapper = $fileUploadRequestMapper;
     }
 
     /**
      *
-     * @return Response
+     * @param integer $userId
+     * @return Reponse
      */
-    public function uploadImage()
+    public function uploadUserProfileImage()
     {
-        $image = $this->request->file("image");
-        $meatdata = $this->uploadService->uploadImage($image);
+        $userId = Auth::user()->id;
+        $request = [
+                'file' => $this->request->getContent(),
+                'contentType' => $this->request->header('Content-Type'),
+                'contentLength' => $this->request->header('Content-Length')
+        ];
+        $postRequest = $this->fileUploadRequestMapper->map($request);
 
-        return $this->response($meatdata);
+        $response = $this->service->uploadUserProfileImage($userId, $postRequest);
+
+        return $this->response($response);
     }
 }

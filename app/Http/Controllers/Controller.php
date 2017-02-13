@@ -26,8 +26,8 @@ class Controller extends BaseController
         return $nsh_response->render();
     }
 
-    public function validateRequest($validationRules)
+    public function validateRequest($validationRules, $customMessages = [])
     {
-        $this->validate($this->request, $validationRules);
+        $this->validate($this->request, $validationRules, $customMessages);
     }
 }

@@ -8,3 +8,4 @@ Homestead.yaml
 /.vagrant/
 /.settings/
 /public/media/*
+.DS_Store

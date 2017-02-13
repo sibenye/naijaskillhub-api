@@ -23,7 +23,7 @@ use App\Models\DAO\User;
 use App\Models\Requests\UserAddAccountTypeRequest;
 use App\Repositories\AccountTypeRepository;
 use App\Models\Requests\LinkOrUnlinkCategoryRequest;
-use App\Models\Requests\UserProfileImagePostRequest;
+use App\Models\Requests\FileUploadRequest;
 use App\Utilities\NSHFileHandler;
 
 /**
@@ -600,25 +600,32 @@ class UserService
     /**
      *
      * @param integer $userId
-     * @param UserProfileImagePostRequest $request
+     * @param FileUploadRequest $request
      * @throws ValidationException
      * @return array
      */
-    public function uploadUserProfileImage($userId, UserProfileImagePostRequest $request)
+    public function uploadUserProfileImage($userId, $request)
     {
         // validate userId.
         $user = $this->userRepository->get($userId);
 
-        // ensure image was uploaded successfully.
-        $image = $request->getImage();
-        if (get_class($image) != 'UploadedFile' || !$image->isValid()) {
-            throw new ValidationException(NULL, 'The image was not uploaded successfully.');
+        if (empty($request ['image'])) {
+            throw new ValidationException(NULL, 'The Image content is required');
         }
 
-        // ensure image size is not more than 2MB
-        if ($image->getSize() > 2048000) {
-            throw new ValidationException(NULL, 'The image size is more than 2MB.');
+        if (empty($request ['contentType'])) {
+            throw new ValidationException(NULL,
+                'The Content-type header is empty. Specify Content-type.');
         }
+
+        // ensure the content is of type image.
+        $image = $request ['image'];
+        $contentType = $request ['contentType'];
+        if (!$this->fileHandler->contentTypeIsImage($contentType)) {
+            throw new ValidationException(NULL, 'The content is not an image.');
+        }
+
+        // TODO ensure image size is not more than 2MB
 
         $userAttribute = $this->userAttributeRepository->getUserAttributeByName('profileImage',
                 true);
@@ -635,15 +642,16 @@ class UserService
         }
 
         // save image file.
-        $filename = $userId . '_profile_' . time() . '.' . $image->getClientOriginalExtension();
+        $filename = $userId . '_profile_' . time() . '.' .
+                 $this->fileHandler->getImageExtension($contentType);
 
-        $relativeDirPath = 'media/' . $userId . '/images';
+        $relativeDirPath = 'media/';
+        $filePath = $filename;
 
         $this->fileHandler->uploadFile($filename, $image, $relativeDirPath);
 
         // save image filePath
         $attributesCollection = array ();
-        $filePath = $relativeDirPath . '/' . $filename;
 
         $attributesCollection [0] ['attributeId'] = $userAttribute ['id'];
         $attributesCollection [0] ['attributeValue'] = $filePath;
