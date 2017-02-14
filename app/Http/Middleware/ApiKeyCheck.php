@@ -16,7 +16,7 @@ class ApiKeyCheck
      */
     public function handle($request, Closure $next)
     {
-        if (app()->environment('production', 'staging')) {
+        if (app()->environment('production', 'staging') && $request->getMethod() != 'OPTIONS') {
             // Require API Key when environment is either production OR staging...
             if (empty($request->header('NSH-API-KEY'))) {
                 $nsh_response = new NSHResponse(403, 177);
