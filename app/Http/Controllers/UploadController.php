@@ -110,9 +110,13 @@ class UploadController extends Controller
      */
     private function mapFileUploadRequest()
     {
+        $contentType = $this->request->header('Upload-Content-Type');
+        if (empty($contentType)) {
+            $contentType = $this->request->header('Content-Type');
+        }
         $request = [
                 'file' => $this->request->getContent(),
-                'contentType' => $this->request->header('Content-Type'),
+                'contentType' => $contentType,
                 'contentLength' => $this->request->header('Content-Length')
         ];
         return $this->fileUploadRequestMapper->map($request);
