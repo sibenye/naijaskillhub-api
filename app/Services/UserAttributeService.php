@@ -1,59 +1,81 @@
 <?php
-
 namespace App\Services;
 
 use App\Repositories\UserAttributeRepository;
 use App\Models\Requests\Admin\UserAttributePostRequest;
 use Illuminate\Validation\ValidationException;
+use App\Repositories\UserAttributeTypeRepository;
 
-class UserAttributeService {
+class UserAttributeService
+{
 
     /**
      *
      * @var UserAttributeRepository
      */
-    private $repository;
+    private $userAttributeRepository;
 
-    public function __construct(UserAttributeRepository $repository) {
-        $this->repository = $repository;
+    /**
+     *
+     * @var UserAttributeTypeRepository
+     */
+    private $userAttributeTypeRepository;
+
+    public function __construct(UserAttributeRepository $userAttributeRepository,
+            UserAttributeTypeRepository $userAttributeTypeRepository)
+    {
+        $this->userAttributeRepository = $userAttributeRepository;
+        $this->userAttributeTypeRepository = $userAttributeTypeRepository;
     }
 
-    public function get($id = NULL) {
-        return $this->repository->get($id);
+    public function get($id = NULL)
+    {
+        return $this->userAttributeRepository->get($id);
     }
 
-    public function createUserAttribute(UserAttributePostRequest $request) {
+    public function createUserAttribute(UserAttributePostRequest $request)
+    {
         // ensure that the attribute name is not taken
-        if ($this->repository->getUserAttributeByName($request->getName())) {
-            throw new ValidationException(NULL,
-                'The UserAttribute name is already in use.');
+        if ($this->userAttributeRepository->getUserAttributeByName($request->getName())) {
+            throw new ValidationException(NULL, 'The UserAttribute name is already in use.');
         }
+
+        // ensure that the attribute type Id is valid
+        $this->validateAttributeTypeId($request->getUserAttributeTypeId());
+
         $modelAttributes = $request->buildModelAttributes();
 
-        $userAttribute = $this->repository->create($modelAttributes);
+        $userAttribute = $this->userAttributeRepository->create($modelAttributes);
 
         return $userAttribute;
     }
 
-    public function updateUserAttribute(UserAttributePostRequest $request) {
+    public function updateUserAttribute(UserAttributePostRequest $request)
+    {
         // ensure that the userAttributeId is valid
-        $this->repository->get($request->getUserAttributeId());
+        $this->userAttributeRepository->get($request->getUserAttributeId());
+
+        // ensure that the attribute type Id is valid
+        $this->validateAttributeTypeId($request->getUserAttributeTypeId());
 
         // ensure that the attribute name is not taken
-        $existingAttributeByName = $this->repository->getUserAttributeByName(
+        $existingAttributeByName = $this->userAttributeRepository->getUserAttributeByName(
                 $request->getName());
         if ($existingAttributeByName && $request->getUserAttributeId() !=
                  $existingAttributeByName ['id']) {
-            throw new ValidationException(NULL,
-                'The UserAttribute name is already in use.');
+            throw new ValidationException(NULL, 'The UserAttribute name is already in use.');
         }
 
         $modelAttributes = $request->buildModelAttributes();
 
-        $userAttribute = $this->repository->update(
-                $request->getUserAttributeId(), $modelAttributes);
+        $userAttribute = $this->userAttributeRepository->update($request->getUserAttributeId(),
+                $modelAttributes);
 
         return $userAttribute;
     }
 
+    private function validateAttributeTypeId($userAttributeTypeId)
+    {
+        $this->userAttributeTypeRepository->get($userAttributeTypeId);
+    }
 }
