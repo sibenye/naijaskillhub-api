@@ -28,9 +28,23 @@ class UserAttributeService
         $this->userAttributeTypeRepository = $userAttributeTypeRepository;
     }
 
-    public function get($id = NULL)
+    public function get($id = NULL, $attributeType = NULL)
     {
+        if ($attributeType) {
+            return $this->getUserAttributesByType($attributeType);
+        }
         return $this->userAttributeRepository->get($id);
+    }
+
+    public function getUserAttributesByType($attributeType)
+    {
+        $attributeType = $this->userAttributeTypeRepository->getUserAttributeTypeByName(
+                $attributeType, true);
+
+        $userAttributes = $this->userAttributeRepository->getUserAttributesByType(
+                $attributeType->id);
+
+        return $userAttributes;
     }
 
     public function createUserAttribute(UserAttributePostRequest $request)

@@ -30,8 +30,12 @@ class UserAttributeTypeRepository extends BaseRepository
      * @param string $attributeTypeName
      * @return Model
      */
-    public function getUserAttributeTypeByName($attributeTypeName)
+    public function getUserAttributeTypeByName($attributeTypeName, $throw = false)
     {
-        return $this->model->where('name', $attributeTypeName)->first();
+        if ($throw) {
+            return $this->model->where('name', $attributeTypeName)->firstOrFail();
+        } else {
+            return $this->model->where('name', $attributeTypeName)->first();
+        }
     }
 }

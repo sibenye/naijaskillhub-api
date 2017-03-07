@@ -23,7 +23,7 @@ $app->get('/users/byVanityName/{vanityName}',
 
 $app->get('/users/{id}/attributes',
         [
-                'uses' => 'UserController@getUserAttributes'
+                'uses' => 'UserController@getUserAttributeValues'
         ]);
 
 $app->get('/users/{id}/categories',

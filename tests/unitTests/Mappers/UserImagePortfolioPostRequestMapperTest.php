@@ -37,7 +37,9 @@ class UserImagePortfolioPostRequestMapperTest extends \TestCase
     {
         $this->mapper = new UserImagePortfolioPostRequestMapper();
 
-        $this->imageMock = $this->getMockBuilder(UploadedFile::class)->disableOriginalConstructor()->getMock();
+        $this->imageMock = $this->getMockBuilder(UploadedFile::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
@@ -48,12 +50,10 @@ class UserImagePortfolioPostRequestMapperTest extends \TestCase
     public function testMapping()
     {
         $in = [
-                "image" => $this->imageMock,
                 "caption" => "testCaption"
         ];
 
         $expectedOut = new UserImagePortfolioPostRequest();
-        $expectedOut->setImage($this->imageMock);
         $expectedOut->setCaption("testCaption");
 
         $out = $this->mapper->map($in);

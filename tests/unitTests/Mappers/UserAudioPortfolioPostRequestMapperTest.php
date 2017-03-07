@@ -37,7 +37,9 @@ class UserAudioPortfolioPostRequestMapperTest extends \TestCase
     {
         $this->mapper = new UserAudioPortfolioPostRequestMapper();
 
-        $this->audioMock = $this->getMockBuilder(UploadedFile::class)->disableOriginalConstructor()->getMock();
+        $this->audioMock = $this->getMockBuilder(UploadedFile::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
@@ -48,12 +50,10 @@ class UserAudioPortfolioPostRequestMapperTest extends \TestCase
     public function testMapping()
     {
         $in = [
-                "audio" => $this->audioMock,
                 "caption" => "testCaption"
         ];
 
         $expectedOut = new UserAudioPortfolioPostRequest();
-        $expectedOut->setAudio($this->audioMock);
         $expectedOut->setCaption("testCaption");
 
         $out = $this->mapper->map($in);

@@ -162,11 +162,13 @@ class UserController extends Controller
      * @param integer $id User Id.
      * @return Response
      */
-    public function getUserAttributes($id)
+    public function getUserAttributeValues($id)
     {
+        $requestedAttributeType = $this->request->input('attributeType', NULL);
         $requestedAttributes = $this->request->input('attributeNames', NULL);
         $requestedAttributesArray = $requestedAttributes ? preg_split('/,/', $requestedAttributes) : [ ];
-        $userAttributes = $this->service->getUserAttributes($id, $requestedAttributesArray);
+        $userAttributes = $this->service->getUserAttributes($id, $requestedAttributesArray,
+                $requestedAttributeType);
 
         return $this->response($userAttributes);
     }

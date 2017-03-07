@@ -39,4 +39,14 @@ class UserAttributeRepository extends BaseRepository
             return $this->model->where('name', $attributeName)->first();
         }
     }
+
+    /**
+     *
+     * @param integer $attributeTypeId
+     * @return Collection
+     */
+    public function getUserAttributesByType($attributeTypeId)
+    {
+        return $this->model->where('attributeTypeId', $attributeTypeId)->get();
+    }
 }

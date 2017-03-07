@@ -23,7 +23,8 @@ class UserAttributeController extends Controller
 
     public function getUserAttributes()
     {
-        $userAttributes = $this->service->get();
+        $attributeType = $this->request->input("attributeType", NULL);
+        $userAttributes = $this->service->get(NULL, $attributeType);
 
         return $this->response($userAttributes);
     }
@@ -51,16 +52,5 @@ class UserAttributeController extends Controller
         $userAttribute = $this->service->createUserAttribute($userAttributePostRequest);
 
         return $this->response($userAttribute);
-    }
-
-    public function update($id)
-    {
-        $userAttributePostRequest = new UserAttributePostRequest($this->request->all());
-
-        $userAttributePostRequest->setUserAttributeId($id);
-
-        $this->service->updateUserAttribute($userAttributePostRequest);
-
-        return $this->response();
     }
 }
