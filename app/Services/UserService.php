@@ -24,6 +24,7 @@ use App\Utilities\NSHCryptoUtil;
 use App\Utilities\NSHFileHandler;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
+use App\Repositories\UserAttributeTypeRepository;
 
 /**
  * UserService class.
@@ -44,6 +45,12 @@ class UserService
      * @var UserAttributeRepository
      */
     private $userAttributeRepository;
+
+    /**
+     *
+     * @var UserAttributeTypeRepository
+     */
+    private $userAttributeTypeRepository;
 
     /**
      *
@@ -85,18 +92,22 @@ class UserService
      *
      * @param UserRepository $repository
      * @param UserAttributeRepository $userAttributeRepository
+     * @param UserAttributeTypeRepository $userAttributeTypeRepository
      * @param CategoryRepository $categoryRepository
      * @param CredentialTypeRepository $credentialTypeRepository
      * @param NSH_CryptoUtil $cryptoUtil
      */
     public function __construct(UserRepository $repository,
-            UserAttributeRepository $userAttributeRepository, CategoryRepository $categoryRepository,
+            UserAttributeRepository $userAttributeRepository,
+            UserAttributeTypeRepository $userAttributeTypeRepository,
+            CategoryRepository $categoryRepository,
             CredentialTypeRepository $credentialTypeRepository,
             AccountTypeRepository $accountTypeRepository, NSHCryptoUtil $cryptoUtil,
             AuthService $authService, NSHFileHandler $fileHandler)
     {
         $this->userRepository = $repository;
         $this->userAttributeRepository = $userAttributeRepository;
+        $this->userAttributeTypeRepository = $userAttributeTypeRepository;
         $this->categoryRepository = $categoryRepository;
         $this->credentialTypeRepository = $credentialTypeRepository;
         $this->accountTypeRepository = $accountTypeRepository;
@@ -171,15 +182,26 @@ class UserService
      * @param array $requestedAttributes
      * @return array
      */
-    public function getUserAttributes($userId, $requestedAttributes = [])
+    public function getUserAttributes($userId, $requestedAttributes = [],
+            $requestedAttributeType = NULL)
     {
-        $userAttributes = $this->userRepository->getUserAttributes($userId, $requestedAttributes);
+        // get attributeType Id
+        $attributeTypeId = NULL;
+        if ($requestedAttributeType) {
+            $attributeType = $this->userAttributeTypeRepository->getUserAttributeTypeByName(
+                    $requestedAttributeType);
+            $attributeTypeId = $attributeType->id;
+        }
+
+        $userAttributes = $this->userRepository->getUserAttributes($userId, $requestedAttributes,
+                $attributeTypeId);
 
         $userAttributesContent = array ();
         $i = 0;
 
         foreach ($userAttributes as $value) {
             $userAttributesContent [$i] ['attributeId'] = $value->id;
+            $userAttributesContent [$i] ['attributeType'] = $value->attributeType->name;
             $userAttributesContent [$i] ['attributeName'] = $value->name;
             $userAttributesContent [$i] ['attributeValue'] = $value->pivot->attributeValue;
             $userAttributesContent [$i] ['createdDate'] = $value->pivot->createdDate;

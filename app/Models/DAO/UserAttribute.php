@@ -1,10 +1,10 @@
 <?php
-
 namespace App\Models\DAO;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserAttribute extends Model {
+class UserAttribute extends Model
+{
     const CREATED_AT = 'createdDate';
     const UPDATED_AT = 'modifiedDate';
     /**
@@ -24,10 +24,16 @@ class UserAttribute extends Model {
     /**
      * The users that belong to this userAttribute.
      */
-    public function users() {
-        return $this->belongsToMany('App\Models\DAO\User',
-                'nsh_userattributevalues', 'userAttributeId', 'userId')->withPivot(
-                'attributeValue')->withTimestamps('createdDate', 'modifiedDate');
+    public function users()
+    {
+        return $this->belongsToMany('App\Models\DAO\User', 'nsh_userattributevalues',
+                'userAttributeId', 'userId')
+            ->withPivot('attributeValue')
+            ->withTimestamps('createdDate', 'modifiedDate');
     }
 
+    public function attributeType()
+    {
+        return $this->belongsTo('App\Models\DAO\UserAttributeType', 'attributeTypeId');
+    }
 }

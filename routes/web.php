@@ -29,6 +29,7 @@ $app->group([
         function () use ($app) {
             require __DIR__ . '/admin/category_route.php';
             require __DIR__ . '/admin/userattribute_route.php';
+            require __DIR__ . '/admin/userattributetype_route.php';
         });
 
 require __DIR__ . '/user_route.php';

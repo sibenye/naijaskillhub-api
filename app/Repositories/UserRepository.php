@@ -55,17 +55,23 @@ class UserRepository extends BaseRepository
      * @param array $attributeNames
      * @return Collection
      */
-    public function getUserAttributes($userId, $attributeNames = [])
+    public function getUserAttributes($userId, $attributeNames = [], $attributeTypeId = NULL)
     {
         $user = $this->get($userId);
 
-        if (!empty($attributeNames)) {
+        if (!empty($attributeNames) && !empty($attributeTypeId)) {
+            $userAttributesbyName = $user->userAttributes->whereIn('name', $attributeNames);
+            $attributesByType = $user->userAttributes->where('attributeTypeId', $attributeTypeId);
+            $userAttributes = $userAttributesbyName->union($attributesByType);
+        } else if (!empty($attributeNames)) {
             $userAttributes = $user->userAttributes->whereIn('name', $attributeNames);
-            return $userAttributes;
+        } else if (!empty($attributeTypeId)) {
+            $userAttributes = $user->userAttributes->where('attributeTypeId', $attributeTypeId);
         } else {
             $userAttributes = $user->userAttributes;
-            return $userAttributes;
         }
+
+        return $userAttributes;
     }
 
     /**

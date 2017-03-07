@@ -1,66 +1,70 @@
 <?php
-
 namespace Tests\unitTests;
 
 use App\Repositories\UserAttributeRepository;
 use App\Services\UserAttributeService;
 use App\Models\Requests\Admin\UserAttributePostRequest;
+use App\Repositories\UserAttributeTypeRepository;
 
-class UserAttributeServiceTest extends \TestCase {
+class UserAttributeServiceTest extends \TestCase
+{
     private $userAttributeService;
     private $userAttributeRepositoryMock;
+    private $userAttributeTypeRepositoryMock;
     private $userAttributePostRequest;
 
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
 
-        $this->userAttributeRepositoryMock = $this->createMock(
-                UserAttributeRepository::class);
+        $this->userAttributeRepositoryMock = $this->createMock(UserAttributeRepository::class);
 
-        $this->userAttributeService = new UserAttributeService(
-            $this->userAttributeRepositoryMock);
+        $this->userAttributeTypeRepositoryMock = $this->createMock(
+                UserAttributeTypeRepository::class);
+
+        $this->userAttributeService = new UserAttributeService($this->userAttributeRepositoryMock,
+            $this->userAttributeTypeRepositoryMock);
     }
 
-    public function testCreateUserAttribute() {
+    public function testCreateUserAttribute()
+    {
         $this->userAttributePostRequest = $this->createUserAttributePostRequest();
-        $this->userAttributeRepositoryMock->expects($this->once())->method(
-                'getUserAttributeByName')->with(
-                $this->userAttributePostRequest->getName());
+        $this->userAttributeRepositoryMock->expects($this->once())
+            ->method('getUserAttributeByName')
+            ->with($this->userAttributePostRequest->getName());
 
         $modelAttributes = $this->userAttributePostRequest->buildModelAttributes();
-        $this->userAttributeRepositoryMock->expects($this->once())->method(
-                'create')->with($modelAttributes);
+        $this->userAttributeRepositoryMock->expects($this->once())
+            ->method('create')
+            ->with($modelAttributes);
 
-        $this->userAttributeService->createUserAttribute(
-                $this->userAttributePostRequest);
+        $this->userAttributeService->createUserAttribute($this->userAttributePostRequest);
     }
 
-    public function testUpdateUserAttribute() {
+    public function testUpdateUserAttribute()
+    {
         $this->userAttributePostRequest = $this->createUserAttributePostRequest();
         $this->userAttributePostRequest->setUserAttributeId(1);
-        $this->userAttributeRepositoryMock->expects($this->once())->method(
-                'getUserAttributeByName')->with(
-                $this->userAttributePostRequest->getName());
+        $this->userAttributeRepositoryMock->expects($this->once())
+            ->method('getUserAttributeByName')
+            ->with($this->userAttributePostRequest->getName());
 
-        $this->userAttributeRepositoryMock->expects($this->once())->method(
-                'get')->with(
-                $this->userAttributePostRequest->getUserAttributeId());
+        $this->userAttributeRepositoryMock->expects($this->once())
+            ->method('get')
+            ->with($this->userAttributePostRequest->getUserAttributeId());
 
         $modelAttributes = $this->userAttributePostRequest->buildModelAttributes();
-        $this->userAttributeRepositoryMock->expects($this->once())->method(
-                'update')->with(
-                $this->userAttributePostRequest->getUserAttributeId(),
-                $modelAttributes);
+        $this->userAttributeRepositoryMock->expects($this->once())
+            ->method('update')
+            ->with($this->userAttributePostRequest->getUserAttributeId(), $modelAttributes);
 
-        $this->userAttributeService->updateUserAttribute(
-                $this->userAttributePostRequest);
+        $this->userAttributeService->updateUserAttribute($this->userAttributePostRequest);
     }
 
-    private function createUserAttributePostRequest() {
-        return new UserAttributePostRequest(
-            [
-                    'name' => 'testAttr'
-            ]);
+    private function createUserAttributePostRequest()
+    {
+        return new UserAttributePostRequest([
+                'name' => 'testAttr'
+        ]);
     }
-
 }

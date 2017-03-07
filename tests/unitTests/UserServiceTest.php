@@ -17,6 +17,7 @@ use App\Models\Requests\UserPostRequest;
 use App\Services\AuthService;
 use App\Repositories\AccountTypeRepository;
 use App\Utilities\NSHFileHandler;
+use App\Repositories\UserAttributeTypeRepository;
 
 /**
  * UserService Tests.
@@ -42,6 +43,12 @@ class UserServiceTest extends \TestCase
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
     private $userAttributeRepositoryMock;
+
+    /**
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $userAttributeTypeRepositoryMock;
 
     /**
      *
@@ -125,6 +132,14 @@ class UserServiceTest extends \TestCase
         ])
             ->getMock();
 
+        $this->userAttributeTypeRepositoryMock = $this->getMockBuilder(
+                UserAttributeTypeRepository::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getUserAttributeTypeByName'
+        ])
+            ->getMock();
+
         $this->categoryRepositoryMock = $this->getMockBuilder(CategoryRepository::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -165,9 +180,10 @@ class UserServiceTest extends \TestCase
             ->getMock();
 
         $this->userService = new UserService($this->userRepositoryMock,
-            $this->userAttributeRepositoryMock, $this->categoryRepositoryMock,
-            $this->credentialTypeRepositoryMock, $this->accountTypeRepositoryMock,
-            $this->cryptoUtilMock, $this->authServiceMock, $this->fileHandlerMock);
+            $this->userAttributeRepositoryMock, $this->userAttributeTypeRepositoryMock,
+            $this->categoryRepositoryMock, $this->credentialTypeRepositoryMock,
+            $this->accountTypeRepositoryMock, $this->cryptoUtilMock, $this->authServiceMock,
+            $this->fileHandlerMock);
 
         $this->userModelMock = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()

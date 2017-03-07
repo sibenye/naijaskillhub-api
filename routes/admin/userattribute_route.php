@@ -15,10 +15,5 @@ $app->get('/userAttributes/{id}',
 
 $app->post('/userAttributes',
         [
-                'uses' => 'UserAttributeController@create'
-        ]);
-
-$app->put('/userAttributes/{id}',
-        [
-                'uses' => 'UserAttributeController@update'
+                'uses' => 'UserAttributeController@upsert'
         ]);
