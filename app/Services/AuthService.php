@@ -201,9 +201,11 @@ class AuthService
             }
         }
 
-        $user ['authToken'] = $this->generateAuthToken($request->getEmailAddress());
+        $response = array ();
+        $response ['authToken'] = $this->generateAuthToken($request->getEmailAddress());
+        $response ['userId'] = $user->id;
 
-        return $user;
+        return $response;
     }
 
     /**
