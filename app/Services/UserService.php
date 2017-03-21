@@ -201,11 +201,10 @@ class UserService
 
         foreach ($userAttributes as $value) {
             $userAttributesContent [$i] ['attributeId'] = $value->id;
-            $userAttributesContent [$i] ['attributeType'] = $value->attributeType->name;
+            $userAttributesContent [$i] ['attributeType'] = $value->attributeType;
             $userAttributesContent [$i] ['attributeName'] = $value->name;
-            $userAttributesContent [$i] ['attributeValue'] = $value->pivot->attributeValue;
-            $userAttributesContent [$i] ['createdDate'] = $value->pivot->createdDate;
-            $userAttributesContent [$i] ['modifiedDate'] = $value->pivot->modifiedDate;
+            $userAttributesContent [$i] ['displayName'] = $value->displayName;
+            $userAttributesContent [$i] ['attributeValue'] = $value->attributeValue;
 
             $i++;
         }
