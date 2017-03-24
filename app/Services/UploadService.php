@@ -77,8 +77,9 @@ class UploadService
         ];
         $existingProfileImage = $this->userRepository->getUserAttributes($user->id, $attributeName);
 
-        if (!$existingProfileImage->isEmpty()) {
-            $existingProfileImageFilePath = $existingProfileImage->first()->pivot->attributeValue;
+        if (!$existingProfileImage->isEmpty() &&
+                 !empty($existingProfileImage->first()->attributeValue)) {
+            $existingProfileImageFilePath = $existingProfileImage->first()->attributeValue;
             $this->fileHandler->deleteFile($existingProfileImageFilePath);
         }
 
