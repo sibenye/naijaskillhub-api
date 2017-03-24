@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\DAO\User;
 use App\Models\DAO\AccountType;
+use Illuminate\Support\Facades\DB;
+use FastRoute\RouteParser\Std;
 
 /**
  * User Repository.
@@ -53,25 +55,54 @@ class UserRepository extends BaseRepository
      *
      * @param integer $userId
      * @param array $attributeNames
-     * @return Collection
+     * @return array An array of StdClass
      */
     public function getUserAttributes($userId, $attributeNames = [], $attributeTypeId = NULL)
     {
-        $user = $this->get($userId);
-
-        if (!empty($attributeNames) && !empty($attributeTypeId)) {
-            $userAttributesbyName = $user->userAttributes->whereIn('name', $attributeNames);
-            $attributesByType = $user->userAttributes->where('attributeTypeId', $attributeTypeId);
-            $userAttributes = $userAttributesbyName->union($attributesByType);
-        } else if (!empty($attributeNames)) {
-            $userAttributes = $user->userAttributes->whereIn('name', $attributeNames);
-        } else if (!empty($attributeTypeId)) {
-            $userAttributes = $user->userAttributes->where('attributeTypeId', $attributeTypeId);
-        } else {
+        if (empty($attributeNames) && empty($attributeTypeId)) {
+            $user = $this->get($userId);
             $userAttributes = $user->userAttributes;
-        }
+            $userAttributesContent = array ();
+            $i = 0;
+            foreach ($userAttributes as $value) {
+                $attrObj = new \stdClass();
+                $attrObj->id = $value->id;
+                $attrObj->attributeType = $value->attributeType->name;
+                $attrObj->name = $value->name;
+                $attrObj->displayName = $value->displayName;
+                $attrObj->attributeValue = $value->pivot->attributeValue;
 
-        return $userAttributes;
+                $userAttributesContent [$i] = $attrObj;
+                ++$i;
+            }
+
+            return $userAttributesContent;
+        } else {
+            $builder = DB::table('nsh_userattributes')->select('nsh_userattributes.id',
+                    'nsh_userattributes.name', 'nsh_userattributes.displayName',
+                    'nsh_userattributetypes.name as attributeType',
+                    'nsh_userattributevalues.attributeValue')
+                ->join('nsh_userattributetypes', 'nsh_userattributetypes.id', '=',
+                    'nsh_userattributes.attributeTypeId')
+                ->leftJoin('nsh_userattributevalues',
+                    function ($join) use ($userId) {
+                        $join->on('nsh_userattributevalues.userAttributeId', '=',
+                                'nsh_userattributes.id')
+                            ->where('nsh_userattributevalues.userId', '=', $userId);
+                    });
+
+            if (!empty($attributeNames) && !empty($attributeTypeId)) {
+                $builder = $builder->whereIn('nsh_userattributes.name', $attributeNames)->orWhere(
+                        'nsh_userattributes.attributeTypeId', '=', $attributeTypeId);
+            } elseif (!empty($attributeNames)) {
+                $builder = $builder->whereIn('nsh_userattributes.name', $attributeNames);
+            } elseif (!empty($attributeTypeId)) {
+                $builder = $builder->where('nsh_userattributes.attributeTypeId', '=',
+                        $attributeTypeId);
+            }
+
+            return $builder->get();
+        }
     }
 
     /**
