@@ -208,6 +208,8 @@ class AuthServiceTest extends \TestCase
         $this->cryptoUtilMock->expects($this->once())
             ->method('generateJWToken');
 
+        $this->userRepositoryMock->method('createUser')->willReturn($this->userModelMock);
+
         $userDataRequest = [
                 "emailAddress" => "testUser@test.com",
                 "credentialType" => "standard",
