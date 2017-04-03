@@ -194,7 +194,7 @@ class UserPortfolioService
         $modelAttribute ['userId'] = $userId;
         $modelAttribute ['caption'] = $request->getCaption();
         $modelAttribute ['fileName'] = $filename;
-        $modelAttribute ['filePath'] = $filename;
+        $modelAttribute ['filePath'] = $filename; // we save the fileName as the filePath.
 
         $saveImagePortfolio = $this->userImagePortfolioRepository->create($modelAttribute);
 
@@ -640,7 +640,7 @@ class UserPortfolioService
         $imagesContent = array ();
         foreach ($images as $key => $value) {
             $imagesContent [$key] ['imageId'] = $value->id;
-            $imagesContent [$key] ['filePath'] = $value->filePath;
+            $imagesContent [$key] ['filePath'] = env("PORTFOLIO_IMAGE_FOLDER") . $value->filePath;
             $imagesContent [$key] ['fileName'] = $value->fileName;
             $imagesContent [$key] ['caption'] = $value->caption;
             $imagesContent [$key] ['createdDate'] = $value->createdDate->toDateTimeString();
@@ -685,7 +685,7 @@ class UserPortfolioService
         $audiosContent = array ();
         foreach ($audios as $key => $value) {
             $audiosContent [$key] ['audioId'] = $value->id;
-            $audiosContent [$key] ['filePath'] = $value->filePath;
+            $audiosContent [$key] ['filePath'] = env("PORTFOLIO_AUDIO_FOLDER") . $value->filePath;
             $audiosContent [$key] ['caption'] = $value->caption;
             $audiosContent [$key] ['fileName'] = $value->fileName;
             $audiosContent [$key] ['createdDate'] = $value->createdDate->toDateTimeString();
