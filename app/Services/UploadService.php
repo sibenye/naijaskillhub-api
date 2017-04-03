@@ -80,22 +80,24 @@ class UploadService
         if (!$existingProfileImage->isEmpty() &&
                  !empty($existingProfileImage->first()->attributeValue)) {
             $existingProfileImageFilePath = $existingProfileImage->first()->attributeValue;
-            $this->fileHandler->deleteFile($existingProfileImageFilePath);
+            $this->fileHandler->deleteFile(
+                    env("PROFILE_IMAGE_FOLDER") . $existingProfileImageFilePath);
         }
 
         // save image file.
         $filename = $userId . '_profile_' . time() . '.' .
                  $this->fileHandler->getFileExtension($contentType);
 
-        $filePath = $filename;
+        $filePath = env("PROFILE_IMAGE_FOLDER") . $filename;
 
         $this->fileHandler->uploadFile($filePath, $image);
 
-        // save image filePath
+        // save image filePath in database
+        // note: we save the fileName as the filePath.
         $attributesCollection = array ();
 
         $attributesCollection [0] ['attributeId'] = $userAttribute ['id'];
-        $attributesCollection [0] ['attributeValue'] = $filePath;
+        $attributesCollection [0] ['attributeValue'] = $filename;
 
         $this->userRepository->upsertUserAttributeValue($user, $attributesCollection);
 

@@ -90,6 +90,15 @@
         },
         "JWT_DURATION": {
             "required": true
+        },
+        "PROFILE_IMAGE_FOLDER": {
+            "required": true
+        },
+        "PORTFOLIO_IMAGE_FOLDER": {
+            "required": true
+        },
+        "PORTFOLIO_AUDIO_FOLDER": {
+            "required": true
         }
 	},
 	"formation": {

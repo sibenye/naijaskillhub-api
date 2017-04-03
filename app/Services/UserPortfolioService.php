@@ -109,13 +109,13 @@ class UserPortfolioService
      * @param integer $id
      * @return array Associative array.
      */
-    public function getUserImagesPortfolio($userId)
+    public function getUserImagesPortfolio($userId, $imageId = NULL)
     {
         $user = $this->userRepository->get($userId);
 
         $result = array ();
         $result ['userId'] = $userId;
-        $result ['images'] = $this->mapImagesResponse($user);
+        $result ['images'] = $this->mapImagesResponse($user, $imageId);
 
         return $result;
     }
@@ -125,13 +125,13 @@ class UserPortfolioService
      * @param integer $id
      * @return array Associative array.
      */
-    public function getUserVideosPortfolio($userId)
+    public function getUserVideosPortfolio($userId, $videoId = NULL)
     {
         $user = $this->userRepository->get($userId);
 
         $result = array ();
         $result ['userId'] = $userId;
-        $result ['videos'] = $this->mapVideosResponse($user);
+        $result ['videos'] = $this->mapVideosResponse($user, $videoId);
 
         return $result;
     }
@@ -141,13 +141,13 @@ class UserPortfolioService
      * @param integer $id
      * @return array Associative array.
      */
-    public function getUserAudiosPortfolio($userId)
+    public function getUserAudiosPortfolio($userId, $audioId = NULL)
     {
         $user = $this->userRepository->get($userId);
 
         $result = array ();
         $result ['userId'] = $userId;
-        $result ['voiceClips'] = $this->mapAudiosResponse($user);
+        $result ['voiceClips'] = $this->mapAudiosResponse($user, $audioId);
 
         return $result;
     }
@@ -157,13 +157,13 @@ class UserPortfolioService
      * @param integer $id
      * @return array Associative array.
      */
-    public function getUserCreditsPortfolio($userId)
+    public function getUserCreditsPortfolio($userId, $creditId = NULL)
     {
         $user = $this->userRepository->get($userId);
 
         $result = array ();
         $result ['userId'] = $userId;
-        $result ['credits'] = $this->mapCreditsResponse($user);
+        $result ['credits'] = $this->mapCreditsResponse($user, $creditId);
 
         return $result;
     }
@@ -194,11 +194,19 @@ class UserPortfolioService
         $modelAttribute ['userId'] = $userId;
         $modelAttribute ['caption'] = $request->getCaption();
         $modelAttribute ['fileName'] = $filename;
-        $modelAttribute ['filePath'] = $filename;
+        $modelAttribute ['filePath'] = $filename; // we save the fileName as the filePath.
 
-        $this->userImagePortfolioRepository->create($modelAttribute);
+        $saveImagePortfolio = $this->userImagePortfolioRepository->create($modelAttribute);
 
-        return $this->getUserImagesPortfolio($userId);
+        $imagePortfolio = $this->getUserImagesPortfolio($userId, $saveImagePortfolio->id);
+
+        $response = [ ];
+        $response ['imageId'] = $imagePortfolio ['images'] [0] ['imageId'];
+        $response ['caption'] = $imagePortfolio ['images'] [0] ['caption'];
+        $response ['filePath'] = $imagePortfolio ['images'] [0] ['filePath'];
+        $response ['fileName'] = $imagePortfolio ['images'] [0] ['fileName'];
+
+        return $response;
     }
 
     /**
@@ -228,7 +236,15 @@ class UserPortfolioService
 
         $this->userImagePortfolioRepository->update($imageId, $modelAttributes);
 
-        return $this->getUserImagesPortfolio($userId);
+        $imagePortfolio = $this->getUserImagesPortfolio($userId, $imageId);
+
+        $response = [ ];
+        $response ['imageId'] = $imagePortfolio ['images'] [0] ['imageId'];
+        $response ['caption'] = $imagePortfolio ['images'] [0] ['caption'];
+        $response ['filePath'] = $imagePortfolio ['images'] [0] ['filePath'];
+        $response ['fileName'] = $imagePortfolio ['images'] [0] ['fileName'];
+
+        return $response;
     }
 
     /**
@@ -254,9 +270,16 @@ class UserPortfolioService
         $modelAttribute ['caption'] = $caption;
         $modelAttribute ['videoUrl'] = $request->getVideoUrl();
 
-        $this->userVideoPortfolioRepository->create($modelAttribute);
+        $savedVideoPortfolio = $this->userVideoPortfolioRepository->create($modelAttribute);
 
-        return $this->getUserVideosPortfolio($userId);
+        $videoPortfolio = $this->getUserVideosPortfolio($userId, $savedVideoPortfolio->id);
+
+        $response = [ ];
+        $response ['videoId'] = $videoPortfolio ['videos'] [0] ['videoId'];
+        $response ['caption'] = $videoPortfolio ['videos'] [0] ['caption'];
+        $response ['videoUrl'] = $videoPortfolio ['videos'] [0] ['videoUrl'];
+
+        return $response;
     }
 
     /**
@@ -295,7 +318,14 @@ class UserPortfolioService
 
         $this->userVideoPortfolioRepository->update($videoId, $modelAttributes);
 
-        return $this->getUserVideosPortfolio($userId);
+        $videoPortfolio = $this->getUserVideosPortfolio($userId, $videoId);
+
+        $response = [ ];
+        $response ['videoId'] = $videoPortfolio ['videos'] [0] ['videoId'];
+        $response ['caption'] = $videoPortfolio ['videos'] [0] ['caption'];
+        $response ['videoUrl'] = $videoPortfolio ['videos'] [0] ['videoUrl'];
+
+        return $response;
     }
 
     /**
@@ -328,9 +358,17 @@ class UserPortfolioService
         $modelAttribute ['fileName'] = $filename;
         $modelAttribute ['filePath'] = $filename;
 
-        $this->userAudioPortfolioRepository->create($modelAttribute);
+        $savedAudioPortfolio = $this->userAudioPortfolioRepository->create($modelAttribute);
 
-        return $this->getUserAudiosPortfolio($userId);
+        $audioPortfolio = $this->getUserAudiosPortfolio($userId, $savedAudioPortfolio->id);
+
+        $response = [ ];
+        $response ['audioId'] = $audioPortfolio ['audios'] [0] ['audioId'];
+        $response ['caption'] = $audioPortfolio ['audios'] [0] ['caption'];
+        $response ['filePath'] = $audioPortfolio ['audios'] [0] ['filePath'];
+        $response ['fileName'] = $audioPortfolio ['audios'] [0] ['fileName'];
+
+        return $response;
     }
 
     /**
@@ -360,7 +398,15 @@ class UserPortfolioService
 
         $this->userAudioPortfolioRepository->update($audioId, $modelAttributes);
 
-        return $this->getUserAudiosPortfolio($userId);
+        $audioPortfolio = $this->getUserAudiosPortfolio($userId, $audioId);
+
+        $response = [ ];
+        $response ['audioId'] = $audioPortfolio ['audios'] [0] ['audioId'];
+        $response ['caption'] = $audioPortfolio ['audios'] [0] ['caption'];
+        $response ['filePath'] = $audioPortfolio ['audios'] [0] ['filePath'];
+        $response ['fileName'] = $audioPortfolio ['audios'] [0] ['fileName'];
+
+        return $response;
     }
 
     /**
@@ -388,9 +434,18 @@ class UserPortfolioService
         $modelAttribute ['year'] = $request->getYear();
         $modelAttribute ['creditTypeId'] = $creditType->id;
 
-        $this->userCreditPortfolioRepository->create($modelAttribute);
+        $savedCreditPortfolio = $this->userCreditPortfolioRepository->create($modelAttribute);
 
-        return $this->getUserCreditsPortfolio($userId);
+        $creditPortfolio = $this->getUserCreditsPortfolio($userId, $savedCreditPortfolio->id);
+
+        $response = [ ];
+        $response ['creditId'] = $creditPortfolio ['credits'] [0] ['creditId'];
+        $response ['caption'] = $creditPortfolio ['credits'] [0] ['caption'];
+        $response ['creditType'] = $creditPortfolio ['credits'] [0] ['creditType'];
+        $response ['creditTypeId'] = $creditPortfolio ['credits'] [0] ['creditTypeId'];
+        $response ['year'] = $creditPortfolio ['credits'] [0] ['year'];
+
+        return $response;
     }
 
     /**
@@ -437,7 +492,16 @@ class UserPortfolioService
 
         $this->userCreditPortfolioRepository->update($creditId, $modelAttributes);
 
-        return $this->getUserCreditsPortfolio($userId);
+        $creditPortfolio = $this->getUserCreditsPortfolio($userId, $creditId);
+
+        $response = [ ];
+        $response ['creditId'] = $creditPortfolio ['credits'] [0] ['creditId'];
+        $response ['caption'] = $creditPortfolio ['credits'] [0] ['caption'];
+        $response ['creditType'] = $creditPortfolio ['credits'] [0] ['creditType'];
+        $response ['creditTypeId'] = $creditPortfolio ['credits'] [0] ['creditTypeId'];
+        $response ['year'] = $creditPortfolio ['credits'] [0] ['year'];
+
+        return $response;
     }
 
     /**
@@ -568,18 +632,19 @@ class UserPortfolioService
      * @param Model $user
      * @return array Associative array.
      */
-    private function mapImagesResponse(Model $user)
+    private function mapImagesResponse(Model $user, $ImageId = NULL)
     {
-        $images = $user->images;
+        $images = empty($ImageId) ? $user->images : $user->images()
+            ->where('id', $ImageId)
+            ->get();
         $imagesContent = array ();
         foreach ($images as $key => $value) {
             $imagesContent [$key] ['imageId'] = $value->id;
-            $imagesContent [$key] ['filePath'] = $value->filePath;
+            $imagesContent [$key] ['filePath'] = env("PORTFOLIO_IMAGE_FOLDER") . $value->filePath;
             $imagesContent [$key] ['fileName'] = $value->fileName;
             $imagesContent [$key] ['caption'] = $value->caption;
             $imagesContent [$key] ['createdDate'] = $value->createdDate->toDateTimeString();
             $imagesContent [$key] ['modifiedDate'] = $value->modifiedDate->toDateTimeString();
-            ;
         }
 
         return $imagesContent;
@@ -590,9 +655,11 @@ class UserPortfolioService
      * @param Model $user
      * @return array Associative array.
      */
-    private function mapVideosResponse(Model $user)
+    private function mapVideosResponse(Model $user, $videoId = NULL)
     {
-        $videos = $user->videos;
+        $videos = empty($videoId) ? $user->videos : $user->videos()
+            ->where('id', $videoId)
+            ->get();
         $videosContent = array ();
         foreach ($videos as $key => $value) {
             $videosContent [$key] ['videoId'] = $value->id;
@@ -600,7 +667,6 @@ class UserPortfolioService
             $videosContent [$key] ['caption'] = $value->caption;
             $videosContent [$key] ['createdDate'] = $value->createdDate->toDateTimeString();
             $videosContent [$key] ['modifiedDate'] = $value->modifiedDate->toDateTimeString();
-            ;
         }
 
         return $videosContent;
@@ -611,18 +677,19 @@ class UserPortfolioService
      * @param Model $user
      * @return array Associative array.
      */
-    private function mapAudiosResponse(Model $user)
+    private function mapAudiosResponse(Model $user, $audioId = NULL)
     {
-        $audios = $user->audios;
+        $audios = empty($audioId) ? $user->audios : $user->audios()
+            ->where('id', $audioId)
+            ->get();
         $audiosContent = array ();
         foreach ($audios as $key => $value) {
             $audiosContent [$key] ['audioId'] = $value->id;
-            $audiosContent [$key] ['filePath'] = $value->filePath;
+            $audiosContent [$key] ['filePath'] = env("PORTFOLIO_AUDIO_FOLDER") . $value->filePath;
             $audiosContent [$key] ['caption'] = $value->caption;
             $audiosContent [$key] ['fileName'] = $value->fileName;
             $audiosContent [$key] ['createdDate'] = $value->createdDate->toDateTimeString();
             $audiosContent [$key] ['modifiedDate'] = $value->modifiedDate->toDateTimeString();
-            ;
         }
         return $audiosContent;
     }
@@ -632,9 +699,11 @@ class UserPortfolioService
      * @param Model $user
      * @return array Associative array.
      */
-    private function mapCreditsResponse(Model $user)
+    private function mapCreditsResponse(Model $user, $creditId = NULL)
     {
-        $credits = $user->credits;
+        $credits = empty($creditId) ? $user->credits : $user->credits()
+            ->where('id', $creditId)
+            ->get();
         $creditsContent = array ();
         foreach ($credits as $key => $value) {
             $creditsContent [$key] ['creditId'] = $value->pivot->id;
