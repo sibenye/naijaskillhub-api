@@ -92,7 +92,8 @@ class UploadService
 
         $this->fileHandler->uploadFile($filePath, $image);
 
-        // save image filePath
+        // save image filePath in database
+        // note: we save the fileName as the filePath.
         $attributesCollection = array ();
 
         $attributesCollection [0] ['attributeId'] = $userAttribute ['id'];
