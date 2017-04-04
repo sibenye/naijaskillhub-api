@@ -204,7 +204,12 @@ class UserService
             $userAttributesContent [$i] ['attributeType'] = $value->attributeType;
             $userAttributesContent [$i] ['attributeName'] = $value->name;
             $userAttributesContent [$i] ['displayName'] = $value->displayName;
-            $userAttributesContent [$i] ['attributeValue'] = $value->attributeValue;
+            if ($userAttributesContent [$i] ['attributeName'] == 'profileImage') {
+                $userAttributesContent [$i] ['attributeValue'] = env("PROFILE_IMAGE_FOLDER") .
+                         $value->attributeValue;
+            } else {
+                $userAttributesContent [$i] ['attributeValue'] = $value->attributeValue;
+            }
 
             $i++;
         }
