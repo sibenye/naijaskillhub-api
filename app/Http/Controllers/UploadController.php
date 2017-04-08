@@ -113,12 +113,12 @@ class UploadController extends Controller
         if (empty($contentType)) {
             $contentType = $this->request->header('Content-Type');
         }
-        Log::info('HEADER UPLOAD: ' . $this->request->header('Upload-Content-Type'));
+        Log::info('CONTENT TYPE: ' . $this->request->input('uploadContentType'));
         Log::info('REQUEST: ' . $this->request->input('file'));
         $request = [
                 'file' => $this->request->input('file'),
-                'contentType' => $contentType,
-                'caption' => $this->request->header('Upload-Caption')
+                'contentType' => $this->request->input('uploadContentType'),
+                'caption' => $this->request->input('caption')
         ];
         return $this->fileUploadRequestMapper->map($request);
     }
