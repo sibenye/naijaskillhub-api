@@ -4,11 +4,11 @@
  */
 namespace App\Http\Controllers;
 
-use App\Services\UploadService;
-use Illuminate\Http\Response;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Mappers\FileUploadRequestMapper;
+use App\Services\UploadService;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Upload Controller.
@@ -61,15 +61,13 @@ class UploadController extends Controller
      *
      * @return Response
      */
-    public function uploadUserPorfolioImage()
+    public function uploadUserPortfolioImage()
     {
         $postRequest = $this->mapFileUploadRequest();
 
         $userId = Auth::user()->id;
 
-        $location = $this->request->header('Location');
-
-        $response = $this->service->uploadUserPortfolioImage($userId, $location, $postRequest);
+        $response = $this->service->uploadUserPortfolioImage($userId, $postRequest);
 
         return $this->response($response);
     }
@@ -110,14 +108,10 @@ class UploadController extends Controller
      */
     private function mapFileUploadRequest()
     {
-        $contentType = $this->request->header('Upload-Content-Type');
-        if (empty($contentType)) {
-            $contentType = $this->request->header('Content-Type');
-        }
         $request = [
-                'file' => $this->request->getContent(),
-                'contentType' => $contentType,
-                'contentLength' => $this->request->header('Content-Length')
+                'file' => $this->request->input('file'),
+                'contentType' => $this->request->input('uploadContentType'),
+                'caption' => $this->request->input('caption')
         ];
         return $this->fileUploadRequestMapper->map($request);
     }

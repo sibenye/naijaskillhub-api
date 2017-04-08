@@ -138,21 +138,14 @@ class UserPortfolioController extends Controller
      * @param integer $userId
      * @return Response
      */
-    public function upsertUserImagePortfolio($userId)
+    public function updateUserImagePortfolioMetadata($userId)
     {
         $postRequest = $this->userImagePortfolioPostRequestMapper->map($this->request->all());
 
-        $imageId = $postRequest->getImageId();
-        $userImagesPortfolio = array ();
+        $this->validateRequest($postRequest->getValidationRules());
+        $userImagesPortfolio = $this->service->updateUserImagePortfolioMetadata($userId,
+                $postRequest);
 
-        if (empty($imageId)) {
-            $this->validateRequest($postRequest->getValidationRules(),
-                    $postRequest->getCustomMessages());
-            $userImagesPortfolio = $this->service->createUserImagePortfolio($userId, $postRequest);
-        } else {
-            $this->validateRequest($postRequest->getUpdateValidationRules());
-            $userImagesPortfolio = $this->service->updateUserImagePortfolio($userId, $postRequest);
-        }
         return $this->response($userImagesPortfolio);
     }
 
@@ -183,20 +176,14 @@ class UserPortfolioController extends Controller
      * @param integer $userId
      * @return Response
      */
-    public function upsertUserAudioPortfolio($userId)
+    public function updateUserAudioPortfolioMetadata($userId)
     {
         $postRequest = $this->userAudioPortfolioPostRequestMapper->map($this->request->all());
 
-        $audioId = $postRequest->getAudioId();
-        $userAudiosPortfolio = array ();
+        $this->validateRequest($postRequest->getValidationRules());
+        $userAudiosPortfolio = $this->service->updateUserAudioPortfolioMetadata($userId,
+                $postRequest);
 
-        if (empty($audioId)) {
-            $this->validateRequest($postRequest->getValidationRules());
-            $userAudiosPortfolio = $this->service->createUserAudioPortfolio($userId, $postRequest);
-        } else {
-            $this->validateRequest($postRequest->getUpdateValidationRules());
-            $userAudiosPortfolio = $this->service->updateUserAudioPortfolio($userId, $postRequest);
-        }
         return $this->response($userAudiosPortfolio);
     }
 

@@ -10,7 +10,7 @@ namespace App\Models\Requests;
  * @author silver.ibenye
  *
  */
-class UserAudioPortfolioPostRequest implements IPostRequest
+class UserAudioPortfolioMetadataPostRequest implements IPostRequest
 {
     /**
      *
@@ -23,12 +23,6 @@ class UserAudioPortfolioPostRequest implements IPostRequest
      * @var string
      */
     private $caption;
-
-    /**
-     *
-     * @var string
-     */
-    private $uploadContentType;
 
     /**
      * {@inheritDoc}
@@ -56,32 +50,8 @@ class UserAudioPortfolioPostRequest implements IPostRequest
     public function getValidationRules()
     {
         return [
-                'caption' => 'required|max:200',
-                'uploadContentType' => 'required|max:20'
-        ];
-    }
-
-    /**
-     *
-     * @return array
-     */
-    public function getUpdateValidationRules()
-    {
-        return [
-                'audioId' => 'required',
-                'caption' => 'required|max:200'
-        ];
-    }
-
-    /**
-     * Get custom validation messages.
-     *
-     * @return array
-     */
-    public function getCustomMessages()
-    {
-        return [
-                'uploadContentType.required' => 'uploadContentType is required. And should be in this format "audio/{audio extension}"'
+                'caption' => 'max:200',
+                'audioId' => 'required|max:20'
         ];
     }
 
@@ -117,22 +87,5 @@ class UserAudioPortfolioPostRequest implements IPostRequest
     public function setCaption($caption)
     {
         $this->caption = $caption;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUploadContentType()
-    {
-        return $this->uploadContentType;
-    }
-
-    /**
-     * @param string $uploadContentType
-     * return void
-     */
-    public function setUploadContentType($uploadContentType)
-    {
-        $this->uploadContentType = $uploadContentType;
     }
 }

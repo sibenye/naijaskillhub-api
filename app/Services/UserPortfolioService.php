@@ -14,9 +14,9 @@ use App\Repositories\UserAudioPortfolioRepository;
 use App\Repositories\UserCreditPortfolioRepository;
 use App\Repositories\CreditTypeRepository;
 use App\Models\Requests\UserCreditPortfolioPostRequest;
-use App\Models\Requests\UserAudioPortfolioPostRequest;
+use App\Models\Requests\UserAudioPortfolioMetadataPostRequest;
 use App\Models\Requests\UserVideoPortfolioPostRequest;
-use App\Models\Requests\UserImagePortfolioPostRequest;
+use App\Models\Requests\UserImagePortfolioMetadataPostRequest;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -171,52 +171,12 @@ class UserPortfolioService
     /**
      *
      * @param integer $userId
-     * @param UserImagePortfolioPostRequest $request
+     * @param UserImagePortfolioMetadataPostRequest $request
      * @return array Associative array.
      * @throws ValidationException
      */
-    public function createUserImagePortfolio($userId, UserImagePortfolioPostRequest $request)
-    {
-        // validate userId.
-        $this->userRepository->get($userId);
-
-        // ensure the uploadContentType is in the right format
-        if (!preg_match('/\w\/\w/', $request->getUploadContentType())) {
-            throw new ValidationException(NULL,
-                'The uploadContentType should be in this format "image/{image extension}".');
-        }
-
-        $extension = $this->fileHandler->getFileExtension($request->getUploadContentType());
-        $filename = $userId . '_' . time() . '.' . $extension;
-
-        // save image portfolio.
-        $modelAttribute = array ();
-        $modelAttribute ['userId'] = $userId;
-        $modelAttribute ['caption'] = $request->getCaption();
-        $modelAttribute ['fileName'] = $filename;
-        $modelAttribute ['filePath'] = $filename; // we save the fileName as the filePath.
-
-        $saveImagePortfolio = $this->userImagePortfolioRepository->create($modelAttribute);
-
-        $imagePortfolio = $this->getUserImagesPortfolio($userId, $saveImagePortfolio->id);
-
-        $response = [ ];
-        $response ['imageId'] = $imagePortfolio ['images'] [0] ['imageId'];
-        $response ['caption'] = $imagePortfolio ['images'] [0] ['caption'];
-        $response ['filePath'] = $imagePortfolio ['images'] [0] ['filePath'];
-        $response ['fileName'] = $imagePortfolio ['images'] [0] ['fileName'];
-
-        return $response;
-    }
-
-    /**
-     *
-     * @param integer $userId
-     * @param UserImagePortfolioPostRequest $request
-     * @return array Associative array.
-     * @throws ValidationException
-     */
-    public function updateUserImagePortfolio($userId, UserImagePortfolioPostRequest $request)
+    public function updateUserImagePortfolioMetadata($userId,
+            UserImagePortfolioMetadataPostRequest $request)
     {
         // validate userId.
         $user = $this->userRepository->get($userId);
@@ -331,54 +291,12 @@ class UserPortfolioService
     /**
      *
      * @param integer $userId
-     * @param UserAudioPortfolioPostRequest $request
-     * @return array
-     * @throws ValidationException
-     */
-    public function createUserAudioPortfolio($userId, UserAudioPortfolioPostRequest $request)
-    {
-        // validate userId.
-        $this->userRepository->get($userId);
-
-        // ensure the uploadContentType is in the right format
-        if (!preg_match('/\w\/\w/', $request->getUploadContentType())) {
-            throw new ValidationException(NULL,
-                'The uploadContentType should be in this format "audio/{audio extension}".');
-        }
-
-        $extension = $this->fileHandler->getFileExtension($request->getUploadContentType());
-        $filename = $userId . '_' . time() . '.' . $extension;
-
-        $caption = $request->getCaption();
-
-        // save audio portfolio.
-        $modelAttribute = array ();
-        $modelAttribute ['userId'] = $userId;
-        $modelAttribute ['caption'] = $caption;
-        $modelAttribute ['fileName'] = $filename;
-        $modelAttribute ['filePath'] = $filename;
-
-        $savedAudioPortfolio = $this->userAudioPortfolioRepository->create($modelAttribute);
-
-        $audioPortfolio = $this->getUserAudiosPortfolio($userId, $savedAudioPortfolio->id);
-
-        $response = [ ];
-        $response ['audioId'] = $audioPortfolio ['audios'] [0] ['audioId'];
-        $response ['caption'] = $audioPortfolio ['audios'] [0] ['caption'];
-        $response ['filePath'] = $audioPortfolio ['audios'] [0] ['filePath'];
-        $response ['fileName'] = $audioPortfolio ['audios'] [0] ['fileName'];
-
-        return $response;
-    }
-
-    /**
-     *
-     * @param integer $userId
      * @param array $request
      * @return array
      * @throws ValidationException
      */
-    public function updateUserAudioPortfolio($userId, UserAudioPortfolioPostRequest $request)
+    public function updateUserAudioPortfolioMetadata($userId,
+            UserAudioPortfolioMetadataPostRequest $request)
     {
         // validate userId.
         $user = $this->userRepository->get($userId);

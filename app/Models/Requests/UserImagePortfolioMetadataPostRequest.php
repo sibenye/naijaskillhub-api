@@ -10,7 +10,7 @@ namespace App\Models\Requests;
  * @author silver.ibenye
  *
  */
-class UserImagePortfolioPostRequest implements IPostRequest
+class UserImagePortfolioMetadataPostRequest implements IPostRequest
 {
     /**
      *
@@ -23,12 +23,6 @@ class UserImagePortfolioPostRequest implements IPostRequest
      * @var string
      */
     private $caption;
-
-    /**
-     *
-     * @var string
-     */
-    private $uploadContentType;
 
     /**
      * {@inheritDoc}
@@ -57,31 +51,7 @@ class UserImagePortfolioPostRequest implements IPostRequest
     {
         return [
                 'caption' => 'max:200',
-                'uploadContentType' => 'required|max:20'
-        ];
-    }
-
-    /**
-     *
-     * @return array
-     */
-    public function getUpdateValidationRules()
-    {
-        return [
-                'imageId' => 'required',
-                'caption' => 'required|max:200'
-        ];
-    }
-
-    /**
-     * Get custom validation messages.
-     *
-     * @return array
-     */
-    public function getCustomMessages()
-    {
-        return [
-                'uploadContentType.required' => 'uploadContentType is required. And should be in this format "image/{image extension}"'
+                'imageId' => 'required'
         ];
     }
 
@@ -119,24 +89,5 @@ class UserImagePortfolioPostRequest implements IPostRequest
     public function setImageId($imageId)
     {
         $this->imageId = $imageId;
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getUploadContentType()
-    {
-        return $this->uploadContentType;
-    }
-
-    /**
-     *
-     * @param string $uploadContentType
-     * return void
-     */
-    public function setUploadContentType($uploadContentType)
-    {
-        $this->uploadContentType = $uploadContentType;
     }
 }

@@ -4,7 +4,7 @@
  */
 namespace App\Mappers;
 
-use App\Models\Requests\UserAudioPortfolioPostRequest;
+use App\Models\Requests\UserAudioPortfolioMetadataPostRequest;
 
 /**
  * UserAudioPortfolioPostRequest Mapper.
@@ -19,15 +19,14 @@ class UserAudioPortfolioPostRequestMapper implements IMapper
      * {@inheritDoc}
      * @see \App\Mappers\IMapper::map()
      * @param array $in
-     * @return UserAudioPortfolioPostRequest
+     * @return UserAudioPortfolioMetadataPostRequest
      */
     public function map($in)
     {
-        $out = new UserAudioPortfolioPostRequest();
+        $out = new UserAudioPortfolioMetadataPostRequest();
 
         $out->setAudioId(array_get($in, 'audioId', NULL));
         $out->setCaption(array_get($in, 'caption', NULL));
-        $out->setUploadContentType(array_get($in, 'uploadContentType', NULL));
 
         return $out;
     }
