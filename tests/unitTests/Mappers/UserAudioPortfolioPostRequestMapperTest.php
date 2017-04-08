@@ -5,7 +5,7 @@
 namespace Tests\unitTests\Mappers;
 
 use App\Mappers\UserAudioPortfolioPostRequestMapper;
-use App\Models\Requests\UserAudioPortfolioPostRequest;
+use App\Models\Requests\UserAudioPortfolioMetadataPostRequest;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -50,11 +50,13 @@ class UserAudioPortfolioPostRequestMapperTest extends \TestCase
     public function testMapping()
     {
         $in = [
-                "caption" => "testCaption"
+                "caption" => "testCaption",
+                "audioId" => 1234
         ];
 
-        $expectedOut = new UserAudioPortfolioPostRequest();
+        $expectedOut = new UserAudioPortfolioMetadataPostRequest();
         $expectedOut->setCaption("testCaption");
+        $expectedOut->setAudioId(1234);
 
         $out = $this->mapper->map($in);
 

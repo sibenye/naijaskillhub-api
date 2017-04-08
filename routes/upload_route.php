@@ -10,7 +10,7 @@ $app->post('/upload/profileImage',
 
 $app->post('/upload/portfolio/image',
         [
-                'uses' => 'UploadController@uploadUserPorfolioImage',
+                'uses' => 'UploadController@uploadUserPortfolioImage',
                 'middleware' => 'auth'
         ]);
 

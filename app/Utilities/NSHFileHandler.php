@@ -4,13 +4,12 @@
  */
 namespace App\Utilities;
 
+use App\Utilities\NSHSFTPClientWrapper;
+use GrahamCampbell\Flysystem\Facades\Flysystem;
+use GrahamCampbell\Flysystem\FlysystemManager;
+use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\Facades\Image;
-use Illuminate\Http\File;
-use App\Utilities\NSHSFTPClientWrapper;
-use GrahamCampbell\Flysystem\FlysystemManager;
-use GrahamCampbell\Flysystem\Facades\Flysystem;
-use Illuminate\Support\Facades\Log;
 
 /**
  *
@@ -67,8 +66,6 @@ class NSHFileHandler
      */
     public function fileTypeIsImage($contentType)
     {
-        Log::info('IMAGE EXTENSION: ' . $this->getFileExtension($contentType));
-        Log::info('CONTENTTYPE: ' . $this->getFileType($contentType));
         return ($this->getFileType($contentType) == self::IMAGE_FILE_TYPE &&
                  in_array($this->getFileExtension($contentType), self::VALID_IMAGE_EXTENSIONS));
     }

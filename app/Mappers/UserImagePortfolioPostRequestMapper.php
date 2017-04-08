@@ -4,7 +4,7 @@
  */
 namespace App\Mappers;
 
-use App\Models\Requests\UserImagePortfolioPostRequest;
+use App\Models\Requests\UserImagePortfolioMetadataPostRequest;
 
 /**
  * UserImagePortfolioPostRequest Mapper.
@@ -19,15 +19,14 @@ class UserImagePortfolioPostRequestMapper implements IMapper
      * {@inheritDoc}
      * @see \App\Mappers\IMapper::map()
      * @param array $in
-     * @return UserImagePortfolioPostRequest
+     * @return UserImagePortfolioMetadataPostRequest
      */
     public function map($in)
     {
-        $out = new UserImagePortfolioPostRequest();
+        $out = new UserImagePortfolioMetadataPostRequest();
 
         $out->setImageId(array_get($in, 'imageId', NULL));
         $out->setCaption(array_get($in, 'caption', NULL));
-        $out->setUploadContentType(array_get($in, 'uploadContentType', NULL));
 
         return $out;
     }
