@@ -20,6 +20,18 @@ class NSHFileHandler
 {
     const IMAGE_FILE_TYPE = 'image';
     const AUDIO_FILE_TYPE = 'audio';
+    const VALID_IMAGE_EXTENSIONS = [
+            'jpeg',
+            'jpg',
+            'bmp',
+            'gif',
+            'png'
+    ];
+    const VALID_AUDIO_EXTENSIONS = [
+            'mp3',
+            'wma',
+            'wav'
+    ];
 
     /**
      *
@@ -54,7 +66,8 @@ class NSHFileHandler
      */
     public function fileTypeIsImage($contentType)
     {
-        return ($this->getFileType($contentType) == self::IMAGE_FILE_TYPE);
+        return ($this->getFileType($contentType) == self::IMAGE_FILE_TYPE &&
+                 in_array($this->getFileExtension($contentType), self::VALID_IMAGE_EXTENSIONS));
     }
 
     /**
@@ -65,7 +78,8 @@ class NSHFileHandler
      */
     public function fileTypeIsAudio($contentType)
     {
-        return ($this->getFileType($contentType) == self::AUDIO_FILE_TYPE);
+        return ($this->getFileType($contentType) == self::AUDIO_FILE_TYPE &&
+                 in_array($this->getFileExtension($contentType), self::VALID_AUDIO_EXTENSIONS));
     }
 
     /**

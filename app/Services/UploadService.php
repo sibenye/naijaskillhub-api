@@ -11,6 +11,8 @@ use Illuminate\Validation\ValidationException;
 use App\Repositories\UserRepository;
 use App\Repositories\UserAttributeRepository;
 use App\Models\Requests\FileUploadRequest;
+use App\Repositories\UserImagePortfolioRepository;
+use App\Repositories\UserAudioPortfolioRepository;
 
 /**
  * Upload Service.
@@ -37,12 +39,27 @@ class UploadService
      * @var UserAttributeRepository
      */
     private $userAttributeRepository;
+    /**
+     *
+     * @var UserImagePortfolioRepository
+     */
+    private $userImagePortfolioRepository;
+
+    /**
+     *
+     * @var UserAudioPortfolioRepository
+     */
+    private $userAudioPortfolioRepository;
 
     public function __construct(UserRepository $repository,
-            UserAttributeRepository $userAttributeRepository, NSHFileHandler $fileHandler)
+            UserAttributeRepository $userAttributeRepository,
+            UserImagePortfolioRepository $userImagePortfolioRepository,
+            UserAudioPortfolioRepository $userAudioPortfolioRepository, NSHFileHandler $fileHandler)
     {
         $this->userRepository = $repository;
         $this->userAttributeRepository = $userAttributeRepository;
+        $this->userImagePortfolioRepository = $userImagePortfolioRepository;
+        $this->userAudioPortfolioRepository = $userAudioPortfolioRepository;
         $this->fileHandler = $fileHandler;
     }
 
@@ -115,7 +132,7 @@ class UploadService
      * @throws ValidationException
      * @return array
      */
-    public function uploadUserPortfolioImage($userId, $location, FileUploadRequest $request)
+    public function uploadUserPortfolioImage($userId, FileUploadRequest $request)
     {
         $this->validateUploadRequest($request);
 
@@ -130,13 +147,21 @@ class UploadService
             throw new ValidationException(NULL, 'The content is not an image file.');
         }
 
-        if (empty($location)) {
-            throw new ValidationException(NULL, 'The location header is required.');
-        }
+        $filename = $userId . '_' . time() . '.' . $this->fileHandler->getFileExtension(
+                $contentType);
 
-        $filePath = $location;
+        $filePath = env("PORTFOLIO_IMAGE_FOLDER") . $filename;
 
         $this->fileHandler->uploadFile($filePath, $image);
+
+        // save metadata
+        $modelAttribute = array ();
+        $modelAttribute ['userId'] = $userId;
+        $modelAttribute ['caption'] = $request->getCaption();
+        $modelAttribute ['fileName'] = $filename;
+        $modelAttribute ['filePath'] = $filename; // we save the fileName as the filePath.
+
+        $this->userImagePortfolioRepository->create($modelAttribute);
 
         $response = array ();
         $response ['filePath'] = $filePath;

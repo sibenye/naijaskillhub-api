@@ -26,9 +26,9 @@ class FileUploadRequest implements IPostRequest
 
     /**
      *
-     * @var integer
+     * @var string
      */
-    private $contentLength;
+    private $caption;
 
     /**
      * {@inheritDoc}
@@ -84,18 +84,18 @@ class FileUploadRequest implements IPostRequest
     }
 
     /**
-     * @return integer
+     * @return string
      */
-    public function getContentLength()
+    public function getCaption()
     {
-        return $this->contentLength;
+        return $this->caption;
     }
 
     /**
-     * @param integer $contentLength
+     * @param string $caption
      */
-    public function setContentLength($contentLength)
+    public function setCaption($caption)
     {
-        $this->contentLength = $contentLength;
+        $this->caption = $caption;
     }
 }
