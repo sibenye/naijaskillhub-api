@@ -1,4 +1,6 @@
 <?php
+use Monolog\Handler\ErrorLogHandler;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 try {
@@ -96,5 +98,14 @@ $app->group([
 ], function ($app) {
     require __DIR__ . '/../routes/web.php';
 });
+
+if (env('APP_ENV') != 'local') {
+    $app->configureMonologUsing(
+            function ($monolog) {
+                $monolog->pushHandler(new ErrorLogHandler());
+
+                return $monolog;
+            });
+}
 
 return $app;
