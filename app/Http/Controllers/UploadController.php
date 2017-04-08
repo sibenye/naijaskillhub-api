@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Mappers\FileUploadRequestMapper;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Upload Controller.
@@ -112,6 +113,8 @@ class UploadController extends Controller
         if (empty($contentType)) {
             $contentType = $this->request->header('Content-Type');
         }
+        Log::info('HEADER UPLOAD: ' . $this->request->header('Upload-Content-Type'));
+        Log::info('REQUEST: ' . $this->request->input('file'));
         $request = [
                 'file' => $this->request->input('file'),
                 'contentType' => $contentType,
