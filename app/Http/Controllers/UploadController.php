@@ -113,7 +113,7 @@ class UploadController extends Controller
             $contentType = $this->request->header('Content-Type');
         }
         $request = [
-                'file' => $this->request->file('file'),
+                'file' => $this->request->input('file'),
                 'contentType' => $contentType,
                 'caption' => $this->request->header('Upload-Caption')
         ];
