@@ -169,7 +169,7 @@ class UploadService
         return $response;
     }
 
-    public function uploadUserPortfolioAudio($userId, $location, FileUploadRequest $request)
+    public function uploadUserPortfolioAudio($userId, FileUploadRequest $request)
     {
         $this->validateUploadRequest($request);
 
@@ -184,13 +184,21 @@ class UploadService
             throw new ValidationException(NULL, 'The content is not an audio file.');
         }
 
-        if (empty($location)) {
-            throw new ValidationException(NULL, 'The location header is required.');
-        }
+        $filename = $userId . '_' . time() . '.' . $this->fileHandler->getFileExtension(
+                $contentType);
 
-        $filePath = $location;
+        $filePath = env("PORTFOLIO_AUDIO_FOLDER") . $filename;
 
         $this->fileHandler->uploadFile($filePath, $image);
+
+        // save audio metadata.
+        $modelAttribute = array ();
+        $modelAttribute ['userId'] = $userId;
+        $modelAttribute ['caption'] = $request->getCaption();
+        $modelAttribute ['fileName'] = $filename;
+        $modelAttribute ['filePath'] = $filename;
+
+        $this->userAudioPortfolioRepository->create($modelAttribute);
 
         $response = array ();
         $response ['filePath'] = $filePath;
@@ -211,7 +219,7 @@ class UploadService
         }
 
         if (empty($request->getContentType())) {
-            throw new ValidationException(NULL, 'The Content-Type header is required');
+            throw new ValidationException(NULL, 'The upload contentType is required');
         }
 
         // ensure the contentType is in the right format
@@ -221,7 +229,7 @@ class UploadService
         }
 
         if ($this->fileHandler->getFileSize($request->getFile()) > 2048000) {
-            throw new ValidationException(NULL, 'The image size is more than 2MB.');
+            throw new ValidationException(NULL, 'The file size is more than 2MB.');
         }
     }
 }

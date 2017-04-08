@@ -5,7 +5,7 @@
 namespace Tests\unitTests\Mappers;
 
 use App\Mappers\UserImagePortfolioPostRequestMapper;
-use App\Models\Requests\UserImagePortfolioPostRequest;
+use App\Models\Requests\UserImagePortfolioMetadataPostRequest;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -50,11 +50,13 @@ class UserImagePortfolioPostRequestMapperTest extends \TestCase
     public function testMapping()
     {
         $in = [
-                "caption" => "testCaption"
+                "caption" => "testCaption",
+                "imageId" => 1234
         ];
 
-        $expectedOut = new UserImagePortfolioPostRequest();
+        $expectedOut = new UserImagePortfolioMetadataPostRequest();
         $expectedOut->setCaption("testCaption");
+        $expectedOut->setImageId(1234);
 
         $out = $this->mapper->map($in);
 

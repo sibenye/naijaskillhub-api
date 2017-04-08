@@ -28,7 +28,7 @@ $app->get('/users/{id}/portfolios/credits',
         ]);
 $app->post('/users/{id}/portfolios/images',
         [
-                'uses' => 'UserPortfolioController@upsertUserImagePortfolio',
+                'uses' => 'UserPortfolioController@updateUserImagePortfolioMetadata',
                 'middleware' => [
                         'auth',
                         'acctType'
@@ -44,7 +44,7 @@ $app->post('/users/{id}/portfolios/videos',
         ]);
 $app->post('/users/{id}/portfolios/audios',
         [
-                'uses' => 'UserPortfolioController@upsertUserAudioPortfolio',
+                'uses' => 'UserPortfolioController@updateUserAudioPortfolioMetadata',
                 'middleware' => [
                         'auth',
                         'acctType'

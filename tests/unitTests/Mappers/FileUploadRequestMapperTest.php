@@ -42,13 +42,13 @@ class FileUploadRequestMapperTest extends \TestCase
         $in = [
                 "file" => 'binaryString',
                 'contentType' => 'image/png',
-                'contentLength' => 10000
+                'caption' => 'test'
         ];
 
         $expectedOut = new FileUploadRequest();
         $expectedOut->setFile('binaryString');
         $expectedOut->setContentType('image/png');
-        $expectedOut->setContentLength(10000);
+        $expectedOut->setCaption('test');
 
         $out = $this->mapper->map($in);
 
