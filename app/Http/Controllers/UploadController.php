@@ -67,9 +67,7 @@ class UploadController extends Controller
 
         $userId = Auth::user()->id;
 
-        $location = $this->request->header('Location');
-
-        $response = $this->service->uploadUserPortfolioImage($userId, $location, $postRequest);
+        $response = $this->service->uploadUserPortfolioImage($userId, $postRequest);
 
         return $this->response($response);
     }
@@ -115,9 +113,9 @@ class UploadController extends Controller
             $contentType = $this->request->header('Content-Type');
         }
         $request = [
-                'file' => $this->request->getContent(),
+                'file' => $this->request->file('file'),
                 'contentType' => $contentType,
-                'contentLength' => $this->request->header('Content-Length')
+                'caption' => $this->request->header('Upload-Caption')
         ];
         return $this->fileUploadRequestMapper->map($request);
     }

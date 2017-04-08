@@ -27,7 +27,7 @@ class FileUploadRequestMapper implements IMapper
 
         $out->setFile(array_get($in, 'file', NULL));
         $out->setContentType(array_get($in, 'contentType', NULL));
-        $out->setContentLength(array_get($in, 'contentLength', NULL));
+        $out->setCaption(array_get($in, 'caption', NULL));
 
         return $out;
     }
