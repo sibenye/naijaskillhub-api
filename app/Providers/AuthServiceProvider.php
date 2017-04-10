@@ -37,16 +37,19 @@ class AuthServiceProvider extends ServiceProvider
                         $token = $jwtClient->parseToken($request->header('NSH-AUTH-TOKEN'));
                         // check if expired
                         if ($jwtClient->tokenIsExpired($token)) {
+                            var_dump('OH HERE 1');
                             return null;
                         }
                         // verify token's claim
                         if (!$jwtClient->verifyToken($token)) {
+                            var_dump('OH HERE 2');
                             return null;
                         }
                         // return user
                         $email = $token->getClaim("email", "");
                         return User::where("emailAddress", $email)->first();
                     } else {
+                        var_dump('OH HERE 3');
                         return null;
                     }
                 });

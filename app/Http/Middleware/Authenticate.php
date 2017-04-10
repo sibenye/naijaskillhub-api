@@ -39,6 +39,7 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         if ($this->auth->guard($guard)->guest()) {
+            var_dump('OH HERE 4');
             throw new AuthenticationException();
         }
 
