@@ -99,6 +99,12 @@
         },
         "PORTFOLIO_AUDIO_FOLDER": {
             "required": true
+        },
+        "DROPBOX_APP": {
+            "required": true
+        },
+        "DROPBOX_APP_TOKEN": {
+            "required": true
         }
 	},
 	"formation": {
