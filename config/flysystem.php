@@ -21,7 +21,7 @@ return [
          * |
          */
 
-        'default' => (env('APP_ENV') == 'local') ? 'local' : 'sftp',
+        'default' => (env('APP_ENV') == 'local') ? 'local' : 'dropbox',
 
     /*
     |--------------------------------------------------------------------------
@@ -80,8 +80,8 @@ return [
 
                 'dropbox' => [
                         'driver' => 'dropbox',
-                        'token' => 'your-token',
-                        'app' => 'your-app'
+                        'token' => env('DROPBOX_APP_TOKEN'),
+                        'app' => env('DROPBOX_APP')
                 ],
                 // 'prefix' => 'your-prefix',
                 // 'visibility' => 'public',
