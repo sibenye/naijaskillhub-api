@@ -4,15 +4,14 @@
  */
 namespace App\Services;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Intervention\Image\Facades\Image;
+use App\Models\Requests\FileUploadRequest;
+use App\Repositories\UserAttributeRepository;
+use App\Repositories\UserAudioPortfolioRepository;
+use App\Repositories\UserImagePortfolioRepository;
+use App\Repositories\UserRepository;
 use App\Utilities\NSHFileHandler;
 use Illuminate\Validation\ValidationException;
-use App\Repositories\UserRepository;
-use App\Repositories\UserAttributeRepository;
-use App\Models\Requests\FileUploadRequest;
-use App\Repositories\UserImagePortfolioRepository;
-use App\Repositories\UserAudioPortfolioRepository;
+use Intervention\Image\Facades\Image;
 
 /**
  * Upload Service.
