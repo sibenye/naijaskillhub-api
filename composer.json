@@ -19,7 +19,8 @@
         "lcobucci/jwt": "^3.2",
         "graham-campbell/flysystem": "^3.6",
         "league/flysystem-aws-s3-v3": "^1.0",
-        "league/flysystem-sftp": "^1.0"
+        "league/flysystem-sftp": "^1.0",
+        "league/flysystem-dropbox": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

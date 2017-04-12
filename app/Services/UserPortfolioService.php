@@ -452,6 +452,7 @@ class UserPortfolioService
         // delete image file from directory.
         $filePath = $existingImage [0]->filePath;
         if (!empty($filePath)) {
+            $filePath = env("PORTFOLIO_IMAGE_FOLDER") . $filePath;
             $this->fileHandler->deleteFile($filePath);
         }
     }
@@ -514,6 +515,7 @@ class UserPortfolioService
         // delete audio file from directory.
         $filePath = $existingAudio [0]->filePath;
         if (!empty($filePath)) {
+            $filePath = env("PORTFOLIO_AUDIO_FOLDER") . $filePath;
             $this->fileHandler->deleteFile($filePath);
         }
     }
