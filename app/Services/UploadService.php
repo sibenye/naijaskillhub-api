@@ -170,7 +170,7 @@ class UploadService
 
     public function uploadUserPortfolioAudio($userId, FileUploadRequest $request)
     {
-        $this->validateUploadRequest($request);
+        $this->validateUploadRequest($request, 10485760); // max audio file size is 10MB.
 
         // validate userId.
         $this->userRepository->get($userId);
@@ -211,7 +211,7 @@ class UploadService
      * @param FileUploadRequest $request
      * @throws ValidationException
      */
-    public function validateUploadRequest(FileUploadRequest $request)
+    public function validateUploadRequest(FileUploadRequest $request, $maxFileSize = null)
     {
         if (empty($request->getFile())) {
             throw new ValidationException(NULL, 'The File to be uploaded is required');
@@ -227,7 +227,11 @@ class UploadService
                 'The Content-Type header should be in this format "{type}/{type extension}".');
         }
 
-        if ($this->fileHandler->getFileSize($request->getFile()) > 2048000) {
+        if (empty($maxFileSize)) {
+            $maxFileSize = 2097152; // default to 2MB.
+        }
+
+        if ($this->fileHandler->getFileSize($request->getFile()) > $maxFileSize) {
             throw new ValidationException(NULL, 'The file size is more than 2MB.');
         }
     }
