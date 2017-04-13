@@ -82,9 +82,7 @@ class UploadController extends Controller
 
         $userId = Auth::user()->id;
 
-        $location = $this->request->header('Location');
-
-        $response = $this->service->uploadUserPortfolioAudio($userId, $location, $postRequest);
+        $response = $this->service->uploadUserPortfolioAudio($userId, $postRequest);
 
         return $this->response($response);
     }
