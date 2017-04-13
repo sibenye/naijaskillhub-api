@@ -33,7 +33,8 @@ class NSHFileHandler
             'wma',
             'wav',
             'x-wav',
-            'mpeg'
+            'mpeg',
+            'x-ms-wma'
     ];
 
     /**
