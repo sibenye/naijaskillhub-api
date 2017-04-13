@@ -29,8 +29,11 @@ class NSHFileHandler
     ];
     const VALID_AUDIO_EXTENSIONS = [
             'mp3',
+            'mpga',
             'wma',
-            'wav'
+            'wav',
+            'x-wav',
+            'mpeg'
     ];
 
     /**
