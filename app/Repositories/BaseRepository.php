@@ -40,7 +40,12 @@ abstract class BaseRepository implements IBaseRepository
     public function get($id = NULL)
     {
         if ($id) {
-            return $this->model->findOrFail($id);
+            return $this->model->withCount([
+                    'images',
+                    'videos',
+                    'audios',
+                    'credits'
+            ])->findOrFail($id);
         } else {
             return $this->model->all();
         }
