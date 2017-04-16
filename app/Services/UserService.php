@@ -631,7 +631,7 @@ class UserService
     {
         $userCredentialTypes = $user->credentialTypes;
 
-        $userCredentialTypesContent = array ();
+        $userCredentialTypesContent = [ ];
 
         foreach ($userCredentialTypes as $key => $value) {
             $userCredentialTypesContent [$key] = $value->name;
@@ -639,42 +639,36 @@ class UserService
 
         $userAccountTypes = $user->accountTypes;
 
-        $userAccountTypesContent = array ();
+        $userAccountTypesContent = [ ];
 
         foreach ($userAccountTypes as $key => $value) {
             $userAccountTypesContent [$key] = $value->name;
         }
 
-        $userAttributes = $user->userAttributes;
-
-        $userAttributesContent = array ();
-        $i = 0;
-
-        foreach ($userAttributes as $value) {
-            $userAttributesContent [$i] ['attributeId'] = $value->id;
-            $userAttributesContent [$i] ['attributeName'] = $value->name;
-            $userAttributesContent [$i] ['attributeValue'] = $value->pivot->attributeValue;
-
-            $i++;
-        }
+        $portfolioSummary = [
+                "numberOfImages" => count($user->images),
+                "numberOfVideos" => count($user->videos),
+                "numberOfAudios" => count($user->audios),
+                "numberOfCredits" => count($user->credits)
+        ];
 
         $userCategories = $user->categories;
 
-        $userCategoriesContent = array ();
+        $userCategoriesContent = [ ];
 
         foreach ($userCategories as $key => $value) {
             $userCategoriesContent [$key] ['categoryId'] = $value->id;
             $userCategoriesContent [$key] ['categoryName'] = $value->name;
         }
 
-        $userContent = array ();
+        $userContent = [ ];
         $userContent ['userId'] = $user->id;
         $userContent ['isActive'] = $user->isActive;
         $userContent ['emailAddress'] = $user->emailAddress;
         $userContent ['vanityName'] = $user->vanityName;
         $userContent ['credentialTypes'] = $userCredentialTypesContent;
         $userContent ['accountTypes'] = $userAccountTypesContent;
-        $userContent ['attributes'] = $userAttributesContent;
+        $userContent ['portfolio'] = $portfolioSummary;
         $userContent ['categories'] = $userCategoriesContent;
         $userContent ['createdDate'] = $user->createdDate->toDateTimeString();
         $userContent ['modifiedDate'] = $user->modifiedDate->toDateTimeString();
