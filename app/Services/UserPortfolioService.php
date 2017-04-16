@@ -147,7 +147,7 @@ class UserPortfolioService
 
         $result = array ();
         $result ['userId'] = $userId;
-        $result ['voiceClips'] = $this->mapAudiosResponse($user, $audioId);
+        $result ['audios'] = $this->mapAudiosResponse($user, $audioId);
 
         return $result;
     }
