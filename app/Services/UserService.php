@@ -646,10 +646,10 @@ class UserService
         }
 
         $portfolioSummary = [
-                "numberOfImages" => count($user->images),
-                "numberOfVideos" => count($user->videos),
-                "numberOfAudios" => count($user->audios),
-                "numberOfCredits" => count($user->credits)
+                "numberOfImages" => $user->images_count,
+                "numberOfVideos" => $user->videos_count,
+                "numberOfAudios" => $user->audios_count,
+                "numberOfCredits" => $user->credits_count
         ];
 
         $userCategories = $user->categories;
