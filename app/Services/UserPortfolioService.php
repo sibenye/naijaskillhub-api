@@ -271,14 +271,17 @@ class UserPortfolioService
         }
 
         $modelAttributes = array ();
-        $modelAttributes ['videoUrl'] = $request ['videoUrl'];
+
+        if (!empty($request->getVideoUrl())) {
+            $modelAttributes ['videoUrl'] = $request->getVideoUrl();
+        }
 
         if (!empty($request->getCaption())) {
             $modelAttributes ['caption'] = $request->getCaption();
         }
 
         if (!empty($request->getVideoScreenUrl())) {
-            $modelAttributes ['videoScreenUrl'] = $request ['videoScreenUrl'];
+            $modelAttributes ['videoScreenUrl'] = $request->getVideoScreenUrl();
         }
 
         $this->userVideoPortfolioRepository->update($videoId, $modelAttributes);
