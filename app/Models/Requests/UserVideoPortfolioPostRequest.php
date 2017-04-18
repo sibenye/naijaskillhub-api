@@ -31,6 +31,12 @@ class UserVideoPortfolioPostRequest implements IPostRequest
     private $caption;
 
     /**
+     *
+     * @var string
+     */
+    private $videoScreenUrl;
+
+    /**
      * {@inheritDoc}
      * @see \App\Models\Requests\IPostRequest::buildModelAttributes()
      */
@@ -60,6 +66,7 @@ class UserVideoPortfolioPostRequest implements IPostRequest
     {
         return [
                 'videoUrl' => 'required|max:500',
+                'videoScreen' => 'max:500',
                 'caption' => 'max:200'
         ];
     }
@@ -74,6 +81,7 @@ class UserVideoPortfolioPostRequest implements IPostRequest
         return [
                 'videoId' => 'required',
                 'videoUrl' => 'max:500',
+                'videoScreen' => 'max:500',
                 'caption' => 'max:200'
         ];
     }
@@ -129,5 +137,24 @@ class UserVideoPortfolioPostRequest implements IPostRequest
     public function setVideoUrl($videoUrl)
     {
         $this->videoUrl = $videoUrl;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getVideoScreenUrl()
+    {
+        return $this->videoScreenUrl;
+    }
+
+    /**
+     *
+     * @param string $videoScreen
+     * return void
+     */
+    public function setVideoScreenUrl($videoScreenUrl)
+    {
+        $this->videoScreenUrl = $videoScreenUrl;
     }
 }

@@ -229,6 +229,7 @@ class UserPortfolioService
         $modelAttribute ['userId'] = $userId;
         $modelAttribute ['caption'] = $caption;
         $modelAttribute ['videoUrl'] = $request->getVideoUrl();
+        $modelAttribute ['videoScreenUrl'] = $request->getVideoScreenUrl();
 
         $savedVideoPortfolio = $this->userVideoPortfolioRepository->create($modelAttribute);
 
@@ -238,6 +239,7 @@ class UserPortfolioService
         $response ['videoId'] = $videoPortfolio ['videos'] [0] ['videoId'];
         $response ['caption'] = $videoPortfolio ['videos'] [0] ['caption'];
         $response ['videoUrl'] = $videoPortfolio ['videos'] [0] ['videoUrl'];
+        $response ['videoScreenUrl'] = $videoPortfolio ['videos'] [0] ['videoScreenUrl'];
 
         return $response;
     }
@@ -269,11 +271,14 @@ class UserPortfolioService
         }
 
         $modelAttributes = array ();
+        $modelAttributes ['videoUrl'] = $request ['videoUrl'];
+
         if (!empty($request->getCaption())) {
             $modelAttributes ['caption'] = $request->getCaption();
         }
-        if (!empty($request->getVideoUrl())) {
-            $modelAttributes ['videoUrl'] = $request ['videoUrl'];
+
+        if (!empty($request->getVideoScreenUrl())) {
+            $modelAttributes ['videoScreenUrl'] = $request ['videoScreenUrl'];
         }
 
         $this->userVideoPortfolioRepository->update($videoId, $modelAttributes);
@@ -284,6 +289,7 @@ class UserPortfolioService
         $response ['videoId'] = $videoPortfolio ['videos'] [0] ['videoId'];
         $response ['caption'] = $videoPortfolio ['videos'] [0] ['caption'];
         $response ['videoUrl'] = $videoPortfolio ['videos'] [0] ['videoUrl'];
+        $response ['videoScreenUrl'] = $videoPortfolio ['videos'] [0] ['videoScreenUrl'];
 
         return $response;
     }
@@ -584,6 +590,7 @@ class UserPortfolioService
         foreach ($videos as $key => $value) {
             $videosContent [$key] ['videoId'] = $value->id;
             $videosContent [$key] ['videoUrl'] = $value->videoUrl;
+            $videosContent [$key] ['videoScreenUrl'] = $value->videoScreenUrl;
             $videosContent [$key] ['caption'] = $value->caption;
             $videosContent [$key] ['createdDate'] = $value->createdDate->toDateTimeString();
             $videosContent [$key] ['modifiedDate'] = $value->modifiedDate->toDateTimeString();
