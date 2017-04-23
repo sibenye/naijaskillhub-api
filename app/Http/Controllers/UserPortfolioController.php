@@ -161,8 +161,7 @@ class UserPortfolioController extends Controller
         $userVideosPortfolio = array ();
 
         if (empty($videoId)) {
-            $this->validateRequest($postRequest->getValidationRules(),
-                    $postRequest->getCustomMessages());
+            $this->validateRequest($postRequest->getValidationRules());
             $userVideosPortfolio = $this->service->createUserVideoPortfolio($userId, $postRequest);
         } else {
             $this->validateRequest($postRequest->getUpdateValidationRules());
