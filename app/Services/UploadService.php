@@ -170,7 +170,7 @@ class UploadService
 
     public function uploadUserPortfolioAudio($userId, FileUploadRequest $request)
     {
-        $this->validateUploadRequest($request, 10485760); // max audio file size is 10MB.
+        $this->validateUploadRequest($request);
 
         // validate userId.
         $this->userRepository->get($userId);
@@ -228,11 +228,11 @@ class UploadService
         }
 
         if (empty($maxFileSize)) {
-            $maxFileSize = 2097152; // default to 2MB.
+            $maxFileSize = 5242880; // default to 5MB.
         }
 
         if ($this->fileHandler->getFileSize($request->getFile()) > $maxFileSize) {
-            throw new ValidationException(NULL, 'The file size is more than 2MB.');
+            throw new ValidationException(NULL, 'The file size is more than 5MB.');
         }
     }
 }
