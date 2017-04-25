@@ -36,6 +36,11 @@ class NSHFileHandler
             'mpeg',
             'x-ms-wma'
     ];
+    const AUDIO_MIME_TO_EXTENSION = [
+            'x-wav' => 'wav',
+            'x-ms-wma' => 'wma',
+            'mpeg' => 'mpga'
+    ];
 
     /**
      *
@@ -83,7 +88,10 @@ class NSHFileHandler
     public function fileTypeIsAudio($contentType)
     {
         return ($this->getFileType($contentType) == self::AUDIO_FILE_TYPE &&
-                 in_array($this->getFileExtension($contentType), self::VALID_AUDIO_EXTENSIONS));
+                 (in_array($this->getFileExtension($contentType), self::VALID_AUDIO_EXTENSIONS)) || (array_key_exists(
+                        $this->getFileExtension($contentType), self::AUDIO_MIME_TO_EXTENSION) && in_array(
+                        self::AUDIO_MIME_TO_EXTENSION [$this->getFileExtension($contentType)],
+                        self::VALID_AUDIO_EXTENSIONS)));
     }
 
     /**
