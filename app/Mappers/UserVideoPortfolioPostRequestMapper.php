@@ -29,6 +29,7 @@ class UserVideoPortfolioPostRequestMapper implements IMapper
         $out->setVideoUrl(array_get($in, 'videoUrl', NULL));
         $out->setVideoScreenUrl(array_get($in, 'videoScreenUrl', NULL));
         $out->setCaption(array_get($in, 'caption', NULL));
+        $out->setDescription(array_get($in, 'description', NULL));
 
         return $out;
     }

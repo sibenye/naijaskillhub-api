@@ -37,6 +37,12 @@ class UserVideoPortfolioPostRequest implements IPostRequest
     private $videoScreenUrl;
 
     /**
+     *
+     * @var string
+     */
+    private $description;
+
+    /**
      * {@inheritDoc}
      * @see \App\Models\Requests\IPostRequest::buildModelAttributes()
      */
@@ -54,6 +60,14 @@ class UserVideoPortfolioPostRequest implements IPostRequest
             $attr ['caption'] = $this->caption;
         }
 
+        if ($this->videoScreenUrl !== NULL) {
+            $attr ['videoScreenUrl'] = $this->videoScreenUrl;
+        }
+
+        if ($this->description !== NULL) {
+            $attr ['description'] = $this->description;
+        }
+
         return $attr;
     }
 
@@ -66,8 +80,9 @@ class UserVideoPortfolioPostRequest implements IPostRequest
     {
         return [
                 'videoUrl' => 'required|max:500',
-                'videoScreen' => 'max:500',
-                'caption' => 'max:200'
+                'videoScreenUrl' => 'max:500',
+                'caption' => 'max:200',
+                'description' => 'max:500'
         ];
     }
 
@@ -81,8 +96,9 @@ class UserVideoPortfolioPostRequest implements IPostRequest
         return [
                 'videoId' => 'required',
                 'videoUrl' => 'max:500',
-                'videoScreen' => 'max:500',
-                'caption' => 'max:200'
+                'videoScreenUrl' => 'max:500',
+                'caption' => 'max:200',
+                'description' => 'max:500'
         ];
     }
 
@@ -150,11 +166,28 @@ class UserVideoPortfolioPostRequest implements IPostRequest
 
     /**
      *
-     * @param string $videoScreen
+     * @param string $videoScreenUrl
      * return void
      */
     public function setVideoScreenUrl($videoScreenUrl)
     {
         $this->videoScreenUrl = $videoScreenUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param  $description
+     * return void
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
     }
 }

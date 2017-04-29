@@ -4,20 +4,17 @@
  */
 namespace Tests\unitTests;
 
-use App\Repositories\UserRepository;
-use App\Services\UserService;
-use App\Repositories\UserAttributeRepository;
+use App\Models\DAO\AccountType;
+use App\Models\DAO\CredentialType;
 use App\Models\DAO\User;
 use App\Models\DAO\UserAttribute;
-use App\Repositories\CategoryRepository;
-use App\Repositories\CredentialTypeRepository;
-use App\Models\DAO\CredentialType;
-use App\Utilities\NSHCryptoUtil;
-use App\Models\Requests\UserPostRequest;
-use App\Services\AuthService;
 use App\Models\Requests\RegisterRequest;
 use App\Repositories\AccountTypeRepository;
-use App\Models\DAO\AccountType;
+use App\Repositories\CredentialTypeRepository;
+use App\Repositories\UserAttributeRepository;
+use App\Repositories\UserRepository;
+use App\Services\AuthService;
+use App\Utilities\NSHCryptoUtil;
 
 /**
  * AuthService Tests.

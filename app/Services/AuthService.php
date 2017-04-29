@@ -4,18 +4,15 @@
  */
 namespace App\Services;
 
-use App\Repositories\UserRepository;
-use App\Utilities\NSHCryptoUtil;
-use App\Utilities\NSHConstants;
-use App\Models\Requests\LoginRequest;
 use App\Enums\CredentialType;
-use Illuminate\Validation\ValidationException;
-use App\Exceptions\NSHAuthenticationException;
-use App\Models\Requests\UserPostRequest;
+use App\Models\Requests\LoginRequest;
 use App\Models\Requests\RegisterRequest;
+use App\Repositories\AccountTypeRepository;
 use App\Repositories\CredentialTypeRepository;
 use App\Repositories\UserAttributeRepository;
-use App\Repositories\AccountTypeRepository;
+use App\Repositories\UserRepository;
+use App\Utilities\NSHCryptoUtil;
+use Illuminate\Validation\ValidationException;
 
 /**
  * AuthService class.

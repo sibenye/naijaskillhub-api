@@ -4,8 +4,6 @@
  */
 namespace Tests\unitTests\Mappers;
 
-use App\Mappers\UserChangeEmailPostRequestMapper;
-use App\Models\Requests\UserChangeEmailPostRequest;
 use App\Mappers\UserChangeVanityNamePostRequestMapper;
 use App\Models\Requests\UserChangeVanityNamePostRequest;
 

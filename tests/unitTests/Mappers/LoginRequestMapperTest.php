@@ -4,8 +4,6 @@
  */
 namespace Tests\unitTests\Mappers;
 
-use App\Mappers\UserPostRequestMapper;
-use App\Models\Requests\UserPostRequest;
 use App\Mappers\LoginRequestMapper;
 use App\Models\Requests\LoginRequest;
 
