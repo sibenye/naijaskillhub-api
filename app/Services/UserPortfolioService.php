@@ -4,20 +4,19 @@
  */
 namespace App\Services;
 
-use App\Repositories\UserRepository;
-use Illuminate\Database\Eloquent\Model;
-use App\Utilities\NSHFileHandler;
-use Illuminate\Validation\ValidationException;
-use App\Repositories\UserImagePortfolioRepository;
-use App\Repositories\UserVideoPortfolioRepository;
+use App\Models\Requests\UserAudioPortfolioMetadataPostRequest;
+use App\Models\Requests\UserCreditPortfolioPostRequest;
+use App\Models\Requests\UserImagePortfolioMetadataPostRequest;
+use App\Models\Requests\UserVideoPortfolioPostRequest;
+use App\Repositories\CreditTypeRepository;
 use App\Repositories\UserAudioPortfolioRepository;
 use App\Repositories\UserCreditPortfolioRepository;
-use App\Repositories\CreditTypeRepository;
-use App\Models\Requests\UserCreditPortfolioPostRequest;
-use App\Models\Requests\UserAudioPortfolioMetadataPostRequest;
-use App\Models\Requests\UserVideoPortfolioPostRequest;
-use App\Models\Requests\UserImagePortfolioMetadataPostRequest;
-use Illuminate\Support\Facades\Auth;
+use App\Repositories\UserImagePortfolioRepository;
+use App\Repositories\UserRepository;
+use App\Repositories\UserVideoPortfolioRepository;
+use App\Utilities\NSHFileHandler;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
 
 /**
  * UserPortfolio Service.

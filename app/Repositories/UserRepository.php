@@ -4,12 +4,11 @@
  */
 namespace App\Repositories;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Collection;
-use App\Models\DAO\User;
 use App\Models\DAO\AccountType;
+use App\Models\DAO\User;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use FastRoute\RouteParser\Std;
 
 /**
  * User Repository.

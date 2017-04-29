@@ -4,8 +4,6 @@
  */
 namespace Tests\unitTests\Mappers;
 
-use App\Mappers\UserResetPasswordPostRequestMapper;
-use App\Models\Requests\UserResetPasswordPostRequest;
 use App\Mappers\UserForgotPasswordPostRequestMapper;
 use App\Models\Requests\UserForgotPasswordPostRequest;
 

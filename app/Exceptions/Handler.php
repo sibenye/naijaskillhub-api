@@ -1,15 +1,14 @@
 <?php
 namespace App\Exceptions;
 
+use App\Models\Responses\NSHResponse;
 use Exception;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Response;
-use App\Models\Responses\NSHResponse;
-use phpDocumentor\Reflection\Types\String_;
+use Illuminate\Validation\ValidationException;
+use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
