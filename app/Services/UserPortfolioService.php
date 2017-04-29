@@ -230,6 +230,7 @@ class UserPortfolioService
         $modelAttribute ['caption'] = $caption;
         $modelAttribute ['videoUrl'] = $request->getVideoUrl();
         $modelAttribute ['videoScreenUrl'] = $request->getVideoScreenUrl();
+        $modelAttribute ['description'] = $request->getDescription();
 
         $savedVideoPortfolio = $this->userVideoPortfolioRepository->create($modelAttribute);
 
@@ -240,6 +241,7 @@ class UserPortfolioService
         $response ['caption'] = $videoPortfolio ['videos'] [0] ['caption'];
         $response ['videoUrl'] = $videoPortfolio ['videos'] [0] ['videoUrl'];
         $response ['videoScreenUrl'] = $videoPortfolio ['videos'] [0] ['videoScreenUrl'];
+        $response ['description'] = $videoPortfolio ['videos'] [0] ['description'];
 
         return $response;
     }
@@ -293,6 +295,7 @@ class UserPortfolioService
         $response ['caption'] = $videoPortfolio ['videos'] [0] ['caption'];
         $response ['videoUrl'] = $videoPortfolio ['videos'] [0] ['videoUrl'];
         $response ['videoScreenUrl'] = $videoPortfolio ['videos'] [0] ['videoScreenUrl'];
+        $response ['description'] = $videoPortfolio ['videos'] [0] ['description'];
 
         return $response;
     }
@@ -332,6 +335,9 @@ class UserPortfolioService
         $response ['caption'] = $audioPortfolio ['audios'] [0] ['caption'];
         $response ['filePath'] = $audioPortfolio ['audios'] [0] ['filePath'];
         $response ['fileName'] = $audioPortfolio ['audios'] [0] ['fileName'];
+        $response ['description'] = $audioPortfolio ['audios'] [0] ['description'];
+        $response ['trackType'] = $audioPortfolio ['audios'] [0] ['trackType'];
+        $response ['roleInTrack'] = $audioPortfolio ['audios'] [0] ['roleInTrack'];
 
         return $response;
     }
@@ -594,6 +600,7 @@ class UserPortfolioService
             $videosContent [$key] ['videoId'] = $value->id;
             $videosContent [$key] ['videoUrl'] = $value->videoUrl;
             $videosContent [$key] ['videoScreenUrl'] = $value->videoScreenUrl;
+            $videosContent [$key] ['description'] = $value->description;
             $videosContent [$key] ['caption'] = $value->caption;
             $videosContent [$key] ['createdDate'] = $value->createdDate->toDateTimeString();
             $videosContent [$key] ['modifiedDate'] = $value->modifiedDate->toDateTimeString();
@@ -618,6 +625,9 @@ class UserPortfolioService
             $audiosContent [$key] ['filePath'] = env("PORTFOLIO_AUDIO_FOLDER") . $value->filePath;
             $audiosContent [$key] ['caption'] = $value->caption;
             $audiosContent [$key] ['fileName'] = $value->fileName;
+            $audiosContent [$key] ['description'] = $value->description;
+            $audiosContent [$key] ['trackType'] = $value->trackType;
+            $audiosContent [$key] ['roleInTrack'] = $value->roleInTrack;
             $audiosContent [$key] ['createdDate'] = $value->createdDate->toDateTimeString();
             $audiosContent [$key] ['modifiedDate'] = $value->modifiedDate->toDateTimeString();
         }

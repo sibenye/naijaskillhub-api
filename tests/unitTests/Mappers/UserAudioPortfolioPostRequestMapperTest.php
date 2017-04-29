@@ -51,12 +51,18 @@ class UserAudioPortfolioPostRequestMapperTest extends \TestCase
     {
         $in = [
                 "caption" => "testCaption",
-                "audioId" => 1234
+                "audioId" => 1234,
+                "description" => "testDescription",
+                "roleInTrack" => "testRoleInTrack",
+                "trackType" => "testTrackType"
         ];
 
         $expectedOut = new UserAudioPortfolioMetadataPostRequest();
         $expectedOut->setCaption("testCaption");
         $expectedOut->setAudioId(1234);
+        $expectedOut->setDescription("testDescription");
+        $expectedOut->setRoleInTrack("testRoleInTrack");
+        $expectedOut->setTrackType("testTrackType");
 
         $out = $this->mapper->map($in);
 

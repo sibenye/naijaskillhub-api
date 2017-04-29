@@ -40,12 +40,14 @@ class UserVideoPortfolioPostRequestMapperTest extends \TestCase
     {
         $in = [
                 "videoUrl" => "testUrl",
-                "caption" => "testCaption"
+                "caption" => "testCaption",
+                "description" => "testDescription"
         ];
 
         $expectedOut = new UserVideoPortfolioPostRequest();
         $expectedOut->setVideoUrl("testUrl");
         $expectedOut->setCaption("testCaption");
+        $expectedOut->setDescription("testDescription");
 
         $out = $this->mapper->map($in);
 
